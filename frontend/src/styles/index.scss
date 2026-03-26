@@ -1,0 +1,304 @@
+@import './variables';
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Sora:wght@600;700;800&display=swap');
+
+:root {
+  --page-bg: radial-gradient(circle at 10% 6%, #d5f3f2 0%, #edf5ff 36%, #f6f9fc 100%);
+  --surface: rgba(255, 255, 255, 0.96);
+  --surface-strong: #ffffff;
+  --text-main: #0f1f32;
+  --text-soft: #4d617c;
+  --border-soft: rgba(20, 46, 79, 0.14);
+  --card-shadow: 0 18px 44px rgba(23, 52, 88, 0.12);
+}
+
+:root[data-theme='dark'] {
+  --page-bg: radial-gradient(circle at 14% 10%, #0d2539 0%, #071526 38%, #050d1a 100%);
+  --surface: #122033;
+  --surface-strong: #1a2b41;
+  --text-main: #f8fbff;
+  --text-soft: #e4ecf9;
+  --border-soft: rgba(189, 211, 239, 0.24);
+  --card-shadow: 0 18px 46px rgba(1, 7, 14, 0.6);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--text-main);
+  background: var(--page-bg);
+  transition: background 0.35s ease, color 0.25s ease;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: 'Sora', 'IBM Plex Sans', sans-serif;
+}
+
+.dashboard-section,
+.mood-form,
+.todays-entry,
+.mood-chart,
+.comparison-card,
+.comparison-insight,
+.settings .form-section,
+.settings-info,
+.entry-details,
+.auth-card {
+  background: var(--surface) !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--border-soft) !important;
+  box-shadow: var(--card-shadow) !important;
+  backdrop-filter: blur(10px);
+}
+
+.section-description,
+.entry-label,
+.settings-subtitle,
+.theme-label,
+.chart-subtitle,
+.comparison-subtitle,
+.value-unit,
+.period-label,
+.metric-label,
+.user-id,
+.no-entry,
+.no-data {
+  color: var(--text-soft) !important;
+}
+
+.entry-value,
+.details-value,
+.reflection-text,
+.section-content,
+.settings p,
+.auth-header p {
+  color: var(--text-main) !important;
+}
+
+input,
+textarea,
+select {
+  color: var(--text-main) !important;
+  border-color: var(--border-soft) !important;
+}
+
+:root[data-theme='dark'] .app-header {
+  background:
+    radial-gradient(circle at 10% 18%, rgba(35, 174, 177, 0.22) 0, rgba(35, 174, 177, 0) 38%),
+    radial-gradient(circle at 86% 10%, rgba(59, 130, 246, 0.24) 0, rgba(59, 130, 246, 0) 36%),
+    linear-gradient(135deg, #0c2236 0%, #102d4c 100%);
+  border-bottom-color: rgba(180, 211, 244, 0.38);
+  box-shadow: 0 18px 42px rgba(2, 8, 18, 0.55);
+}
+
+:root[data-theme='dark'] .app-nav .header-nav {
+  background: rgba(14, 165, 164, 0.1) !important;
+  border-color: rgba(14, 165, 164, 0.4) !important;
+}
+
+:root[data-theme='dark'] .header-nav {
+  background: rgba(170, 214, 255, 0.14);
+  border-color: rgba(196, 227, 255, 0.34);
+}
+
+:root[data-theme='dark'] .header-nav-btn.active {
+  color: #0f2b45;
+  background: #e8f7ff;
+  border-color: #e8f7ff;
+}
+
+:root[data-theme='dark'] .header-nav-btn,
+:root[data-theme='dark'] .brand-copy p,
+:root[data-theme='dark'] .user-name,
+:root[data-theme='dark'] .logout-btn {
+  color: #e9f3ff;
+}
+
+:root[data-theme='dark'] h1,
+:root[data-theme='dark'] h2,
+:root[data-theme='dark'] h3,
+:root[data-theme='dark'] h4,
+:root[data-theme='dark'] p,
+:root[data-theme='dark'] span,
+:root[data-theme='dark'] label,
+:root[data-theme='dark'] small,
+:root[data-theme='dark'] li,
+:root[data-theme='dark'] strong,
+:root[data-theme='dark'] .section-description,
+:root[data-theme='dark'] .entry-label,
+:root[data-theme='dark'] .metric-label,
+:root[data-theme='dark'] .value-unit,
+:root[data-theme='dark'] .period-label,
+:root[data-theme='dark'] .theme-label,
+:root[data-theme='dark'] .field-description,
+:root[data-theme='dark'] .mood-labels,
+:root[data-theme='dark'] .mood-text,
+:root[data-theme='dark'] .entry-value,
+:root[data-theme='dark'] .details-value,
+:root[data-theme='dark'] .section-content,
+:root[data-theme='dark'] .reflection-text,
+:root[data-theme='dark'] .sleep-value {
+  color: #f2f7ff !important;
+}
+
+:root[data-theme='dark'] .theme-option {
+  background: #1a2b41;
+  color: #dceaff;
+  border-color: rgba(195, 217, 244, 0.28);
+}
+
+:root[data-theme='dark'] .theme-option.active {
+  color: #072231;
+  background: #b8eff4;
+  border-color: #b8eff4;
+}
+
+:root[data-theme='dark'] .header-nav-btn.active,
+:root[data-theme='dark'] .settings-btn.active,
+:root[data-theme='dark'] .mood-form .feeling-btn.active,
+:root[data-theme='dark'] .theme-option.active {
+  color: #072231 !important;
+}
+
+:root[data-theme='dark'] .app-footer {
+  background: rgba(24, 31, 46, 0.9);
+  color: var(--text-soft);
+  border-top-color: var(--border-soft);
+}
+
+:root[data-theme='dark'] .app {
+  background: #000000 !important;
+}
+
+:root[data-theme='dark'] .section-header,
+:root[data-theme='dark'] .entry-header,
+:root[data-theme='dark'] .comparison-header,
+:root[data-theme='dark'] .form-header,
+:root[data-theme='dark'] .settings-header {
+  border-bottom-color: rgba(196, 214, 236, 0.25) !important;
+}
+
+:root[data-theme='dark'] .entry-detail,
+:root[data-theme='dark'] .quote,
+:root[data-theme='dark'] .reflection-box,
+:root[data-theme='dark'] .reflection-text,
+:root[data-theme='dark'] .sleep-value,
+:root[data-theme='dark'] .sleep-stat,
+:root[data-theme='dark'] .value-box,
+:root[data-theme='dark'] .settings-info,
+:root[data-theme='dark'] .no-data,
+:root[data-theme='dark'] .no-entry,
+:root[data-theme='dark'] .chart-no-data {
+  background: rgba(21, 37, 58, 0.9) !important;
+  border-color: rgba(180, 205, 236, 0.24) !important;
+  color: var(--text-main) !important;
+}
+
+:root[data-theme='dark'] .mood-form,
+:root[data-theme='dark'] .mood-form p,
+:root[data-theme='dark'] .mood-form label,
+:root[data-theme='dark'] .mood-form .field-description,
+:root[data-theme='dark'] .mood-form .mood-labels,
+:root[data-theme='dark'] .mood-form .mood-text,
+:root[data-theme='dark'] .entry-card p,
+:root[data-theme='dark'] .entry-card strong,
+:root[data-theme='dark'] .details-value,
+:root[data-theme='dark'] .section-content {
+  color: #eef5ff !important;
+}
+
+:root[data-theme='dark'] .mood-form .feeling-btn {
+  background: #1b2d44 !important;
+  color: #eaf3ff !important;
+  border-color: rgba(184, 207, 236, 0.34) !important;
+}
+
+:root[data-theme='dark'] .mood-form .feeling-btn.active {
+  background: #a8eceb !important;
+  color: #062c34 !important;
+  border-color: #a8eceb !important;
+}
+
+:root[data-theme='dark'] .mood-form .mood-display,
+:root[data-theme='dark'] .mood-form .quote {
+  background: rgba(28, 47, 72, 0.82) !important;
+  border-color: rgba(183, 210, 241, 0.25) !important;
+}
+
+:root[data-theme='dark'] input::placeholder,
+:root[data-theme='dark'] textarea::placeholder {
+  color: #c8d8ed !important;
+  opacity: 1;
+}
+
+:root[data-theme='dark'] .settings input,
+:root[data-theme='dark'] .settings textarea,
+:root[data-theme='dark'] .settings select {
+  background: #e7f0fb !important;
+  color: #0f2236 !important;
+  border-color: #b7cbe3 !important;
+}
+
+:root[data-theme='dark'] .settings input::placeholder,
+:root[data-theme='dark'] .settings textarea::placeholder {
+  color: #4f6884 !important;
+}
+
+:root[data-theme='dark'] .mobile-menu {
+  background: #0f1f32 !important;
+  color: #f8fbff;
+}
+
+:root[data-theme='dark'] .mobile-menu-header {
+  border-bottom-color: rgba(180, 205, 236, 0.24) !important;
+}
+
+:root[data-theme='dark'] .user-name-mobile,
+:root[data-theme='dark'] .mobile-menu-item {
+  color: #f8fbff !important;
+}
+
+:root[data-theme='dark'] .user-email-mobile {
+  color: #b8d1e6 !important;
+}
+
+:root[data-theme='dark'] .mobile-menu-close {
+  color: #f8fbff !important;
+}
+
+:root[data-theme='dark'] .mobile-menu-item:hover {
+  background: rgba(184, 207, 236, 0.12) !important;
+  border-left-color: #0ea5a4 !important;
+}
+
+:root[data-theme='dark'] .mobile-menu-item.logout {
+  color: #f87171 !important;
+}
+
+:root[data-theme='dark'] .mobile-menu-item.logout:hover {
+  background: rgba(248, 113, 113, 0.08) !important;
+  border-left-color: #f87171 !important;
+}
+
+:root[data-theme='dark'] .mobile-menu-nav {
+  border-top-color: rgba(180, 205, 236, 0.24) !important;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}

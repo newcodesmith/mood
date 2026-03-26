@@ -1,0 +1,139 @@
+@import './variables';
+@import './mixins';
+
+.mood-chart {
+  @include card;
+  max-width: 100%;
+
+  @include mobile {
+    padding: $spacing-lg;
+  }
+}
+
+.chart-header {
+  margin-bottom: $spacing-lg;
+  border-bottom: 2px solid $bg-lighter;
+  padding-bottom: $spacing-lg;
+}
+
+.chart-title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $primary-color;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: $font-size-lg;
+    background: $gradient-primary;
+    border-radius: $radius-sm;
+  }
+}
+
+.chart-subtitle {
+  font-size: $font-size-sm;
+  color: $text-light;
+  margin-top: $spacing-sm;
+}
+
+.chart-container {
+  position: relative;
+  height: 350px;
+  margin-bottom: $spacing-lg;
+
+  @include mobile {
+    height: 250px;
+  }
+}
+
+.chart-canvas {
+  height: 100% !important;
+}
+
+.chart-no-data {
+  text-align: center;
+  padding: $spacing-xl;
+  color: $text-light;
+  background: $bg-lighter;
+  border-radius: $radius-md;
+  font-size: $font-size-base;
+}
+
+.entry-details {
+  @include card;
+  background: $bg-lighter;
+  margin-top: $spacing-lg;
+
+  @include mobile {
+    padding: $spacing-md;
+  }
+}
+
+.details-label {
+  font-size: $font-size-sm;
+  color: $text-light;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: $spacing-sm;
+  display: block;
+}
+
+.details-value {
+  font-size: $font-size-base;
+  color: $text-dark;
+  margin-bottom: $spacing-md;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.feelings-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
+}
+
+.feeling-tag {
+  display: inline-block;
+  background: $primary-color;
+  color: $bg-white;
+  padding: 0.35rem 0.7rem;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+}
+
+.reflection-text {
+  background: $bg-white;
+  padding: $spacing-md;
+  border-radius: $radius-sm;
+  border-left: 3px solid $secondary-color;
+  color: $text-dark;
+  line-height: 1.6;
+  font-size: $font-size-sm;
+}
+
+.sleep-value {
+  background: $bg-white;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-sm;
+  color: $text-dark;
+  font-weight: $font-weight-semibold;
+}
+
+@include mobile {
+  .chart-container {
+    height: 200px;
+  }
+
+  .entry-details {
+    margin-top: $spacing-md;
+  }
+}

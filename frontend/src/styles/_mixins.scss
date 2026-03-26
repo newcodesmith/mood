@@ -1,0 +1,177 @@
+@import './variables';
+
+// Flexbox Utilities
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// Grid Utilities
+@mixin grid-center {
+  display: grid;
+  place-items: center;
+}
+
+// Spacing
+@mixin margin($top: 0, $right: 0, $bottom: 0, $left: 0) {
+  margin: $top $right $bottom $left;
+}
+
+@mixin padding($top: 0, $right: 0, $bottom: 0, $left: 0) {
+  padding: $top $right $bottom $left;
+}
+
+// Text Utilities
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin text-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Colors & Backgrounds
+@mixin bg-gradient {
+  background: $gradient-primary;
+}
+
+@mixin bg-gradient-light {
+  background: $gradient-primary-light;
+}
+
+// Button Styles
+@mixin button-base($bg-color: $primary-color, $text-color: $bg-white) {
+  padding: $spacing-md;
+  background: $bg-color;
+  color: $text-color;
+  border: none;
+  border-radius: $radius-md;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all $transition-normal;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@mixin button-primary {
+  @include button-base($gradient-primary);
+}
+
+// Form Utilities
+@mixin form-input {
+  width: 100%;
+  padding: $spacing-md;
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  font-size: $font-size-md;
+  font-family: inherit;
+  transition: all $transition-fast;
+
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+  }
+}
+
+@mixin form-label {
+  display: block;
+  margin-bottom: $spacing-sm;
+  font-weight: $font-weight-semibold;
+  color: $text-primary;
+  font-size: $font-size-md;
+}
+
+@mixin form-error($bg-color: #fee, $border-color: $error-color, $text-color: $error-color) {
+  background: $bg-color;
+  border: 1px solid $border-color;
+  color: $text-color;
+  padding: $spacing-md;
+  border-radius: $radius-md;
+}
+
+// Card Styles
+@mixin card {
+  background: $bg-white;
+  padding: $spacing-xl;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+}
+
+@mixin card-header {
+  margin-bottom: $spacing-lg;
+  border-bottom: 2px solid $bg-lighter;
+  padding-bottom: $spacing-md;
+}
+
+// Responsive Mixins
+@mixin mobile {
+  @media (max-width: $tablet) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: $tablet) and (max-width: $desktop) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: $desktop) {
+    @content;
+  }
+}
+
+@mixin large-desktop {
+  @media (min-width: $desktop) {
+    @content;
+  }
+}
+
+// Overlay & Glass Effect
+@mixin glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+@mixin overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+// Text Gradient
+@mixin text-gradient($color1: $primary-color, $color2: $secondary-color) {
+  background: linear-gradient(135deg, $color1 0%, $color2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

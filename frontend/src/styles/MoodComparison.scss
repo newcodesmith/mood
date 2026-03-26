@@ -1,0 +1,139 @@
+@import './variables';
+@import './mixins';
+
+.mood-comparison {
+  width: 100%;
+
+  @include mobile {
+    padding: $spacing-lg;
+  }
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-xl;
+
+  @include tablet {
+    grid-template-columns: 1fr;
+    gap: $spacing-lg;
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: $spacing-md;
+  }
+}
+
+.comparison-card {
+  @include card;
+  background: linear-gradient(160deg, rgba($primary-color, 0.04) 0%, rgba($secondary-color, 0.04) 100%);
+  border: 1px solid rgba($primary-color, 0.14);
+  display: grid;
+  gap: $spacing-md;
+  align-content: start;
+
+  @include mobile {
+    padding: $spacing-lg;
+  }
+}
+
+h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: $font-weight-bold;
+  color: $primary-color;
+  letter-spacing: -0.02em;
+}
+
+.current,
+.previous {
+  padding: $spacing-md $spacing-lg;
+  background: rgba($bg-white, 0.7);
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  display: grid;
+  gap: $spacing-sm;
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: var(--text-soft);
+  font-weight: $font-weight-semibold;
+}
+
+.value {
+  font-size: 1.8rem;
+  line-height: 1;
+  font-weight: $font-weight-bold;
+  color: var(--text-main);
+}
+
+.change {
+  margin-top: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  border-radius: $radius-md;
+  display: grid;
+  gap: $spacing-sm;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  line-height: 1.4;
+}
+
+.change.positive {
+  background: rgba($success-color, 0.15);
+  color: darken($success-color, 10%);
+}
+
+.change.negative {
+  background: rgba($error-color, 0.12);
+  color: darken($error-color, 8%);
+}
+
+.percent {
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+}
+
+:root[data-theme='dark'] {
+  .comparison-card {
+    border-color: rgba(173, 207, 241, 0.28);
+    background: linear-gradient(160deg, rgba(12, 31, 52, 0.74) 0%, rgba(17, 40, 65, 0.74) 100%);
+  }
+
+  .current,
+  .previous {
+    background: rgba(27, 46, 70, 0.72);
+    border-color: rgba(178, 207, 240, 0.24);
+  }
+
+  .label {
+    color: #cbd9eb;
+  }
+
+  .value {
+    color: #f3f8ff;
+  }
+
+  .change.positive {
+    background: rgba(34, 197, 94, 0.22);
+    color: #97f5bc;
+  }
+
+  .change.negative {
+    background: rgba(239, 68, 68, 0.22);
+    color: #ffb2b2;
+  }
+}
+
+@include mobile {
+  .comparison-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .current,
+  .previous,
+  .change {
+    padding: $spacing-md;
+  }
+}

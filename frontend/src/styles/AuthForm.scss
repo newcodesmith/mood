@@ -1,0 +1,109 @@
+@import './variables';
+@import './mixins';
+
+.auth-page {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-xl $spacing-md;
+}
+
+.auth-card {
+  @include card;
+  width: 100%;
+  max-width: 520px;
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.95), rgba(246, 248, 252, 0.95));
+  border: 1px solid rgba($primary-color, 0.18);
+}
+
+.auth-header {
+  margin-bottom: $spacing-lg;
+
+  h2 {
+    margin: 0 0 $spacing-sm;
+    font-family: 'Sora', 'IBM Plex Sans', sans-serif;
+    font-size: 1.8rem;
+    color: $primary-color;
+  }
+
+  p {
+    margin: 0;
+    color: $text-secondary;
+    line-height: 1.5;
+  }
+}
+
+.auth-form {
+  display: grid;
+  gap: $spacing-md;
+}
+
+.auth-field {
+  display: grid;
+  gap: $spacing-sm;
+
+  label {
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+    font-size: $font-size-sm;
+  }
+
+  input {
+    @include form-input;
+  }
+}
+
+.password-rules {
+  background: rgba($primary-color, 0.08);
+  border: 1px solid rgba($primary-color, 0.2);
+  border-radius: $radius-md;
+  padding: $spacing-md;
+
+  h4 {
+    margin: 0 0 $spacing-sm;
+    color: $primary-color;
+    font-size: $font-size-sm;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: $text-secondary;
+    display: grid;
+    gap: $spacing-xs;
+    font-size: $font-size-sm;
+  }
+}
+
+.auth-error {
+  @include form-error;
+  font-size: $font-size-sm;
+
+  &.details {
+    ul {
+      margin: 0;
+      padding-left: 1rem;
+      display: grid;
+      gap: 4px;
+    }
+  }
+}
+
+.auth-submit {
+  @include button-base($gradient-primary, $bg-white);
+}
+
+.auth-switch {
+  margin-top: $spacing-md;
+  background: transparent;
+  border: none;
+  color: $primary-color;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  font-size: $font-size-sm;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

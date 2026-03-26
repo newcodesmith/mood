@@ -1,0 +1,257 @@
+@import './variables';
+@import './mixins';
+
+.entry-details {
+  @include card;
+  border-left: 5px solid $primary-color;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+
+  @include mobile {
+    padding: $spacing-lg;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: $gradient-primary;
+  }
+}
+
+.entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+  padding-bottom: $spacing-lg;
+  border-bottom: 2px solid $bg-lighter;
+
+  @include mobile {
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+}
+
+.entry-date {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $primary-color;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+
+  &::before {
+    content: '📅';
+    font-size: $font-size-2xl;
+  }
+}
+
+.entry-mood-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: $radius-full;
+  background: $gradient-primary;
+  color: $bg-white;
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  box-shadow: $shadow-md;
+}
+
+.entry-content {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.entry-section {
+  &:not(:last-child) {
+    padding-bottom: $spacing-lg;
+    border-bottom: 1px solid $bg-lighter;
+  }
+}
+
+.section-label {
+  font-size: $font-size-sm;
+  color: $text-light;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: $spacing-sm;
+  display: block;
+}
+
+.section-content {
+  font-size: $font-size-base;
+  color: $text-dark;
+  line-height: 1.6;
+}
+
+.feelings-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
+.feeling-badge {
+  display: inline-block;
+  background: $gradient-primary;
+  color: $bg-white;
+  padding: 0.35rem 0.7rem;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  box-shadow: $shadow-sm;
+  transition: all $transition-fast;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+}
+
+.reflection-box {
+  background: $bg-lighter;
+  padding: $spacing-lg;
+  border-radius: $radius-md;
+  border-left: 4px solid $secondary-color;
+  font-style: italic;
+  color: $text-dark;
+  line-height: 1.7;
+
+  @include mobile {
+    padding: $spacing-md;
+  }
+}
+
+.sleep-stat {
+  @include bg-gradient-light;
+  padding: $spacing-lg;
+  border-radius: $radius-md;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+
+  @include mobile {
+    padding: $spacing-md;
+  }
+
+  .stat-value {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    @include text-gradient;
+  }
+
+  .stat-label {
+    font-size: $font-size-sm;
+    color: $text-light;
+  }
+}
+
+.no-data {
+  text-align: center;
+  padding: $spacing-xl;
+  color: $text-light;
+  background: $bg-lighter;
+  border-radius: $radius-md;
+  font-size: $font-size-base;
+  font-style: italic;
+}
+
+.entry-actions {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-lg;
+  padding-top: $spacing-lg;
+  border-top: 2px solid $bg-lighter;
+
+  @include mobile {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+}
+
+.action-btn {
+  flex: 1;
+  padding: $spacing-md;
+  border: none;
+  border-radius: $radius-md;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all $transition-fast;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
+
+.delete-btn {
+  background: $error-color;
+  color: $bg-white;
+
+  &:hover {
+    background: darken($error-color, 10%);
+  }
+}
+
+.edit-btn {
+  background: $primary-color;
+  color: $bg-white;
+
+  &:hover {
+    background: darken($primary-color, 10%);
+  }
+}
+
+.close-btn {
+  background: $bg-lighter;
+  color: $text-dark;
+  border: 1px solid $border-color;
+
+  &:hover {
+    background: $border-color;
+  }
+}
+
+@include mobile {
+  .entry-header {
+    flex-direction: column;
+  }
+
+  .entry-mood-badge {
+    width: 50px;
+    height: 50px;
+  }
+
+  .reflection-box {
+    border-left-width: 3px;
+  }
+}

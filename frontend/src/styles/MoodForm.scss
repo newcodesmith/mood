@@ -1,0 +1,230 @@
+@import './variables';
+@import './mixins';
+
+.mood-form {
+  @include card;
+  max-width: 600px;
+  margin: 0 auto;
+
+  @include mobile {
+    padding: $spacing-lg;
+  }
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: $spacing-xl;
+  border-bottom: 2px solid $bg-lighter;
+  padding-bottom: $spacing-lg;
+
+  h2 {
+    color: $primary-color;
+    margin-bottom: $spacing-sm;
+  }
+
+  p {
+    color: $text-light;
+    font-size: $font-size-base;
+    line-height: 1.5;
+  }
+}
+
+.form-group {
+  margin-bottom: $spacing-xl;
+
+  label {
+    @include form-label;
+  }
+
+  .field-description {
+    display: block;
+    color: $text-light;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-normal;
+    margin-bottom: $spacing-md;
+    line-height: 1.4;
+  }
+}
+
+.required {
+  color: $error-color;
+}
+
+.mood-slider-container {
+  margin-bottom: $spacing-md;
+}
+
+.mood-slider {
+  width: 100%;
+  height: 8px;
+  border-radius: $radius-sm;
+  background: linear-gradient(to right, darken($secondary-color, 10%), darken($warning-color, 8%), darken($primary-color, 8%));
+  appearance: none;
+  outline: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  margin-bottom: $spacing-md;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: $radius-full;
+    background: $primary-color;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all $transition-fast;
+
+    &:hover {
+      transform: scale(1.2);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  &::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: $radius-full;
+    background: $primary-color;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all $transition-fast;
+
+    &:hover {
+      transform: scale(1.2);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+.mood-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-md;
+  @include bg-gradient-light;
+  padding: $spacing-md $spacing-lg;
+  border-radius: $radius-md;
+
+  @include mobile {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+}
+
+.mood-value {
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  @include text-gradient;
+}
+
+.mood-text {
+  font-size: $font-size-base;
+  color: $primary-color;
+  font-weight: $font-weight-medium;
+}
+
+.mood-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: $font-size-sm;
+  color: $text-light;
+}
+
+.feelings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: $spacing-sm;
+
+  @include mobile {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.feeling-btn {
+  padding: $spacing-md;
+  border: 2px solid $border-color;
+  border-radius: $radius-md;
+  background: $bg-white;
+  cursor: pointer;
+  font-size: $font-size-base;
+  transition: all $transition-fast;
+  font-weight: $font-weight-medium;
+
+  &:hover {
+    border-color: $primary-color;
+    color: $primary-color;
+    background: rgba($primary-color, 0.05);
+  }
+
+  &.active {
+    background: $primary-color;
+    color: $bg-white;
+    border-color: $primary-color;
+    box-shadow: 0 2px 8px rgba($primary-color, 0.3);
+  }
+}
+
+.form-group {
+  textarea,
+  input[type="number"],
+  input[type="text"] {
+    @include form-input;
+
+    &:disabled {
+      background-color: $bg-lighter;
+      cursor: not-allowed;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+  }
+}
+
+.error {
+  color: $error-color;
+  font-size: $font-size-sm;
+  display: block;
+  margin-top: $spacing-sm;
+}
+
+.error-message {
+  @include form-error;
+  margin-bottom: $spacing-md;
+  font-size: $font-size-base;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: $spacing-lg;
+  background: $gradient-primary;
+  color: $bg-white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: transform $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba($primary-color, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
