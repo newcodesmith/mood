@@ -21,6 +21,18 @@ npm install
 npm start         # Port 3000
 ```
 
+## Production Frontend Deploy
+
+Set a production API URL before building so auth does not point to localhost:
+
+```bash
+cd frontend
+REACT_APP_API_URL="https://YOUR_BACKEND_DOMAIN/api" npm run build
+firebase deploy
+```
+
+If `REACT_APP_API_URL` is missing, the app now falls back to `/api` in production (instead of `localhost`).
+
 **Both (from root):**
 ```bash
 npm run dev

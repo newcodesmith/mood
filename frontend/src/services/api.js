@@ -1,6 +1,21 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+const LOCAL_API_BASE_URL = 'http://localhost:3001/api';
+const PROD_FALLBACK_API_BASE_URL = '/api';
+
+const isLocalDevHost =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+const API_BASE_URL =
+  process.env.REACT_APP_API_URL ||
+  (isLocalDevHost ? LOCAL_API_BASE_URL : PROD_FALLBACK_API_BASE_URL);
+
+if (!process.env.REACT_APP_API_URL && !isLocalDevHost) {
+  console.warn(
+    'REACT_APP_API_URL is not set. Using /api fallback. Set REACT_APP_API_URL for production deployments.'
+  );
+}
 
 const API = axios.create({
   baseURL: API_BASE_URL
