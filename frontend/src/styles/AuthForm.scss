@@ -97,11 +97,43 @@
 
   ul {
     margin: 0;
-    padding-left: 1.1rem;
+    padding-left: 0;
+    list-style: none;
     color: $text-secondary;
     display: grid;
     gap: $spacing-xs;
     font-size: $font-size-sm;
+  }
+}
+
+.password-rule {
+  transition: color $transition-fast;
+
+  &.is-pending {
+    color: $text-secondary;
+  }
+
+  &.is-met {
+    color: #1f8f62;
+    font-weight: $font-weight-semibold;
+  }
+
+  &.is-unmet {
+    color: #b64c4c;
+  }
+}
+
+:root[data-theme='dark'] .password-rule {
+  &.is-pending {
+    color: #c7d6ea;
+  }
+
+  &.is-met {
+    color: #90f0c8;
+  }
+
+  &.is-unmet {
+    color: #ffb4b4;
   }
 }
 
@@ -126,6 +158,12 @@
   border: 1px solid rgba($success-color, 0.28);
   color: darken($success-color, 20%);
   font-size: $font-size-sm;
+}
+
+:root[data-theme='dark'] .auth-notice {
+  background: rgba(131, 246, 198, 0.24);
+  border-color: rgba(163, 255, 219, 0.52);
+  color: #edfff7;
 }
 
 .auth-submit {

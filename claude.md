@@ -100,13 +100,6 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Unsaved theme changes revert when leaving the Settings page
 - Theme tokens are shared through SCSS variables and CSS custom properties
 
-### 13. Password Reset
-- Users can request password reset via email entry form (forgot password)
-- Reset flow uses secure random token with expiration window
-- Reset tokens are stored as hashes, not plain values
-- Reset token is single-use and cleared after successful password update
-- Forgot password responses avoid account enumeration leaks
-
 ## Data Model
 
 ### User
@@ -117,8 +110,6 @@ A time-series mood tracking application that allows users to log daily mood, fee
   "email": "string (unique)",
   "avatar": "string (url/path)",
   "password_hash": "string (DB only)",
-  "reset_token_hash": "string (DB only, nullable)",
-  "reset_token_expires_at": "timestamp (DB only, nullable)",
   "created_at": "timestamp",
   "updated_at": "timestamp"
 }
@@ -169,7 +160,6 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - All touch targets at least 40px on mobile for accessibility
 - Avatar uploads are stored as validated image data and limited to 2MB on the frontend
 - Navigation styling must preserve readable contrast in both light and dark mode
-- Password reset tokens must be hashed, time-limited, and invalidated after use
 
 ## Completed Tasks
 - [x] Project setup (React + Node.js)
@@ -197,4 +187,3 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - [x] Mood entry editing from dashboard views
 - [x] One-entry-per-day log guard with edit redirect for today's mood
 - [x] Show/hide password toggle on auth forms
-- [x] Secure forgot/reset password workflow
