@@ -102,6 +102,58 @@ router.get('/me', authenticateToken, async (req, res) => {
   }
 });
 
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body || {};
+    const normalizedEmail = normalizeEmail(email);
+
+    if (!normalizedEmail || !isValidEmail(normalizedEmail)) {
+      return res.status(400).json({ error: 'A valid email address is required' });
+    }
+
+    const user = await User.getByEmail(normalizedEmail);
+    if (!user) {
+      return res.status(404).json({ error: 'No account found with that email address.' });
+    }
+
+    return res.json({ message: 'Email verified.' });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { email, newPassword, confirmPassword } = req.body || {};
+    const normalizedEmail = normalizeEmail(email);
+
+    if (!normalizedEmail || !newPassword || !confirmPassword) {
+      return res.status(400).json({ error: 'Email, new password, and confirmation are required' });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ error: 'Passwords do not match' });
+    }
+
+    const passwordIssues = validatePassword(newPassword);
+    if (passwordIssues.length > 0) {
+      return res.status(400).json({ error: 'Password validation failed', issues: passwordIssues });
+    }
+
+    const user = await User.getByEmail(normalizedEmail);
+    if (!user) {
+      return res.status(404).json({ error: 'No account found with that email address.' });
+    }
+
+    const newPasswordHash = await bcrypt.hash(newPassword, 12);
+    await User.updatePasswordHash(user.id, newPasswordHash);
+
+    return res.json({ message: 'Password reset successfully.' });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 router.post('/change-password', authenticateToken, async (req, res) => {
   try {
     const { currentPassword, newPassword, confirmPassword } = req.body || {};

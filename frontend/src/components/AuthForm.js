@@ -40,10 +40,13 @@ const AuthForm = ({ onSuccess }) => {
   const [error, setError] = useState('');
   const [passwordIssues, setPasswordIssues] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+  const [resetStep, setResetStep] = useState('email'); // 'email' | 'new-password' | 'done'
 
   const isLogin = mode === 'login';
   const isRegister = mode === 'register';
-  const showPasswordRuleStatus = isRegister && password.length > 0;
+  const isForgotPassword = mode === 'forgot-password';
+  const isResetNewPassword = isForgotPassword && resetStep === 'new-password';
+  const showPasswordRuleStatus = (isRegister || isResetNewPassword) && password.length > 0;
 
   const resetForm = () => {
     setName('');
@@ -54,6 +57,7 @@ const AuthForm = ({ onSuccess }) => {
     setShowConfirmPassword(false);
     setError('');
     setPasswordIssues([]);
+    setResetStep('email');
   };
 
   const toggleMode = () => {
@@ -61,10 +65,65 @@ const AuthForm = ({ onSuccess }) => {
     resetForm();
   };
 
+  const goToForgotPassword = () => {
+    setMode('forgot-password');
+    resetForm();
+  };
+
+  const goToLogin = () => {
+    setMode('login');
+    resetForm();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setPasswordIssues([]);
+
+    if (isForgotPassword) {
+      if (resetStep === 'email') {
+        if (!email) {
+          setError('Email is required');
+          return;
+        }
+        setSubmitting(true);
+        try {
+          await authService.forgotPassword({ email });
+          setPassword('');
+          setConfirmPassword('');
+          setResetStep('new-password');
+        } catch (err) {
+          setError(err.response?.data?.error || 'Could not verify email');
+        } finally {
+          setSubmitting(false);
+        }
+        return;
+      }
+
+      if (resetStep === 'new-password') {
+        if (!password || !confirmPassword) {
+          setError('Please enter and confirm your new password');
+          return;
+        }
+        if (password !== confirmPassword) {
+          setError('Passwords do not match');
+          return;
+        }
+        setSubmitting(true);
+        try {
+          await authService.resetPassword({ email, newPassword: password, confirmPassword });
+          setResetStep('done');
+        } catch (err) {
+          const apiError = err.response?.data?.error || 'Password reset failed';
+          const issues = err.response?.data?.issues || [];
+          setError(apiError);
+          setPasswordIssues(Array.isArray(issues) ? issues : []);
+        } finally {
+          setSubmitting(false);
+        }
+        return;
+      }
+    }
 
     if (!email || !password) {
       setError('Email and password are required');
@@ -108,13 +167,27 @@ const AuthForm = ({ onSuccess }) => {
           <h2>
             {isLogin && 'Welcome Back'}
             {isRegister && 'Create Your Account'}
+            {isForgotPassword && resetStep === 'email' && 'Reset Password'}
+            {isForgotPassword && resetStep === 'new-password' && 'Set New Password'}
+            {isForgotPassword && resetStep === 'done' && 'Password Reset'}
           </h2>
           <p>
             {isLogin && 'Sign in to continue tracking your mood journey.'}
             {isRegister && 'Set up secure access to your private mood data.'}
+            {isForgotPassword && resetStep === 'email' && 'Enter your email address to verify your account.'}
+            {isForgotPassword && resetStep === 'new-password' && 'Enter and confirm your new password below.'}
           </p>
         </div>
 
+        {isForgotPassword && resetStep === 'done' ? (
+          <div className="forgot-password-success">
+            <div className="forgot-password-icon">✓</div>
+            <p>Your password has been reset successfully. You can now sign in with your new password.</p>
+            <button type="button" className="auth-submit" onClick={goToLogin}>
+              Sign In
+            </button>
+          </div>
+        ) : (
         <form className="auth-form" onSubmit={handleSubmit}>
           {isRegister && (
             <div className="auth-field">
@@ -130,39 +203,51 @@ const AuthForm = ({ onSuccess }) => {
             </div>
           )}
 
-          <div className="auth-field">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              placeholder="you@example.com"
-            />
-          </div>
-
-          <div className="auth-field">
-            <label htmlFor="password">Password</label>
-            <div className="password-input-wrap">
+          {(!isForgotPassword || resetStep === 'email') && (
+            <div className="auth-field">
+              <label htmlFor="email">Email</label>
               <input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete={isLogin ? 'current-password' : 'new-password'}
-                placeholder="Enter password"
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                placeholder="you@example.com"
               />
-              <button
-                type="button"
-                className="password-toggle-btn"
-                onClick={() => setShowPassword((prev) => !prev)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? 'Hide' : 'Show'}
+            </div>
+          )}
+
+          {!isForgotPassword && (
+            <div className="auth-field">
+              <label htmlFor="password">Password</label>
+              <div className="password-input-wrap">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete={isLogin ? 'current-password' : 'new-password'}
+                  placeholder="Enter password"
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {isLogin && (
+            <div className="auth-forgot-link">
+              <button type="button" className="auth-link" onClick={goToForgotPassword}>
+                Forgot password?
               </button>
             </div>
-          </div>
+          )}
 
           {isRegister && (
             <>
@@ -176,6 +261,74 @@ const AuthForm = ({ onSuccess }) => {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     autoComplete="new-password"
                     placeholder="Re-enter password"
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                  >
+                    {showConfirmPassword ? 'Hide' : 'Show'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="password-rules">
+                <h4>Password Requirements</h4>
+                <ul>
+                  {passwordRules.map((rule) => {
+                    const isMet = rule.test(password);
+                    const statusClass = showPasswordRuleStatus
+                      ? isMet
+                        ? 'is-met'
+                        : 'is-unmet'
+                      : 'is-pending';
+
+                    return (
+                      <li key={rule.label} className={`password-rule ${statusClass}`}>
+                        {showPasswordRuleStatus ? (isMet ? '✓' : '•') : '•'} {rule.label}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </>
+          )}
+
+          {isResetNewPassword && (
+            <>
+              <div className="auth-field">
+                <label htmlFor="password">New Password</label>
+                <div className="password-input-wrap">
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="new-password"
+                    placeholder="Enter new password"
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? 'Hide' : 'Show'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="auth-field">
+                <label htmlFor="confirmPassword">Confirm New Password</label>
+                <div className="password-input-wrap">
+                  <input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    autoComplete="new-password"
+                    placeholder="Re-enter new password"
                   />
                   <button
                     type="button"
@@ -229,14 +382,27 @@ const AuthForm = ({ onSuccess }) => {
                 ? 'Sign In'
                 : isRegister
                   ? 'Create Account'
-                  : 'Continue'}
+                  : isForgotPassword && resetStep === 'email'
+                    ? 'Verify Email'
+                    : isForgotPassword && resetStep === 'new-password'
+                      ? 'Reset Password'
+                      : 'Continue'}
           </button>
         </form>
+        )}
 
         <div className="auth-divider">
-          <button type="button" className="auth-switch" onClick={toggleMode}>
-            {isLogin ? 'Need an account? Register' : 'Already have an account? Sign in'}
-          </button>
+          {isForgotPassword ? (
+            resetStep !== 'done' && (
+              <button type="button" className="auth-switch" onClick={goToLogin}>
+                Back to Sign In
+              </button>
+            )
+          ) : (
+            <button type="button" className="auth-switch" onClick={toggleMode}>
+              {isLogin ? 'Need an account? Register' : 'Already have an account? Sign in'}
+            </button>
+          )}
         </div>
       </div>
     </div>

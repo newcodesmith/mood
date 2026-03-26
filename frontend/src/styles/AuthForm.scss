@@ -205,3 +205,34 @@
     text-decoration: underline;
   }
 }
+
+.auth-forgot-link {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -$spacing-xs;
+
+  .auth-link {
+    margin-top: 0;
+  }
+}
+
+.forgot-password-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: $spacing-md;
+  padding: $spacing-lg 0 $spacing-md;
+
+  .forgot-password-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+
+  p {
+    color: $text-secondary;
+    font-size: $font-size-sm;
+    line-height: 1.6;
+    max-width: 320px;
+  }
+}

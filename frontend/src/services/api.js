@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://mood--backend-9b77c9379b8b.herokuapp.com/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
 
 const API = axios.create({
   baseURL: API_BASE_URL
@@ -42,7 +42,9 @@ export const authService = {
     return response;
   },
   me: () => API.get('/auth/me'),
-  changePassword: (payload) => API.post('/auth/change-password', payload)
+  changePassword: (payload) => API.post('/auth/change-password', payload),
+  forgotPassword: (payload) => API.post('/auth/forgot-password', payload),
+  resetPassword: (payload) => API.post('/auth/reset-password', payload)
 };
 
 export const userService = {
