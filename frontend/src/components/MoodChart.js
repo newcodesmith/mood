@@ -25,6 +25,9 @@ ChartJS.register(
 const MoodChart = ({ entries, onSelectEntry }) => {
   const [selectedIdx, setSelectedIdx] = useState(null);
   const [activeMetric, setActiveMetric] = useState('mood');
+  const isDarkTheme =
+    typeof document !== 'undefined' &&
+    document.documentElement.getAttribute('data-theme') === 'dark';
 
   if (!entries || entries.length === 0) {
     return <div className="mood-chart-empty">No data to display</div>;
@@ -67,20 +70,42 @@ const MoodChart = ({ entries, onSelectEntry }) => {
     plugins: {
       legend: {
         display: true,
-        position: 'top'
+        position: 'top',
+        labels: {
+          color: isDarkTheme ? '#eaf3ff' : '#1f3146'
+        }
       },
       title: {
         display: true,
-        text: isMoodTab ? 'Last 11 Mood Records' : 'Last 11 Sleep Records'
+        text: isMoodTab ? 'Last 11 Mood Records' : 'Last 11 Sleep Records',
+        color: isDarkTheme ? '#f2f8ff' : '#173049'
       }
     },
     scales: {
+      x: {
+        ticks: {
+          color: isDarkTheme ? '#d9e7fb' : '#3f5774'
+        },
+        grid: {
+          color: isDarkTheme ? 'rgba(177, 204, 238, 0.18)' : 'rgba(46, 87, 136, 0.12)'
+        },
+        border: {
+          color: isDarkTheme ? 'rgba(177, 204, 238, 0.3)' : 'rgba(46, 87, 136, 0.2)'
+        }
+      },
       y: {
         beginAtZero: !isMoodTab,
         min: isMoodTab ? 1 : 0,
         max: isMoodTab ? 10 : 24,
         ticks: {
-          stepSize: isMoodTab ? 1 : 2
+          stepSize: isMoodTab ? 1 : 2,
+          color: isDarkTheme ? '#d9e7fb' : '#3f5774'
+        },
+        grid: {
+          color: isDarkTheme ? 'rgba(177, 204, 238, 0.16)' : 'rgba(46, 87, 136, 0.1)'
+        },
+        border: {
+          color: isDarkTheme ? 'rgba(177, 204, 238, 0.3)' : 'rgba(46, 87, 136, 0.2)'
         }
       }
     },
@@ -129,11 +154,13 @@ const MoodChart = ({ entries, onSelectEntry }) => {
       <div className="chart-container">
         <Line data={data} options={options} />
       </div>
-      {selectedIdx !== null && (
-        <div className="chart-info">
-          <p>Click on a point to see details for that day</p>
-        </div>
-      )}
+      <div className="chart-info">
+        <p>
+          {selectedIdx === null
+            ? 'Click on a point to see details for that day.'
+            : 'Point selected. Scroll down to the Entry Details card to view and edit it.'}
+        </p>
+      </div>
     </div>
   );
 };

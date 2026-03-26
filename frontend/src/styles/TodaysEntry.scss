@@ -69,12 +69,14 @@
 }
 
 .quote {
-  background: rgba($primary-color, 0.12);
-  border-left: 4px solid $primary-color;
-  padding: $spacing-md $spacing-lg;
+  background: linear-gradient(135deg, rgba($primary-color, 0.16), rgba($secondary-color, 0.12));
+  border-left: 5px solid $primary-color;
+  padding: $spacing-lg $spacing-lg;
   border-radius: $radius-sm;
   color: $text-primary;
-  line-height: 1.6;
+  line-height: 1.65;
+  font-size: 1.05rem;
+  font-weight: $font-weight-semibold;
 }
 
 .entry-detail {
@@ -131,7 +133,7 @@
 
   .quote {
     padding: $spacing-md;
-    font-size: $font-size-sm;
+    font-size: $font-size-base;
   }
 
   .entry-detail {

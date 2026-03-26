@@ -178,6 +178,24 @@
   }
 }
 
+:root[data-theme='dark'] .feeling-btn {
+  border-color: rgba(108, 187, 223, 0.4);
+  background: rgba(15, 30, 45, 0.8);
+  color: #c0f0ff;
+
+  &:hover {
+    border-color: #1fc4c1;
+    color: #ffffff;
+    background: rgba(31, 196, 193, 0.12);
+  }
+
+  &.active {
+    background: linear-gradient(135deg, #1fc4c1 0%, #3b82f6 100%);
+    color: #ffffff;
+    border-color: #1fc4c1;
+  }
+}
+
 .form-group {
   textarea,
   input[type="number"],
@@ -240,6 +258,15 @@
   }
 }
 
+:root[data-theme='dark'] .submit-btn {
+  background: linear-gradient(135deg, #1fc4c1 0%, #3b82f6 100%);
+  box-shadow: 0 2px 8px rgba(31, 196, 193, 0.25);
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(31, 196, 193, 0.4);
+  }
+}
+
 .form-actions-row {
   display: flex;
   gap: $spacing-md;
@@ -268,5 +295,17 @@
   &:hover {
     background: $bg-lighter;
     border-color: rgba($primary-color, 0.32);
+  }
+}
+
+:root[data-theme='dark'] .secondary-btn {
+  background: rgba(108, 187, 223, 0.15);
+  color: #c0f0ff;
+  border-color: rgba(131, 201, 234, 0.4);
+
+  &:hover {
+    background: rgba(131, 201, 234, 0.25);
+    border-color: rgba(170, 216, 246, 0.6);
+    color: #ffffff;
   }
 }

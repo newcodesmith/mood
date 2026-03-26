@@ -307,6 +307,28 @@
   }
 }
 
+:root[data-theme='dark'] .btn-primary {
+  background: linear-gradient(135deg, #1fc4c1 0%, #3b82f6 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 12px rgba(31, 196, 193, 0.35);
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(31, 196, 193, 0.5);
+  }
+}
+
+:root[data-theme='dark'] .btn-secondary {
+  background: rgba(108, 187, 223, 0.15);
+  color: #c0f0ff;
+  border-color: rgba(131, 201, 234, 0.4);
+
+  &:hover {
+    background: rgba(131, 201, 234, 0.25);
+    border-color: rgba(170, 216, 246, 0.6);
+    color: #ffffff;
+  }
+}
+
 .message {
   padding: $spacing-md $spacing-lg;
   border-radius: $radius-md;

@@ -62,8 +62,9 @@ A time-series mood tracking application that allows users to log daily mood, fee
 
 ### 7. Mood Graph
 - Line or bar chart showing last 11 mood records
+- Tabbed metric switcher to view Mood Trend and Sleep Trend in the same chart panel
 - X-axis: dates
-- Y-axis: mood score (1-10)
+- Y-axis: mood score (1-10) or sleep hours (0-24)
 
 ### 8. Interactive Chart
 - Click/tap on chart points to view details
@@ -162,7 +163,9 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Mood form validation: required feeling, mood bounds, sleep range (0-24), optional reflection behavior
 - Settings profile updates: change name and avatar URL/upload, preview/remove avatar, save success state
 - Theme behavior: switch light/dark preview, save persistence, unsaved theme reverts when leaving Settings
+- Theme styling QA: verify text contrast, chart readability, borders, and component backgrounds in both light and dark mode
 - Mood chart interactions: last 11 entries render, selecting a point opens matching entry details
+- Trend tab coverage: switch between Mood Trend and Sleep Trend, verify chart data/axes update correctly
 - Comparison analytics: validate current vs previous 5 check-ins and percentage/trend labels
 - Mobile UX regression: viewport checks for slide-out menu, nav visibility, and touch-target usability
 - API failure handling: network/server errors for auth, mood save, and settings save display safe user messages
@@ -176,6 +179,7 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - All touch targets at least 40px on mobile for accessibility
 - Avatar uploads are stored as validated image data and limited to 2MB on the frontend
 - Navigation styling must preserve readable contrast in both light and dark mode
+- All dashboard and form CSS must be reviewed in both themes to ensure readable typography, visible chart labels, and accessible contrast
 
 ## Future Build Task Order
 - [ ] Project setup (frontend, backend, environment config)
@@ -186,7 +190,7 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - [ ] Frontend auth screens (login/register/reset/change password)
 - [ ] Mood logging form and validation
 - [ ] Today's entry dashboard card with edit flow
-- [ ] Mood chart (last 11 entries) and interactive detail view
+- [ ] Mood chart (last 11 entries) with Mood/Sleep trend tabs and interactive detail view
 - [ ] Mood and sleep comparison analytics
 - [ ] Mood quote logic based on score bands
 - [ ] Settings/profile (name, avatar upload/url, avatar preview/remove)

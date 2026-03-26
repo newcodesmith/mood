@@ -56,6 +56,23 @@
   }
 }
 
+:root[data-theme='dark'] .chart-tab-btn {
+  border-color: rgba(108, 187, 223, 0.35);
+  color: #a3e4ff;
+
+  &:hover {
+    color: #c0f0ff;
+    background: rgba(108, 187, 223, 0.12);
+    border-color: rgba(131, 201, 234, 0.5);
+  }
+
+  &.active {
+    color: #ffffff;
+    background: rgba(108, 187, 223, 0.25);
+    border-color: rgba(131, 201, 234, 0.7);
+  }
+}
+
 .chart-header {
   margin-bottom: $spacing-lg;
   border-bottom: 2px solid $bg-lighter;
@@ -110,6 +127,31 @@
   background: $bg-lighter;
   border-radius: $radius-md;
   font-size: $font-size-base;
+}
+
+.chart-info {
+  margin-top: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  border-left: 3px solid rgba($secondary-color, 0.45);
+  background: rgba($secondary-color, 0.08);
+  border-radius: $radius-sm;
+
+  p {
+    margin: 0;
+    color: $text-secondary;
+    font-size: $font-size-sm;
+    line-height: 1.45;
+    font-weight: $font-weight-medium;
+  }
+}
+
+:root[data-theme='dark'] .chart-info {
+  border-left-color: rgba(146, 197, 248, 0.75);
+  background: rgba(39, 88, 136, 0.34);
+
+  p {
+    color: #e6f1ff;
+  }
 }
 
 .entry-details {

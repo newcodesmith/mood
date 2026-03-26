@@ -171,6 +171,11 @@
   margin: 20px 0;
 }
 
+:root[data-theme='dark'] .auth-submit {
+  background: linear-gradient(135deg, #1fc4c1 0%, #3b82f6 100%);
+  box-shadow: 0 2px 12px rgba(31, 196, 193, 0.35);
+}
+
 .auth-divider {
   display: flex;
   justify-content: space-between;
@@ -192,6 +197,10 @@
   }
 }
 
+:root[data-theme='dark'] .auth-switch {
+  color: #66d9d6;
+}
+
 .auth-link {
   margin-top: $spacing-sm;
   background: transparent;
@@ -204,6 +213,10 @@
   &:hover {
     text-decoration: underline;
   }
+}
+
+:root[data-theme='dark'] .auth-link {
+  color: #66bfff;
 }
 
 .auth-forgot-link {

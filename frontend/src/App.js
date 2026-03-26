@@ -139,6 +139,16 @@ function App() {
     : 0;
   const moodGaugeValue = Math.max(0, Math.min(100, Math.round((averageMood / 10) * 100)));
   const totalCheckIns = recentEntries.length;
+  const averageMoodIcon =
+    totalCheckIns === 0
+      ? '🙂'
+      : averageMood <= 3
+        ? '😞'
+        : averageMood <= 5
+          ? '😐'
+          : averageMood <= 7
+            ? '🙂'
+            : '😄';
 
   if (loading) {
     return <div className="app loading">Loading...</div>;
@@ -283,7 +293,7 @@ function App() {
                 <article className="summary-card mood-ring-card">
                   <div className="summary-card-head">
                     <h3>Average Mood</h3>
-                    <span className="summary-icon" aria-hidden="true">😊</span>
+                    <span className="summary-icon" aria-hidden="true">{averageMoodIcon}</span>
                   </div>
                   <div className="mood-ring" style={{ '--fill': `${moodGaugeValue}%` }}>
                     <div className="mood-ring-center">
