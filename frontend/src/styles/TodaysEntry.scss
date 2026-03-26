@@ -36,6 +36,10 @@
   }
 }
 
+:root[data-theme='dark'] .edit-entry-btn {
+  color: #f2f7ff;
+}
+
 .mood-display {
   display: flex;
   align-items: center;

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { moodEntryService } from '../services/api';
 import '../styles/MoodForm.scss';
 
-const MoodForm = ({ userId, entryToEdit = null, onSuccess, onCancel }) => {
+const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, onCancel, onStartEditToday }) => {
   const [mood, setMood] = useState('5');
   const [feelings, setFeelings] = useState([]);
   const [reflection, setReflection] = useState('');
@@ -79,9 +79,27 @@ const MoodForm = ({ userId, entryToEdit = null, onSuccess, onCancel }) => {
       setErrors({});
       onSuccess && onSuccess();
     } catch (error) {
-      setErrors({ submit: error.response?.data?.error || 'Failed to save entry' });
+      const backendError = error.response?.data?.error;
+      const isDuplicateToday = typeof backendError === 'string' && backendError.toLowerCase().includes('duplicate');
+      setErrors({ submit: isDuplicateToday ? 'You already have an entry for today. Edit today\'s mood instead.' : (backendError || 'Failed to save entry') });
     }
   };
+
+  if (todaysEntry && !entryToEdit) {
+    return (
+      <div className="mood-form mood-form--locked">
+        <div className="form-header">
+          <h2>Today's Mood Already Logged</h2>
+          <p>You can only log one mood entry per day. Edit today's entry if you want to make changes.</p>
+        </div>
+        <div className="limit-notice-actions">
+          <button type="button" className="submit-btn" onClick={onStartEditToday}>
+            Edit Today's Entry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form className="mood-form" onSubmit={handleSubmit}>

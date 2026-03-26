@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://mood--backend-9b77c9379b8b.herokuapp.com/api';
+
 const API = axios.create({
-  baseURL: '/api'
+  baseURL: API_BASE_URL
 });
 
 const TOKEN_KEY = 'mood_tracker_token';

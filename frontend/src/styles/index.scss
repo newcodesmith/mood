@@ -245,6 +245,19 @@ select {
   opacity: 1;
 }
 
+:root[data-theme='dark'] input:not([type='range']):not([type='file']):not([type='checkbox']):not([type='radio']),
+:root[data-theme='dark'] textarea,
+:root[data-theme='dark'] select {
+  background: #e7f0fb !important;
+  color: #0f2236 !important;
+  border-color: #b7cbe3 !important;
+}
+
+:root[data-theme='dark'] input:not([type='range'])::placeholder,
+:root[data-theme='dark'] textarea::placeholder {
+  color: #4f6884 !important;
+}
+
 :root[data-theme='dark'] .settings input,
 :root[data-theme='dark'] .settings textarea,
 :root[data-theme='dark'] .settings select {

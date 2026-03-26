@@ -672,6 +672,7 @@ margin-top: $spacing-md;
   transition: transform $transition-fast, box-shadow $transition-fast;
   align-self: center;
   max-width: 300px;
+  margin: 20px auto;
 
   &:hover {
     transform: translateY(-2px);

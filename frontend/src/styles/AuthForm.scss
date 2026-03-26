@@ -54,6 +54,35 @@
   }
 }
 
+.password-input-wrap {
+  position: relative;
+
+  input {
+    padding-right: 72px;
+  }
+}
+
+.password-toggle-btn {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  border: 1px solid rgba($primary-color, 0.22);
+  background: rgba($primary-color, 0.08);
+  color: $text-primary;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  padding: 0.3rem 0.55rem;
+  cursor: pointer;
+  line-height: 1;
+
+  &:hover {
+    background: rgba($primary-color, 0.15);
+    border-color: rgba($primary-color, 0.38);
+  }
+}
+
 .password-rules {
   background: rgba($primary-color, 0.08);
   border: 1px solid rgba($primary-color, 0.2);
@@ -92,6 +121,7 @@
 
 .auth-submit {
   @include button-base($gradient-primary, $bg-white);
+  margin: 20px 0;
 }
 
 .auth-switch {

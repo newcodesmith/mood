@@ -315,8 +315,10 @@ function App() {
           <MoodForm
             userId={currentUser?.id}
             entryToEdit={editingEntry}
+            todaysEntry={todaysEntry}
             onSuccess={handleMoodSaved}
             onCancel={handleCancelEdit}
+            onStartEditToday={() => handleEditEntry(todaysEntry)}
           />
         )}
 

@@ -11,6 +11,17 @@
   }
 }
 
+.mood-form--locked {
+  .form-header {
+    margin-bottom: $spacing-lg;
+  }
+}
+
+.limit-notice-actions {
+  display: flex;
+  justify-content: center;
+}
+
 .form-header {
   text-align: center;
   margin-bottom: $spacing-xl;
