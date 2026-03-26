@@ -88,6 +88,7 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Primary navigation is displayed below the header on larger screens
 - Settings and sign-out actions move into a slide-out mobile menu on small screens
 - Header layout adapts with flexbox wrapping on smaller screens
+- Dashboard card ordering on mobile ensures Entry Details appears after chart/insight sections without overlap
 - All interactive elements (buttons, inputs) have proper touch targets
 - Font sizes scale appropriately for mobile viewing (smaller fonts on mobile)
 - Padding and spacing adjusted for mobile to reduce scrolling
@@ -101,6 +102,12 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Theme choice only persists after user saves Settings
 - Unsaved theme changes revert when leaving the Settings page
 - Theme tokens are shared through SCSS variables and CSS custom properties
+- Dark mode includes contrast-tuned chart tabs and action buttons for readability
+
+## Deployment Notes
+- Frontend production builds rely on `/frontend/.env.production`
+- `REACT_APP_API_URL` must point to the deployed backend API to avoid auth failures on Firebase-hosted frontend builds
+- Current production backend URL: `https://mood--backend-9b77c9379b8b.herokuapp.com/api`
 
 ## Data Model
 
@@ -166,8 +173,10 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Theme styling QA: verify text contrast, chart readability, borders, and component backgrounds in both light and dark mode
 - Mood chart interactions: last 11 entries render, selecting a point opens matching entry details
 - Trend tab coverage: switch between Mood Trend and Sleep Trend, verify chart data/axes update correctly
+- Dark mode button contrast: verify chart tabs, inline edit actions, form submit/secondary buttons remain readable and distinct
 - Comparison analytics: validate current vs previous 5 check-ins and percentage/trend labels
 - Mobile UX regression: viewport checks for slide-out menu, nav visibility, and touch-target usability
+- Mobile dashboard stacking: confirm Entry Details does not render behind other cards and appears after trend/insight cards
 - API failure handling: network/server errors for auth, mood save, and settings save display safe user messages
 - Production smoke checks: REACT_APP_API_URL is set, auth works from hosted frontend, CORS preflight passes
 
@@ -179,23 +188,23 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - All touch targets at least 40px on mobile for accessibility
 - Avatar uploads are stored as validated image data and limited to 2MB on the frontend
 - Navigation styling must preserve readable contrast in both light and dark mode
-- All dashboard and form CSS must be reviewed in both themes to ensure readable typography, visible chart labels, and accessible contrast
+- All dashboard and form CSS must be reviewed in both themes to ensure readable typography, visible chart labels, accessible contrast, and clear button states
 
-## Future Build Task Order
-- [ ] Project setup (frontend, backend, environment config)
-- [ ] Database schema and migrations (users, mood_entries, auth fields)
-- [ ] Authentication foundation (register, login, JWT middleware, protected routes)
-- [ ] Password security policy and hashing standards
-- [ ] Core mood entry API (CRUD + one-entry-per-day rule)
-- [ ] Frontend auth screens (login/register/reset/change password)
-- [ ] Mood logging form and validation
-- [ ] Today's entry dashboard card with edit flow
-- [ ] Mood chart (last 11 entries) with Mood/Sleep trend tabs and interactive detail view
-- [ ] Mood and sleep comparison analytics
-- [ ] Mood quote logic based on score bands
-- [ ] Settings/profile (name, avatar upload/url, avatar preview/remove)
-- [ ] Theme preferences (light/dark preview and save behavior)
-- [ ] Mobile-responsive navigation and layout polish
-- [ ] Shared SCSS design system and component styling cleanup
-- [ ] Cypress E2E coverage for auth, mood logging, edit, and settings flows
-- [ ] Production deployment checks (REACT_APP_API_URL set, CORS verified, smoke test on mobile)
+## Build Status
+- [x] Project setup (frontend, backend, environment config)
+- [x] Database schema and migrations (users, mood_entries, auth fields)
+- [x] Authentication foundation (register, login, JWT middleware, protected routes)
+- [x] Password security policy and hashing standards
+- [x] Core mood entry API (CRUD + one-entry-per-day rule)
+- [x] Frontend auth screens (login/register/reset/change password)
+- [x] Mood logging form and validation
+- [x] Today's entry dashboard card with edit flow
+- [x] Mood chart (last 11 entries) with Mood/Sleep trend tabs and interactive detail view
+- [x] Mood and sleep comparison analytics
+- [x] Mood quote logic based on score bands
+- [x] Settings/profile (name, avatar upload/url, avatar preview/remove)
+- [x] Theme preferences (light/dark preview and save behavior)
+- [x] Mobile-responsive navigation and layout polish
+- [x] Shared SCSS design system and component styling cleanup
+- [ ] Cypress E2E coverage for full auth, mood logging, edit, and settings flows
+- [x] Production deployment checks (REACT_APP_API_URL set, CORS verified, smoke test on hosted frontend)
