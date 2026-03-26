@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { moodEntryService } from '../services/api';
 import '../styles/MoodForm.scss';
 
-const MoodForm = ({ userId, onSuccess }) => {
+const MoodForm = ({ userId, entryToEdit = null, onSuccess, onCancel }) => {
   const [mood, setMood] = useState('5');
   const [feelings, setFeelings] = useState([]);
   const [reflection, setReflection] = useState('');
@@ -10,6 +10,27 @@ const MoodForm = ({ userId, onSuccess }) => {
   const [errors, setErrors] = useState({});
 
   const feelingsOptions = ['Happy', 'Sad', 'Anxious', 'Calm', 'Energetic', 'Tired', 'Hopeful', 'Stressed'];
+
+  useEffect(() => {
+    if (!entryToEdit) {
+      setMood('5');
+      setFeelings([]);
+      setReflection('');
+      setSleep('');
+      setErrors({});
+      return;
+    }
+
+    const parsedFeelings = typeof entryToEdit.feelings === 'string'
+      ? JSON.parse(entryToEdit.feelings)
+      : (entryToEdit.feelings || []);
+
+    setMood(String(entryToEdit.mood ?? '5'));
+    setFeelings(parsedFeelings);
+    setReflection(entryToEdit.reflection || '');
+    setSleep(entryToEdit.sleep ?? '');
+    setErrors({});
+  }, [entryToEdit]);
 
   const handleFeelingToggle = (feeling) => {
     if (feelings.includes(feeling)) {
@@ -33,15 +54,24 @@ const MoodForm = ({ userId, onSuccess }) => {
     if (!validateForm()) return;
 
     try {
-      const today = new Date().toISOString().split('T')[0];
-      await moodEntryService.create({
-        userId,
-        date: today,
-        mood: parseInt(mood),
+      const payload = {
+        mood: parseInt(mood, 10),
         feelings,
         reflection: reflection || null,
         sleep: sleep ? parseFloat(sleep) : null
-      });
+      };
+
+      if (entryToEdit?.id) {
+        await moodEntryService.update(entryToEdit.id, payload);
+      } else {
+        const today = new Date().toISOString().split('T')[0];
+        await moodEntryService.create({
+          userId,
+          date: today,
+          ...payload
+        });
+      }
+
       setMood('5');
       setFeelings([]);
       setReflection('');
@@ -56,8 +86,12 @@ const MoodForm = ({ userId, onSuccess }) => {
   return (
     <form className="mood-form" onSubmit={handleSubmit}>
       <div className="form-header">
-        <h2>Log Your Mood</h2>
-        <p>Take a moment to reflect on how you're feeling. This entry will help you understand your emotional patterns.</p>
+        <h2>{entryToEdit ? 'Edit Mood Entry' : 'Log Your Mood'}</h2>
+        <p>
+          {entryToEdit
+            ? 'Update your mood details to keep your record accurate.'
+            : 'Take a moment to reflect on how you\'re feeling. This entry will help you understand your emotional patterns.'}
+        </p>
       </div>
       
       <div className="form-group">
@@ -130,7 +164,14 @@ const MoodForm = ({ userId, onSuccess }) => {
       </div>
 
       {errors.submit && <div className="error-message">{errors.submit}</div>}
-      <button type="submit" className="submit-btn">Save Mood Entry</button>
+      <div className="form-actions-row">
+        {entryToEdit && (
+          <button type="button" className="secondary-btn" onClick={onCancel}>
+            Cancel
+          </button>
+        )}
+        <button type="submit" className="submit-btn">{entryToEdit ? 'Update Mood Entry' : 'Save Mood Entry'}</button>
+      </div>
     </form>
   );
 };

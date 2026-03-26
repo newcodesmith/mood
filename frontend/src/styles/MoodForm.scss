@@ -228,3 +228,34 @@
     }
   }
 }
+
+.form-actions-row {
+  display: flex;
+  gap: $spacing-md;
+
+  @include mobile {
+    flex-direction: column;
+  }
+
+  .submit-btn {
+    width: 100%;
+  }
+}
+
+.secondary-btn {
+  width: 100%;
+  padding: $spacing-lg;
+  background: $bg-white;
+  color: $text-primary;
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: $bg-lighter;
+    border-color: rgba($primary-color, 0.32);
+  }
+}

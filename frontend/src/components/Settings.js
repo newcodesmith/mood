@@ -27,6 +27,7 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
 
   const handleThemeSelect = (nextTheme) => {
     setThemePreference(nextTheme);
+
     if (onThemeChange) {
       onThemeChange(nextTheme);
     }
@@ -122,6 +123,9 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
 
     try {
       const updated = await userService.update(user.id, { name, avatar });
+      if (onThemeChange) {
+        onThemeChange(themePreference, { persist: true });
+      }
       onUpdate && onUpdate(updated.data);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);

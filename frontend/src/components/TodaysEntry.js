@@ -2,7 +2,7 @@ import React from 'react';
 import { getQuoteByMood } from '../services/quotes';
 import '../styles/TodaysEntry.scss';
 
-const TodaysEntry = ({ entry }) => {
+const TodaysEntry = ({ entry, onEdit }) => {
   if (!entry) {
     return <div className="todays-entry empty">No entry for today yet. <a href="#log">Log your mood now!</a></div>;
   }
@@ -11,6 +11,12 @@ const TodaysEntry = ({ entry }) => {
 
   return (
     <div className="todays-entry">
+      <div className="entry-toolbar">
+        <button type="button" className="edit-entry-btn" onClick={() => onEdit && onEdit(entry)}>
+          Edit Entry
+        </button>
+      </div>
+
       <div className="mood-display">
         <div className="mood-score">{entry.mood}</div>
         <div className="mood-label">out of 10</div>

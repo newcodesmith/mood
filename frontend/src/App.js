@@ -9,20 +9,37 @@ import { authService, clearAuthToken, moodEntryService } from './services/api';
 import './styles/App.scss';
 
 function App() {
-  const [theme, setTheme] = useState(localStorage.getItem('mood_theme') || 'light');
+  const storedTheme = localStorage.getItem('mood_theme') || 'light';
+  const [theme, setTheme] = useState(storedTheme);
+  const [savedTheme, setSavedTheme] = useState(storedTheme);
   const [currentUser, setCurrentUser] = useState(null);
   const [todaysEntry, setTodaysEntry] = useState(null);
   const [recentEntries, setRecentEntries] = useState([]);
   const [comparison, setComparison] = useState(null);
   const [selectedEntry, setSelectedEntry] = useState(null);
+  const [editingEntry, setEditingEntry] = useState(null);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const previousActiveTabRef = React.useRef('dashboard');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('mood_theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem('mood_theme', savedTheme);
+  }, [savedTheme]);
+
+  useEffect(() => {
+    const previousActiveTab = previousActiveTabRef.current;
+
+    if (previousActiveTab === 'settings' && activeTab !== 'settings' && theme !== savedTheme) {
+      setTheme(savedTheme);
+    }
+
+    previousActiveTabRef.current = activeTab;
+  }, [activeTab, savedTheme, theme]);
 
   // Restore authenticated session on initial load.
   useEffect(() => {
@@ -59,6 +76,7 @@ function App() {
   };
 
   const handleMoodSaved = () => {
+    setEditingEntry(null);
     if (currentUser) {
       loadUserData(currentUser.id);
       setActiveTab('dashboard');
@@ -87,6 +105,24 @@ function App() {
 
   const handleSelectEntry = (entry) => {
     setSelectedEntry(entry);
+  };
+
+  const handleEditEntry = (entry) => {
+    setEditingEntry(entry);
+    setActiveTab('log');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingEntry(null);
+    setActiveTab('dashboard');
+  };
+
+  const handleThemeChange = (nextTheme, options = {}) => {
+    setTheme(nextTheme);
+
+    if (options.persist) {
+      setSavedTheme(nextTheme);
+    }
   };
 
   if (loading) {
@@ -235,7 +271,7 @@ function App() {
                 <h2>Daily Mood</h2>
                 <p className="section-description">Your mood entry for today</p>
               </div>
-              <TodaysEntry entry={todaysEntry} />
+              <TodaysEntry entry={todaysEntry} onEdit={handleEditEntry} />
             </section>
 
             {selectedEntry && (
@@ -250,6 +286,9 @@ function App() {
                   <p><strong>Feelings:</strong> {typeof selectedEntry.feelings === 'string' ? JSON.parse(selectedEntry.feelings).join(', ') : selectedEntry.feelings.join(', ')}</p>
                   {selectedEntry.reflection && <p><strong>Reflection:</strong> {selectedEntry.reflection}</p>}
                   {selectedEntry.sleep && <p><strong>Sleep:</strong> {selectedEntry.sleep} hours</p>}
+                  <button type="button" className="inline-action-btn" onClick={() => handleEditEntry(selectedEntry)}>
+                    Edit This Entry
+                  </button>
                 </div>
               </section>
             )}
@@ -273,7 +312,12 @@ function App() {
         )}
 
         {activeTab === 'log' && (
-          <MoodForm userId={currentUser?.id} onSuccess={handleMoodSaved} />
+          <MoodForm
+            userId={currentUser?.id}
+            entryToEdit={editingEntry}
+            onSuccess={handleMoodSaved}
+            onCancel={handleCancelEdit}
+          />
         )}
 
         {activeTab === 'settings' && currentUser && (
@@ -281,7 +325,7 @@ function App() {
             user={currentUser}
             onUpdate={handleUserUpdate}
             theme={theme}
-            onThemeChange={setTheme}
+            onThemeChange={handleThemeChange}
           />
         )}
       </main>

@@ -38,6 +38,7 @@ A time-series mood tracking application that allows users to log daily mood, fee
 ### 5. Interactive Chart
 - Click/tap on chart points to view details
 - Show full data for selected day: mood, feelings, reflections, sleep
+- Allow editing a selected mood entry from its detail view
 
 ### 6. Mood & Sleep Comparisons
 - Compare average mood from last 5 check-ins vs. previous 5 check-ins
@@ -46,28 +47,29 @@ A time-series mood tracking application that allows users to log daily mood, fee
 
 ### 7. Settings & Profile
 - Update user name
-- Upload/change avatar
-- Store user preferences
+- Upload/change avatar from local files or image URL
+- Preview and remove avatar before saving
+- Store theme preference and profile preferences
 
 ### 8. Form Validation
 - Required fields: mood score, at least one feeling
 - Reflection: optional
 - Sleep: optional, must be valid number (0-24)
 - User name: required, min/max length
-- Avatar: optional, file size/format validation
+- Avatar: optional, image file or URL with file size/format validation
 
-### 9. User Login & Registration (New Requirement)
+### 9. User Login & Registration
 - Users can register with name, email, and password
 - Users can log in with email and password
 - Frontend stores auth token and restores session on refresh
-- Users can sign out from the header
+- Users can sign out from desktop header controls or the mobile slide-out menu
 - Protected routes require a valid JWT
 
-### 10. Password Security Best Practices (New Requirement)
+### 10. Password Security Best Practices
 - Passwords are never stored in plain text
 - Passwords are hashed with bcrypt and strong cost factor
 - Password policy is enforced at registration:
-  - Minimum 12 characters
+  - Minimum 8 characters
   - At least 1 uppercase letter
   - At least 1 lowercase letter
   - At least 1 number
@@ -76,9 +78,11 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Login failures return generic messages (no account-enumeration leaks)
 - Password hashes are never returned in API responses
 
-### 11. Mobile-Friendly Design (New Requirement)
+### 11. Mobile-Friendly Design
 - Responsive layout that works seamlessly on mobile, tablet, and desktop
 - Navigation buttons remain visible and accessible on mobile screens
+- Primary navigation is displayed below the header on larger screens
+- Settings and sign-out actions move into a slide-out mobile menu on small screens
 - Header layout adapts with flexbox wrapping on smaller screens
 - All interactive elements (buttons, inputs) have proper touch targets
 - Font sizes scale appropriately for mobile viewing (smaller fonts on mobile)
@@ -86,6 +90,11 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Images and avatars sized appropriately for small screens
 - Forms and input fields optimized for mobile interaction
 - No content is hidden or inaccessible on mobile views
+
+### 12. Appearance Preferences
+- Users can switch between light and dark mode in Settings
+- Theme choice persists across refreshes via local storage
+- Theme tokens are shared through SCSS variables and CSS custom properties
 
 ## Data Model
 
@@ -127,7 +136,8 @@ A time-series mood tracking application that allows users to log daily mood, fee
 ### Mobile Responsive Design
 - Breakpoints: Mobile (< 768px), Tablet (768px - 1024px), Desktop (> 1024px)
 - Mobile-first approach with `@include mobile`, `@include tablet`, `@include desktop` mixins
-- Header uses flexbox wrap to accommodate navigation on smaller screens
+- Desktop/tablet navigation sits below the header rather than stretching across it
+- Mobile account actions use a slide-out panel with backdrop and close control
 - Font sizes, padding, and gaps scale down on mobile for optimal viewing
 - Touch targets maintained at 40px+ for buttons on mobile
 - Images and avatars scale appropriately for mobile screens
@@ -144,6 +154,8 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Use secure auth defaults and least-privilege data access
 - Keep error responses useful but non-sensitive
 - All touch targets at least 40px on mobile for accessibility
+- Avatar uploads are stored as validated image data and limited to 2MB on the frontend
+- Navigation styling must preserve readable contrast in both light and dark mode
 
 ## Completed Tasks
 - [x] Project setup (React + Node.js)
@@ -165,3 +177,7 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - [x] Password best-practice policy enforcement
 - [x] Avatar image file upload (drag-drop and click)
 - [x] Mobile-friendly navigation and layout
+- [x] Light and dark theme preference
+- [x] Desktop nav bar moved below header
+- [x] Mobile slide-out account menu
+- [x] Mood entry editing from dashboard views

@@ -608,6 +608,24 @@ margin-top: $spacing-md;
   }
 }
 
+.inline-action-btn {
+  margin-top: $spacing-md;
+  padding: 0.7rem 1rem;
+  border: 1px solid rgba($primary-color, 0.22);
+  background: rgba($primary-color, 0.08);
+  color: $text-primary;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: rgba($primary-color, 0.14);
+    border-color: rgba($primary-color, 0.4);
+  }
+}
+
 .empty-state {
   text-align: center;
   padding: $spacing-lg $spacing-md;
