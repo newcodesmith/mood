@@ -41,7 +41,9 @@ export const authService = {
     }
     return response;
   },
-  me: () => API.get('/auth/me')
+  me: () => API.get('/auth/me'),
+  forgotPassword: (payload) => API.post('/auth/forgot-password', payload),
+  resetPassword: (payload) => API.post('/auth/reset-password', payload)
 };
 
 export const userService = {

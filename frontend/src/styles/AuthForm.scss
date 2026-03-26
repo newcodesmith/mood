@@ -119,9 +119,25 @@
   }
 }
 
+.auth-notice {
+  padding: $spacing-md;
+  border-radius: $radius-md;
+  background: rgba($success-color, 0.12);
+  border: 1px solid rgba($success-color, 0.28);
+  color: darken($success-color, 20%);
+  font-size: $font-size-sm;
+}
+
 .auth-submit {
   @include button-base($gradient-primary, $bg-white);
   margin: 20px 0;
+}
+
+.auth-divider {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $spacing-md;
 }
 
 .auth-switch {
@@ -132,6 +148,20 @@
   font-weight: $font-weight-semibold;
   cursor: pointer;
   font-size: $font-size-sm;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.auth-link {
+  margin-top: $spacing-sm;
+  background: transparent;
+  border: none;
+  color: $secondary-color;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
 
   &:hover {
     text-decoration: underline;

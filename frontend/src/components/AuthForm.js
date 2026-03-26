@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { authService } from '../services/api';
 import '../styles/AuthForm.scss';
 
@@ -19,11 +19,26 @@ const AuthForm = ({ onSuccess }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [resetToken, setResetToken] = useState('');
+  const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
   const [passwordIssues, setPasswordIssues] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
   const isLogin = mode === 'login';
+  const isRegister = mode === 'register';
+  const isForgot = mode === 'forgot';
+  const isReset = mode === 'reset';
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const tokenFromQuery = queryParams.get('resetToken');
+
+    if (tokenFromQuery) {
+      setResetToken(tokenFromQuery);
+      setMode('reset');
+    }
+  }, []);
 
   const resetForm = () => {
     setName('');
@@ -32,6 +47,7 @@ const AuthForm = ({ onSuccess }) => {
     setConfirmPassword('');
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setNotice('');
     setError('');
     setPasswordIssues([]);
   };
@@ -41,17 +57,85 @@ const AuthForm = ({ onSuccess }) => {
     resetForm();
   };
 
+  const switchToForgot = () => {
+    setMode('forgot');
+    resetForm();
+  };
+
+  const switchToLogin = () => {
+    setMode('login');
+    resetForm();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setPasswordIssues([]);
+    setNotice('');
+
+    if (isForgot) {
+      if (!email) {
+        setError('Email is required');
+        return;
+      }
+
+      setSubmitting(true);
+
+      try {
+        await authService.forgotPassword({ email });
+        setNotice('If that email exists, a reset link has been sent.');
+      } catch (err) {
+        setError(err.response?.data?.error || 'Unable to process password reset request');
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
+
+    if (isReset) {
+      if (!password || !confirmPassword) {
+        setError('New password and confirmation are required');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        setError('Passwords do not match');
+        return;
+      }
+
+      if (!resetToken) {
+        setError('Reset token is missing or invalid');
+        return;
+      }
+
+      setSubmitting(true);
+
+      try {
+        await authService.resetPassword({ token: resetToken, password, confirmPassword });
+        setNotice('Password reset successful. You can now sign in.');
+        setMode('login');
+        setPassword('');
+        setConfirmPassword('');
+        if (window.location.search.includes('resetToken=')) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      } catch (err) {
+        const apiError = err.response?.data?.error || 'Password reset failed';
+        const issues = err.response?.data?.issues || [];
+        setError(apiError);
+        setPasswordIssues(Array.isArray(issues) ? issues : []);
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
 
     if (!email || !password) {
       setError('Email and password are required');
       return;
     }
 
-    if (!isLogin) {
+    if (isRegister) {
       if (!name.trim()) {
         setError('Name is required');
         return;
@@ -85,12 +169,22 @@ const AuthForm = ({ onSuccess }) => {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-header">
-          <h2>{isLogin ? 'Welcome Back' : 'Create Your Account'}</h2>
-          <p>{isLogin ? 'Sign in to continue tracking your mood journey.' : 'Set up secure access to your private mood data.'}</p>
+          <h2>
+            {isLogin && 'Welcome Back'}
+            {isRegister && 'Create Your Account'}
+            {isForgot && 'Forgot Password'}
+            {isReset && 'Reset Password'}
+          </h2>
+          <p>
+            {isLogin && 'Sign in to continue tracking your mood journey.'}
+            {isRegister && 'Set up secure access to your private mood data.'}
+            {isForgot && 'Enter your email and we\'ll send a password reset link.'}
+            {isReset && 'Choose a new secure password for your account.'}
+          </p>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
-          {!isLogin && (
+          {isRegister && (
             <div className="auth-field">
               <label htmlFor="name">Name</label>
               <input
@@ -104,41 +198,45 @@ const AuthForm = ({ onSuccess }) => {
             </div>
           )}
 
-          <div className="auth-field">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              placeholder="you@example.com"
-            />
-          </div>
-
-          <div className="auth-field">
-            <label htmlFor="password">Password</label>
-            <div className="password-input-wrap">
+          {!isReset && (
+            <div className="auth-field">
+              <label htmlFor="email">Email</label>
               <input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete={isLogin ? 'current-password' : 'new-password'}
-                placeholder="Enter password"
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                placeholder="you@example.com"
               />
-              <button
-                type="button"
-                className="password-toggle-btn"
-                onClick={() => setShowPassword((prev) => !prev)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? 'Hide' : 'Show'}
-              </button>
             </div>
-          </div>
+          )}
 
-          {!isLogin && (
+          {!isForgot && (
+            <div className="auth-field">
+              <label htmlFor="password">{isReset ? 'New Password' : 'Password'}</label>
+              <div className="password-input-wrap">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete={isLogin ? 'current-password' : 'new-password'}
+                  placeholder={isReset ? 'Enter new password' : 'Enter password'}
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {(isRegister || isReset) && (
             <>
               <div className="auth-field">
                 <label htmlFor="confirmPassword">Confirm Password</label>
@@ -173,6 +271,8 @@ const AuthForm = ({ onSuccess }) => {
             </>
           )}
 
+          {notice && <div className="auth-notice">{notice}</div>}
+
           {error && <div className="auth-error">{error}</div>}
 
           {passwordIssues.length > 0 && (
@@ -186,13 +286,37 @@ const AuthForm = ({ onSuccess }) => {
           )}
 
           <button type="submit" className="auth-submit" disabled={submitting}>
-            {submitting ? 'Please wait...' : isLogin ? 'Sign In' : 'Create Account'}
+            {submitting
+              ? 'Please wait...'
+              : isLogin
+                ? 'Sign In'
+                : isRegister
+                  ? 'Create Account'
+                  : isForgot
+                    ? 'Send Reset Link'
+                    : 'Reset Password'}
           </button>
         </form>
 
-        <button type="button" className="auth-switch" onClick={toggleMode}>
-          {isLogin ? 'Need an account? Register' : 'Already have an account? Sign in'}
-        </button>
+
+        {mode !== 'forgot' && mode !== 'reset' && (
+          <div className="auth-divider">
+            <button type="button" className="auth-switch" onClick={toggleMode}>
+              {isLogin ? 'Need an account? Register' : 'Already have an account? Sign in'}
+            </button>
+            {isLogin && (
+              <button type="button" className="auth-link" onClick={switchToForgot}>
+                Forgot your password?
+              </button>
+            )}
+          </div>
+        )}
+
+        {(mode === 'forgot' || mode === 'reset') && (
+          <button type="button" className="auth-link" onClick={switchToLogin}>
+            Back to sign in
+          </button>
+        )}
       </div>
     </div>
   );
