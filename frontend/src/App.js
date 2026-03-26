@@ -169,16 +169,16 @@ function App() {
                 ☰
               </button>
               <div className="user-section">
-                <button
-                  className={`settings-btn ${activeTab === 'settings' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('settings')}
-                  title="Settings"
-                >
-                  ⚙️
-                </button>
                 <div className="user-info">
                   {currentUser.avatar && <img src={currentUser.avatar} alt={currentUser.name} className="user-avatar" />}
-                  <span className="user-name">{currentUser.name}</span>
+                  <button
+                    type="button"
+                    className={`user-name-btn ${activeTab === 'settings' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('settings')}
+                    title="Open settings"
+                  >
+                    {currentUser.name}
+                  </button>
                 </div>
                 <button className="logout-btn" onClick={handleLogout} title="Sign out">
                   Sign Out

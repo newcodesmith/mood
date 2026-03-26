@@ -63,6 +63,7 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Users can register with name, email, and password
 - Users can log in with email and password
 - Users can toggle password visibility (show/hide) on login and registration forms
+- Authenticated users can change their password from the Settings page by providing current password + new password confirmation
 - Frontend stores auth token and restores session on refresh
 - Users can sign out from desktop header controls or the mobile slide-out menu
 - Protected routes require a valid JWT
@@ -187,3 +188,4 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - [x] Mood entry editing from dashboard views
 - [x] One-entry-per-day log guard with edit redirect for today's mood
 - [x] Show/hide password toggle on auth forms
+- [x] In-app change password flow from Settings

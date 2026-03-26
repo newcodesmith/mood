@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { userService } from '../services/api';
+import { authService, userService } from '../services/api';
 import '../styles/Settings.scss';
 
 const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
@@ -10,13 +10,27 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
   const [fileInputKey, setFileInputKey] = useState(0);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+  const [passwordSubmitting, setPasswordSubmitting] = useState(false);
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordIssues, setPasswordIssues] = useState([]);
+  const [avatarError, setAvatarError] = useState(false);
   const fileInputRef = React.useRef(null);
 
   // Initialize form with user data
   useEffect(() => {
     if (user) {
       setName(user.name || '');
-      setAvatar(user.avatar || '');
+      // Validate avatar from user data - clear if invalid (like email addresses)
+      const avatarUrl = user.avatar || '';
+      setAvatar(isValidImageUrl(avatarUrl) ? avatarUrl : '');
+      setAvatarError(false);
       setLoading(false);
     }
   }, [user]);
@@ -62,6 +76,7 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
       }
       
       setAvatar(base64Data);
+      setAvatarError(false);
       setErrors({ ...errors, avatar: null });
     };
     reader.onerror = () => {
@@ -102,6 +117,25 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
     handleFileSelect(file);
   };
 
+  const isValidImageUrl = (url) => {
+    if (!url || url.trim() === '') return true; // Empty is valid (user clearing field)
+    if (url.startsWith('data:')) return true; // Base64 is valid
+    
+    try {
+      const urlObj = new URL(url);
+      // Check if it has http/https protocol
+      if (!urlObj.protocol.startsWith('http')) {
+        return false;
+      }
+      // Check if filename suggests it's an image
+      const path = urlObj.pathname.toLowerCase();
+      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
+      return imageExtensions.some(ext => path.endsWith(ext));
+    } catch {
+      return false; // Invalid URL format
+    }
+  };
+
   const validateForm = () => {
     const newErrors = {};
     if (!name || name.trim().length === 0) {
@@ -131,6 +165,50 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
       setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
       setErrors({ submit: error.response?.data?.error || 'Failed to update profile' });
+    }
+  };
+
+  const resetPasswordForm = () => {
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmNewPassword('');
+    setShowCurrentPassword(false);
+    setShowNewPassword(false);
+    setShowConfirmNewPassword(false);
+  };
+
+  const handleChangePassword = async () => {
+    setPasswordError('');
+    setPasswordIssues([]);
+    setPasswordSuccess(false);
+
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      setPasswordError('All password fields are required');
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      setPasswordError('New passwords do not match');
+      return;
+    }
+
+    setPasswordSubmitting(true);
+
+    try {
+      await authService.changePassword({
+        currentPassword,
+        newPassword,
+        confirmPassword: confirmNewPassword
+      });
+      resetPasswordForm();
+      setPasswordSuccess(true);
+      setTimeout(() => setPasswordSuccess(false), 3000);
+    } catch (error) {
+      setPasswordError(error.response?.data?.error || 'Failed to update password');
+      const issues = error.response?.data?.issues || [];
+      setPasswordIssues(Array.isArray(issues) ? issues : []);
+    } finally {
+      setPasswordSubmitting(false);
     }
   };
 
@@ -192,11 +270,20 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
               <p className="preview-label">Preview</p>
               {avatar ? (
                 <>
-                  <img src={avatar} alt="Avatar preview" className="avatar-image" />
+                  <img
+                    src={avatar}
+                    alt="Avatar preview"
+                    className="avatar-image"
+                    onError={() => setAvatarError(true)}
+                  />
+                  {avatarError && (
+                    <div className="error-message">Invalid image URL (e.g., email address). Please provide a valid image URL or upload a file.</div>
+                  )}
                   <button
                     type="button"
                     onClick={() => {
                       setAvatar('');
+                      setAvatarError(false);
                       setFileInputKey(prev => prev + 1);
                     }}
                     className="btn btn-secondary"
@@ -217,10 +304,19 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
               id="avatar-url"
               type="text"
               value={avatar && avatar.startsWith('data:') ? '' : avatar}
-              onChange={(e) => setAvatar(e.target.value)}
+              onChange={(e) => {
+                const url = e.target.value;
+                if (isValidImageUrl(url)) {
+                  setAvatar(url);
+                  setAvatarError(false);
+                } else if (url !== '') {
+                  // Show error but don't update avatar state for invalid URLs
+                  setErrors({ ...errors, avatar: 'Please enter a valid image URL (e.g., https://example.com/image.jpg)' });
+                }
+              }}
               placeholder="https://example.com/avatar.jpg"
             />
-            <small>Alternatively, paste a valid image URL</small>
+            <small>Alternatively, paste a valid image URL (must be a direct image link like JPG, PNG, GIF)</small>
           </div>
         </div>
 
@@ -248,6 +344,95 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
                 🌙 Dark
               </button>
             </div>
+          </div>
+        </div>
+
+        <div className="form-section">
+          <h3>Change Password</h3>
+          <div className="password-change-form">
+            <div className="form-group">
+              <label htmlFor="current-password">Current Password</label>
+              <div className="password-input-wrap">
+                <input
+                  id="current-password"
+                  type={showCurrentPassword ? 'text' : 'password'}
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  autoComplete="current-password"
+                  placeholder="Enter current password"
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowCurrentPassword((prev) => !prev)}
+                  aria-label={showCurrentPassword ? 'Hide current password' : 'Show current password'}
+                >
+                  {showCurrentPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="new-password">New Password</label>
+              <div className="password-input-wrap">
+                <input
+                  id="new-password"
+                  type={showNewPassword ? 'text' : 'password'}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  autoComplete="new-password"
+                  placeholder="Enter new password"
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowNewPassword((prev) => !prev)}
+                  aria-label={showNewPassword ? 'Hide new password' : 'Show new password'}
+                >
+                  {showNewPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="confirm-new-password">Confirm New Password</label>
+              <div className="password-input-wrap">
+                <input
+                  id="confirm-new-password"
+                  type={showConfirmNewPassword ? 'text' : 'password'}
+                  value={confirmNewPassword}
+                  onChange={(e) => setConfirmNewPassword(e.target.value)}
+                  autoComplete="new-password"
+                  placeholder="Re-enter new password"
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowConfirmNewPassword((prev) => !prev)}
+                  aria-label={showConfirmNewPassword ? 'Hide confirm new password' : 'Show confirm new password'}
+                >
+                  {showConfirmNewPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
+            </div>
+
+            {passwordError && <div className="error-message">{passwordError}</div>}
+
+            {passwordIssues.length > 0 && (
+              <div className="error-message details">
+                <ul>
+                  {passwordIssues.map((issue) => (
+                    <li key={issue}>{issue}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {passwordSuccess && <div className="success-message">Password updated successfully.</div>}
+
+            <button type="button" className="submit-btn secondary-submit" disabled={passwordSubmitting} onClick={handleChangePassword}>
+              {passwordSubmitting ? 'Updating...' : 'Update Password'}
+            </button>
           </div>
         </div>
 

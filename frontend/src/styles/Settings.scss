@@ -85,6 +85,7 @@
 
   input[type="text"],
   input[type="email"],
+  input[type="password"],
   input[type="file"],
   textarea {
     @include form-input;
@@ -224,6 +225,23 @@
   font-size: $font-size-4xl;
   box-shadow: $shadow-lg;
   color: $bg-white;
+}
+
+.avatar-preview .error-message {
+  padding: $spacing-md;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid #ef4444;
+  border-radius: $radius-md;
+  color: #dc2626;
+  font-size: $font-size-sm;
+  text-align: center;
+  line-height: 1.5;
+}
+
+[data-theme="dark"] .avatar-preview .error-message {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
 }
 
 .form-actions {
@@ -385,6 +403,53 @@
     background: rgba($primary-color, 0.12);
     color: $primary-color;
     box-shadow: 0 6px 18px rgba($primary-color, 0.16);
+  }
+}
+
+.password-change-form {
+  display: grid;
+  gap: $spacing-md;
+}
+
+.password-input-wrap {
+  position: relative;
+
+  input {
+    padding-right: 72px;
+  }
+}
+
+.password-toggle-btn {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  border: 1px solid rgba($primary-color, 0.22);
+  background: rgba($primary-color, 0.08);
+  color: $text-primary;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  padding: 0.3rem 0.55rem;
+  cursor: pointer;
+  line-height: 1;
+
+  &:hover {
+    background: rgba($primary-color, 0.15);
+    border-color: rgba($primary-color, 0.38);
+  }
+}
+
+.secondary-submit {
+  margin-top: $spacing-xs;
+}
+
+.error-message.details {
+  ul {
+    margin: 0;
+    padding-left: 1rem;
+    display: grid;
+    gap: 4px;
   }
 }
 

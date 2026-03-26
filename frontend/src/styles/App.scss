@@ -158,14 +158,15 @@
 
 /* Navigation Bar (below header) */
 .app-nav {
-margin-top: $spacing-md;
+  margin-top: $spacing-md;
   padding: $spacing-md $spacing-lg;
   display: flex;
   justify-content: center;
   gap: $spacing-md;
 
   @include mobile {
-    display: none;
+    padding: $spacing-sm $spacing-md;
+    gap: $spacing-sm;
   }
 }
 
@@ -303,38 +304,6 @@ margin-top: $spacing-md;
   }
 }
 
-.settings-btn {
-  background: rgba(255, 255, 255, 0.24);
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  color: $bg-white;
-  border-radius: 12px;
-  width: 40px;
-  height: 40px;
-  font-size: $font-size-lg;
-  cursor: pointer;
-  @include flex-center;
-  transition: all $transition-normal;
-  flex-shrink: 0;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.36);
-    border-color: rgba(255, 255, 255, 0.65);
-    transform: rotate(12deg) translateY(-1px);
-  }
-
-  &.active {
-    background: $bg-white;
-    border-color: $bg-white;
-    color: $primary-color;
-  }
-
-  @include mobile {
-    width: 36px;
-    height: 36px;
-    font-size: $font-size-base;
-  }
-}
-
 .user-info {
   display: flex;
   align-items: center;
@@ -371,6 +340,35 @@ margin-top: $spacing-md;
 .user-name {
   font-weight: $font-weight-medium;
   font-size: $font-size-base;
+}
+
+.user-name-btn {
+  background: rgba(255, 255, 255, 0.24);
+  color: $bg-white;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all $transition-fast;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.38);
+    transform: translateY(-1px);
+  }
+
+  &.active {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  @include mobile {
+    padding: 6px 10px;
+    font-size: 0.7rem;
+  }
 }
 
 /* Mobile Menu Slide-out */

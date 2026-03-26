@@ -37,6 +37,10 @@ const User = {
   getByEmailWithSecret: async (email) => {
     return db('users').where('email', email).first();
   },
+
+  getByIdWithSecret: async (id) => {
+    return db('users').where('id', id).first();
+  },
   
   create: async (userData) => {
     const insertResult = await db('users').insert(userData).returning('id');
@@ -47,6 +51,12 @@ const User = {
   update: async (id, userData) => {
     await db('users').where('id', id).update(userData);
     return db('users').select(safeUserColumns).where('id', id).first();
+  },
+
+  updatePasswordHash: async (id, passwordHash) => {
+    await db('users').where('id', id).update({
+      password_hash: passwordHash
+    });
   },
   
   delete: async (id) => {

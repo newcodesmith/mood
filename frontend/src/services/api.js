@@ -41,7 +41,8 @@ export const authService = {
     }
     return response;
   },
-  me: () => API.get('/auth/me')
+  me: () => API.get('/auth/me'),
+  changePassword: (payload) => API.post('/auth/change-password', payload)
 };
 
 export const userService = {

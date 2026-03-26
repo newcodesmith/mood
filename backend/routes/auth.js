@@ -102,4 +102,45 @@ router.get('/me', authenticateToken, async (req, res) => {
   }
 });
 
+router.post('/change-password', authenticateToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body || {};
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({ error: 'Current password, new password, and confirmation are required' });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ error: 'New passwords do not match' });
+    }
+
+    const passwordIssues = validatePassword(newPassword);
+    if (passwordIssues.length > 0) {
+      return res.status(400).json({ error: 'Password validation failed', issues: passwordIssues });
+    }
+
+    const userWithSecret = await User.getByIdWithSecret(req.user.userId);
+    if (!userWithSecret || !userWithSecret.password_hash) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const currentMatches = await bcrypt.compare(currentPassword, userWithSecret.password_hash);
+    if (!currentMatches) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+
+    const sameAsCurrent = await bcrypt.compare(newPassword, userWithSecret.password_hash);
+    if (sameAsCurrent) {
+      return res.status(400).json({ error: 'New password must be different from current password' });
+    }
+
+    const newPasswordHash = await bcrypt.hash(newPassword, 12);
+    await User.updatePasswordHash(req.user.userId, newPasswordHash);
+
+    return res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
