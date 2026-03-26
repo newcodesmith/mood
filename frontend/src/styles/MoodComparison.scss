@@ -11,8 +11,7 @@
 
 .comparison-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: $spacing-xl;
+  gap: $spacing-md;
 
   @include tablet {
     grid-template-columns: 1fr;
@@ -30,17 +29,18 @@
   background: linear-gradient(160deg, rgba($primary-color, 0.04) 0%, rgba($secondary-color, 0.04) 100%);
   border: 1px solid rgba($primary-color, 0.14);
   display: grid;
-  gap: $spacing-md;
+  gap: $spacing-sm;
   align-content: start;
+  padding: $spacing-md;
 
   @include mobile {
-    padding: $spacing-lg;
+    padding: $spacing-md;
   }
 }
 
 h3 {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 1rem;
   font-weight: $font-weight-bold;
   color: $primary-color;
   letter-spacing: -0.02em;
@@ -48,12 +48,12 @@ h3 {
 
 .current,
 .previous {
-  padding: $spacing-md $spacing-lg;
+  padding: $spacing-sm $spacing-md;
   background: rgba($bg-white, 0.7);
   border: 1px solid $border-color;
   border-radius: $radius-md;
   display: grid;
-  gap: $spacing-sm;
+  gap: $spacing-xs;
 }
 
 .label {
@@ -63,18 +63,18 @@ h3 {
 }
 
 .value {
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   line-height: 1;
   font-weight: $font-weight-bold;
   color: var(--text-main);
 }
 
 .change {
-  margin-top: $spacing-sm;
-  padding: $spacing-md $spacing-lg;
+  margin-top: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
   border-radius: $radius-md;
   display: grid;
-  gap: $spacing-sm;
+  gap: $spacing-xs;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
   line-height: 1.4;
@@ -91,7 +91,7 @@ h3 {
 }
 
 .percent {
-  font-size: $font-size-base;
+  font-size: $font-size-sm;
   font-weight: $font-weight-bold;
 }
 

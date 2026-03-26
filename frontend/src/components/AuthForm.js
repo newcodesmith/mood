@@ -47,6 +47,14 @@ const AuthForm = ({ onSuccess }) => {
   const isForgotPassword = mode === 'forgot-password';
   const isResetNewPassword = isForgotPassword && resetStep === 'new-password';
   const showPasswordRuleStatus = (isRegister || isResetNewPassword) && password.length > 0;
+  const passwordsMatch = password.length > 0 && confirmPassword.length > 0 && password === confirmPassword;
+
+  const getPasswordMatchStatusClass = () => {
+    if (!showPasswordRuleStatus || confirmPassword.length === 0) {
+      return 'is-pending';
+    }
+    return passwordsMatch ? 'is-met' : 'is-unmet';
+  };
 
   const resetForm = () => {
     setName('');
@@ -290,6 +298,9 @@ const AuthForm = ({ onSuccess }) => {
                       </li>
                     );
                   })}
+                  <li className={`password-rule ${getPasswordMatchStatusClass()}`}>
+                    {getPasswordMatchStatusClass() === 'is-met' ? '✓' : '•'} Passwords match
+                  </li>
                 </ul>
               </div>
             </>
@@ -358,6 +369,9 @@ const AuthForm = ({ onSuccess }) => {
                       </li>
                     );
                   })}
+                  <li className={`password-rule ${getPasswordMatchStatusClass()}`}>
+                    {getPasswordMatchStatusClass() === 'is-met' ? '✓' : '•'} Passwords match
+                  </li>
                 </ul>
               </div>
             </>

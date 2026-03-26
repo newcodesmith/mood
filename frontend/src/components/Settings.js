@@ -2,6 +2,33 @@ import React, { useState, useEffect } from 'react';
 import { authService, userService } from '../services/api';
 import '../styles/Settings.scss';
 
+const passwordRules = [
+  {
+    label: 'Minimum 8 characters',
+    test: (value) => value.length >= 8
+  },
+  {
+    label: 'At least one uppercase letter',
+    test: (value) => /[A-Z]/.test(value)
+  },
+  {
+    label: 'At least one lowercase letter',
+    test: (value) => /[a-z]/.test(value)
+  },
+  {
+    label: 'At least one number',
+    test: (value) => /\d/.test(value)
+  },
+  {
+    label: 'At least one special character',
+    test: (value) => /[^A-Za-z0-9\s]/.test(value)
+  },
+  {
+    label: 'No spaces',
+    test: (value) => !/\s/.test(value)
+  }
+];
+
 const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
   const [name, setName] = useState('');
   const [avatar, setAvatar] = useState('');
@@ -22,6 +49,11 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
   const [passwordIssues, setPasswordIssues] = useState([]);
   const [avatarError, setAvatarError] = useState(false);
   const fileInputRef = React.useRef(null);
+  const showPasswordRuleStatus = newPassword.length > 0;
+  const passwordsMatch =
+    newPassword.length > 0 &&
+    confirmNewPassword.length > 0 &&
+    newPassword === confirmNewPassword;
 
   // Initialize form with user data
   useEffect(() => {
@@ -414,6 +446,42 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
                   {showConfirmNewPassword ? 'Hide' : 'Show'}
                 </button>
               </div>
+            </div>
+
+            <div className="password-rules">
+              <h4>Password Requirements</h4>
+              <ul>
+                {passwordRules.map((rule) => {
+                  const isMet = rule.test(newPassword);
+                  const statusClass = showPasswordRuleStatus
+                    ? isMet
+                      ? 'is-met'
+                      : 'is-unmet'
+                    : 'is-pending';
+
+                  return (
+                    <li key={rule.label} className={`password-rule ${statusClass}`}>
+                      {showPasswordRuleStatus ? (isMet ? '✓' : '•') : '•'} {rule.label}
+                    </li>
+                  );
+                })}
+                <li
+                  className={`password-rule ${
+                    !showPasswordRuleStatus || confirmNewPassword.length === 0
+                      ? 'is-pending'
+                      : passwordsMatch
+                        ? 'is-met'
+                        : 'is-unmet'
+                  }`}
+                >
+                  {!showPasswordRuleStatus || confirmNewPassword.length === 0
+                    ? '•'
+                    : passwordsMatch
+                      ? '✓'
+                      : '•'}{' '}
+                  Passwords match
+                </li>
+              </ul>
             </div>
 
             {passwordError && <div className="error-message">{passwordError}</div>}

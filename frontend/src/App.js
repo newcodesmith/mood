@@ -125,6 +125,21 @@ function App() {
     }
   };
 
+  const moodValues = recentEntries
+    .map((entry) => Number(entry?.mood))
+    .filter((value) => Number.isFinite(value));
+  const sleepValues = recentEntries
+    .map((entry) => Number(entry?.sleep))
+    .filter((value) => Number.isFinite(value));
+  const averageMood = moodValues.length
+    ? moodValues.reduce((sum, value) => sum + value, 0) / moodValues.length
+    : 0;
+  const averageSleep = sleepValues.length
+    ? sleepValues.reduce((sum, value) => sum + value, 0) / sleepValues.length
+    : 0;
+  const moodGaugeValue = Math.max(0, Math.min(100, Math.round((averageMood / 10) * 100)));
+  const totalCheckIns = recentEntries.length;
+
   if (loading) {
     return <div className="app loading">Loading...</div>;
   }
@@ -256,8 +271,52 @@ function App() {
       <main className="app-content">
         {activeTab === 'dashboard' && (
           <div className="dashboard">
+            <section className="dashboard-section dashboard-summary">
+              <div className="summary-header">
+                <h2>
+                  <span className="section-icon" aria-hidden="true">✨</span>
+                  Quick Insights
+                </h2>
+                <p className="section-description">A visual snapshot of your latest check-ins.</p>
+              </div>
+              <div className="summary-grid">
+                <article className="summary-card mood-ring-card">
+                  <div className="summary-card-head">
+                    <h3>Average Mood</h3>
+                    <span className="summary-icon" aria-hidden="true">😊</span>
+                  </div>
+                  <div className="mood-ring" style={{ '--fill': `${moodGaugeValue}%` }}>
+                    <div className="mood-ring-center">
+                      <strong>{averageMood ? averageMood.toFixed(1) : '0.0'}</strong>
+                      <span>/10</span>
+                    </div>
+                  </div>
+                </article>
+
+                <article className="summary-card">
+                  <div className="summary-card-head">
+                    <h3>Avg Sleep</h3>
+                    <span className="summary-icon" aria-hidden="true">🌙</span>
+                  </div>
+                  <p className="summary-value">{averageSleep ? averageSleep.toFixed(1) : '0.0'}h</p>
+                  <div className="summary-bar-track" aria-hidden="true">
+                    <span style={{ width: `${Math.max(0, Math.min(100, Math.round((averageSleep / 10) * 100)))}%` }} />
+                  </div>
+                </article>
+
+                <article className="summary-card">
+                  <div className="summary-card-head">
+                    <h3>Check-ins</h3>
+                    <span className="summary-icon" aria-hidden="true">📅</span>
+                  </div>
+                  <p className="summary-value">{totalCheckIns}</p>
+                  <p className="summary-note">From your latest 11-day trend window.</p>
+                </article>
+              </div>
+            </section>
+
             {recentEntries.length === 0 && (
-              <section className="dashboard-section empty-state">
+              <section className="dashboard-section empty-state dashboard-empty-state">
                 <div className="empty-state-content">
                   <h3>👋 Welcome to Mood Tracker!</h3>
                   <p>Start by logging your first mood entry to see your data here.</p>
@@ -266,18 +325,24 @@ function App() {
               </section>
             )}
 
-            <section className="dashboard-section">
+            <section className="dashboard-section dashboard-daily-mood">
               <div className="section-header">
-                <h2>Daily Mood</h2>
+                <h2>
+                  <span className="section-icon" aria-hidden="true">💬</span>
+                  Daily Mood
+                </h2>
                 <p className="section-description">Your mood entry for today</p>
               </div>
               <TodaysEntry entry={todaysEntry} onEdit={handleEditEntry} />
             </section>
 
             {selectedEntry && (
-              <section className="dashboard-section">
+              <section className="dashboard-section dashboard-entry-details">
                 <div className="section-header">
-                  <h2>Entry Details</h2>
+                  <h2>
+                    <span className="section-icon" aria-hidden="true">🧾</span>
+                    Entry Details
+                  </h2>
                   <p className="section-description">Full information for the selected date</p>
                 </div>
                 <div className="entry-card">
@@ -293,17 +358,23 @@ function App() {
               </section>
             )}
 
-            <section className="dashboard-section">
+            <section className="dashboard-section dashboard-insights">
               <div className="section-header">
-                <h2>Weekly Insights</h2>
+                <h2>
+                  <span className="section-icon" aria-hidden="true">📊</span>
+                  Weekly Insights
+                </h2>
                 <p className="section-description">Compare your mood and sleep patterns week-over-week</p>
               </div>
               <MoodComparison comparison={comparison} />
             </section>
 
-            <section className="dashboard-section">
+            <section className="dashboard-section dashboard-trends">
               <div className="section-header">
-                <h2>Mood Trends</h2>
+                <h2>
+                  <span className="section-icon" aria-hidden="true">📈</span>
+                  Mood Trends
+                </h2>
                 <p className="section-description">Visual history of your last 11 mood entries. Click on any bar to see details.</p>
               </div>
               <MoodChart entries={recentEntries} onSelectEntry={handleSelectEntry} />

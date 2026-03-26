@@ -14,52 +14,7 @@ A time-series mood tracking application that allows users to log daily mood, fee
 
 ## Core Features
 
-### 1. Daily Mood Logging
-- Users can log mood, feelings, reflections, and sleep data
-- Simple form with input validation
-- Single entry per day
-- If an entry already exists for today, the Log Mood screen shows a notice and routes users to edit today's entry
-- Store: mood score (1-10), feelings (array/string), reflection (text), sleep hours (number)
-
-### 2. Today's Entry View
-- Display current day's complete mood entry
-- Show all fields: mood, feelings, reflections, sleep
-- Option to edit/update today's entry
-- Quick access from dashboard
-
-### 3. Mood Quotes
-- Display contextual quotes based on current mood level
-- Different quotes for different mood ranges (low, neutral, high)
-
-### 4. Mood Graph
-- Line or bar chart showing last 11 mood records
-- X-axis: dates
-- Y-axis: mood score (1-10)
-
-### 5. Interactive Chart
-- Click/tap on chart points to view details
-- Show full data for selected day: mood, feelings, reflections, sleep
-- Allow editing a selected mood entry from its detail view
-
-### 6. Mood & Sleep Comparisons
-- Compare average mood from last 5 check-ins vs. previous 5 check-ins
-- Compare average sleep from last 5 check-ins vs. previous 5 check-ins
-- Display percentage change and insight narrative
-
-### 7. Settings & Profile
-- Update user name
-- Upload/change avatar from local files or image URL
-- Preview and remove avatar before saving
-- Store theme preference and profile preferences
-
-### 8. Form Validation
-- Required fields: mood score, at least one feeling
-- Reflection: optional
-- Sleep: optional, must be valid number (0-24)
-- User name: required, min/max length
-- Avatar: optional, image file or URL with file size/format validation
-
-### 9. User Login & Registration
+### 1. User Login & Registration
 - Users can register with name, email, and password
 - Users can log in with email and password
 - Users can toggle password visibility (show/hide) on login and registration forms
@@ -68,7 +23,7 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Users can sign out from desktop header controls or the mobile slide-out menu
 - Protected routes require a valid JWT
 
-### 10. Password Security Best Practices
+### 2. Password Security Best Practices
 - Passwords are never stored in plain text
 - Passwords are hashed with bcrypt and strong cost factor
 - Password policy is enforced at registration:
@@ -80,6 +35,51 @@ A time-series mood tracking application that allows users to log daily mood, fee
   - No spaces
 - Login failures return generic messages (no account-enumeration leaks)
 - Password hashes are never returned in API responses
+
+### 3. Daily Mood Logging
+- Users can log mood, feelings, reflections, and sleep data
+- Simple form with input validation
+- Single entry per day
+- If an entry already exists for today, the Log Mood screen shows a notice and routes users to edit today's entry
+- Store: mood score (1-10), feelings (array/string), reflection (text), sleep hours (number)
+
+### 4. Form Validation
+- Required fields: mood score, at least one feeling
+- Reflection: optional
+- Sleep: optional, must be valid number (0-24)
+- User name: required, min/max length
+- Avatar: optional, image file or URL with file size/format validation
+
+### 5. Today's Entry View
+- Display current day's complete mood entry
+- Show all fields: mood, feelings, reflections, sleep
+- Option to edit/update today's entry
+- Quick access from dashboard
+
+### 6. Mood Quotes
+- Display contextual quotes based on current mood level
+- Different quotes for different mood ranges (low, neutral, high)
+
+### 7. Mood Graph
+- Line or bar chart showing last 11 mood records
+- X-axis: dates
+- Y-axis: mood score (1-10)
+
+### 8. Interactive Chart
+- Click/tap on chart points to view details
+- Show full data for selected day: mood, feelings, reflections, sleep
+- Allow editing a selected mood entry from its detail view
+
+### 9. Mood & Sleep Comparisons
+- Compare average mood from last 5 check-ins vs. previous 5 check-ins
+- Compare average sleep from last 5 check-ins vs. previous 5 check-ins
+- Display percentage change and insight narrative
+
+### 10. Settings & Profile
+- Update user name
+- Upload/change avatar from local files or image URL
+- Preview and remove avatar before saving
+- Store theme preference and profile preferences
 
 ### 11. Mobile-Friendly Design
 - Responsive layout that works seamlessly on mobile, tablet, and desktop
@@ -153,6 +153,21 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Run headless: `cd frontend && npm run cy:run`
 - Open UI: `cd frontend && npm run cy:open`
 
+## Test Suggestions
+- Auth happy path: register, login, restore session on refresh, logout
+- Auth validation: weak password rejection, mismatched confirm password, invalid login generic error
+- Add mood entry: create today's mood with feeling, reflection, and sleep; verify dashboard updates
+- One-entry-per-day guard: second create attempt for same day should show edit redirect/notice
+- Edit mood entry: open edit from Today's Entry and from chart detail, update fields, verify persisted changes
+- Mood form validation: required feeling, mood bounds, sleep range (0-24), optional reflection behavior
+- Settings profile updates: change name and avatar URL/upload, preview/remove avatar, save success state
+- Theme behavior: switch light/dark preview, save persistence, unsaved theme reverts when leaving Settings
+- Mood chart interactions: last 11 entries render, selecting a point opens matching entry details
+- Comparison analytics: validate current vs previous 5 check-ins and percentage/trend labels
+- Mobile UX regression: viewport checks for slide-out menu, nav visibility, and touch-target usability
+- API failure handling: network/server errors for auth, mood save, and settings save display safe user messages
+- Production smoke checks: REACT_APP_API_URL is set, auth works from hosted frontend, CORS preflight passes
+
 ## Implementation Notes
 - Mobile-first responsive design with proper breakpoints
 - Validate on both frontend and backend
@@ -162,30 +177,21 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Avatar uploads are stored as validated image data and limited to 2MB on the frontend
 - Navigation styling must preserve readable contrast in both light and dark mode
 
-## Completed Tasks
-- [x] Project setup (React + Node.js)
-- [x] Database schema design
-- [x] Backend API (CRUD for mood entries)
-- [x] Frontend form for logging mood
-- [x] Today's entry view
-- [x] Chart visualization
-- [x] Interactive chart details
-- [x] Comparison analytics
-- [x] Settings/profile management
-- [x] Form validation
-- [x] Mood quotes feature
-- [x] SCSS architecture with design system
-- [x] Hot reload development environment
-- [x] Responsive mobile-first design
-- [x] Cypress E2E testing setup
-- [x] User authentication (register/login)
-- [x] Password best-practice policy enforcement
-- [x] Avatar image file upload (drag-drop and click)
-- [x] Mobile-friendly navigation and layout
-- [x] Light and dark theme preference
-- [x] Desktop nav bar moved below header
-- [x] Mobile slide-out account menu
-- [x] Mood entry editing from dashboard views
-- [x] One-entry-per-day log guard with edit redirect for today's mood
-- [x] Show/hide password toggle on auth forms
-- [x] In-app change password flow from Settings
+## Future Build Task Order
+- [ ] Project setup (frontend, backend, environment config)
+- [ ] Database schema and migrations (users, mood_entries, auth fields)
+- [ ] Authentication foundation (register, login, JWT middleware, protected routes)
+- [ ] Password security policy and hashing standards
+- [ ] Core mood entry API (CRUD + one-entry-per-day rule)
+- [ ] Frontend auth screens (login/register/reset/change password)
+- [ ] Mood logging form and validation
+- [ ] Today's entry dashboard card with edit flow
+- [ ] Mood chart (last 11 entries) and interactive detail view
+- [ ] Mood and sleep comparison analytics
+- [ ] Mood quote logic based on score bands
+- [ ] Settings/profile (name, avatar upload/url, avatar preview/remove)
+- [ ] Theme preferences (light/dark preview and save behavior)
+- [ ] Mobile-responsive navigation and layout polish
+- [ ] Shared SCSS design system and component styling cleanup
+- [ ] Cypress E2E coverage for auth, mood logging, edit, and settings flows
+- [ ] Production deployment checks (REACT_APP_API_URL set, CORS verified, smoke test on mobile)

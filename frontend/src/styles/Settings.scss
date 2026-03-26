@@ -411,6 +411,43 @@
   gap: $spacing-md;
 }
 
+.password-rules {
+  background: rgba($primary-color, 0.06);
+  border: 1px solid rgba($primary-color, 0.2);
+  border-radius: $radius-md;
+  padding: $spacing-md;
+
+  h4 {
+    margin: 0 0 $spacing-sm;
+    color: $text-primary;
+    font-size: $font-size-sm;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: grid;
+    gap: 0.2rem;
+  }
+}
+
+.password-rule {
+  color: $text-secondary;
+  font-size: $font-size-sm;
+
+  &.is-met {
+    color: $success-color;
+  }
+
+  &.is-unmet {
+    color: $error-color;
+  }
+
+  &.is-pending {
+    color: $text-light;
+  }
+}
+
 .password-input-wrap {
   position: relative;
 

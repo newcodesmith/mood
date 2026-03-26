@@ -549,6 +549,54 @@
 .dashboard {
   display: grid;
   gap: $spacing-md;
+
+  @include desktop {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    grid-template-areas:
+      'summary summary'
+      'daily insights'
+      'trends trends'
+      'details details';
+    align-items: stretch;
+  }
+}
+
+.dashboard-summary {
+  grid-area: summary;
+}
+
+.dashboard-daily-mood {
+  grid-area: daily;
+
+  @include desktop {
+    height: 100%;
+  }
+}
+
+.dashboard-insights {
+  grid-area: insights;
+
+  @include desktop {
+    height: 100%;
+  }
+}
+
+.dashboard-trends {
+  grid-area: trends;
+
+  @include desktop {
+    grid-column: 1 / -1;
+  }
+}
+
+.dashboard-entry-details {
+  grid-area: details;
+}
+
+.dashboard-empty-state {
+  @include desktop {
+    grid-column: 1 / -1;
+  }
 }
 
 .dashboard-section {
@@ -561,12 +609,143 @@
   }
 }
 
+.summary-header {
+  margin-bottom: $spacing-md;
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    margin: 0 0 $spacing-xs;
+    color: $primary-color;
+    font-size: $font-size-xl;
+  }
+}
+
+.section-icon {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: $spacing-md;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.summary-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(239, 247, 255, 0.85));
+  border: 1px solid rgba($primary-color, 0.22);
+  border-radius: 14px;
+  padding: $spacing-md;
+  box-shadow: 0 8px 24px rgba(8, 44, 74, 0.08);
+  display: grid;
+  gap: $spacing-sm;
+
+  h3 {
+    margin: 0;
+    color: $text-secondary;
+    font-size: $font-size-sm;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+}
+
+.summary-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summary-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+.mood-ring-card {
+  place-items: center;
+}
+
+.mood-ring {
+  --fill: 0%;
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  background: conic-gradient($primary-color var(--fill), rgba($primary-color, 0.16) 0);
+  display: grid;
+  place-items: center;
+}
+
+.mood-ring-center {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  background: $bg-white;
+  display: grid;
+  place-items: center;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+
+  strong {
+    color: $text-primary;
+    font-size: $font-size-lg;
+    line-height: 1;
+  }
+
+  span {
+    color: $text-light;
+    font-size: $font-size-xs;
+  }
+}
+
+.summary-value {
+  margin: 0;
+  color: $text-primary;
+  font-size: 1.8rem;
+  font-weight: $font-weight-bold;
+  line-height: 1;
+}
+
+.summary-note {
+  margin: 0;
+  color: $text-light;
+  font-size: $font-size-sm;
+}
+
+.summary-bar-track {
+  background: rgba($primary-color, 0.14);
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: $gradient-primary;
+  }
+}
+
 .section-header {
   margin-bottom: $spacing-md;
   border-bottom: 2px solid $bg-lighter;
   padding-bottom: $spacing-sm;
 
   h2 {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
     color: $primary-color;
     margin-bottom: $spacing-sm;
     font-size: $font-size-xl;
