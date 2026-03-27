@@ -2,21 +2,22 @@ import React from 'react';
 import { getQuoteByMood } from '../services/quotes';
 import '../styles/TodaysEntry.scss';
 
-const TodaysEntry = ({ entry, onEdit }) => {
+const TodaysEntry = ({ entry, onEdit, onLogMood }) => {
   if (!entry) {
-    return <div className="todays-entry empty">No entry for today yet. <a href="#log">Log your mood now!</a></div>;
+    return (
+      <div className="todays-entry empty">
+        No entry for today yet.{` `}
+        <button type="button" className="inline-action-btn" onClick={() => onLogMood && onLogMood()}>
+          Log your mood now!
+        </button>
+      </div>
+    );
   }
 
   const feelings = typeof entry.feelings === 'string' ? JSON.parse(entry.feelings) : entry.feelings;
 
   return (
     <div className="todays-entry">
-      <div className="entry-toolbar">
-        <button type="button" className="edit-entry-btn" onClick={() => onEdit && onEdit(entry)}>
-          Edit Entry
-        </button>
-      </div>
-
       <div className="mood-display">
         <div className="mood-score">{entry.mood}</div>
         <div className="mood-label">out of 10</div>
@@ -46,6 +47,12 @@ const TodaysEntry = ({ entry, onEdit }) => {
           <p>{entry.sleep} hours</p>
         </div>
       )}
+
+      <div className="entry-actions">
+        <button type="button" className="edit-entry-btn" onClick={() => onEdit && onEdit(entry)}>
+          Edit Entry
+        </button>
+      </div>
     </div>
   );
 };

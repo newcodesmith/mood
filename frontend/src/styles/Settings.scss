@@ -50,7 +50,7 @@
   }
 }
 
-.section-header {
+.settings .section-header {
   font-size: $font-size-md;
   font-weight: $font-weight-bold;
   color: $primary-color;
@@ -68,7 +68,8 @@
     height: $font-size-xl;
     background: $gradient-primary;
     border-radius: 2px;
-    margin-top: -9px;
+    margin-top: 0;
+    align-self: center;
   }
 }
 

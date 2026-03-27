@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AuthForm from './components/AuthForm';
 import MoodForm from './components/MoodForm';
 import TodaysEntry from './components/TodaysEntry';
@@ -7,6 +7,80 @@ import MoodComparison from './components/MoodComparison';
 import Settings from './components/Settings';
 import { authService, clearAuthToken, moodEntryService } from './services/api';
 import './styles/App.scss';
+
+const getLocalDateString = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const shiftDateKey = (dateKey, offsetDays) => {
+  const [year, month, day] = String(dateKey).split('-').map(Number);
+  const shifted = new Date(year, month - 1, day + offsetDays);
+  const shiftedYear = shifted.getFullYear();
+  const shiftedMonth = String(shifted.getMonth() + 1).padStart(2, '0');
+  const shiftedDay = String(shifted.getDate()).padStart(2, '0');
+  return `${shiftedYear}-${shiftedMonth}-${shiftedDay}`;
+};
+
+const buildComparisonFromEntries = (entries, todayKey) => {
+  const normalizedEntries = entries.map((entry) => ({
+    ...entry,
+    dateKey: String(entry.date).slice(0, 10)
+  }));
+
+  const currentStartKey = shiftDateKey(todayKey, -6);
+  const previousStartKey = shiftDateKey(todayKey, -13);
+  const previousEndKey = shiftDateKey(todayKey, -7);
+
+  const currentEntries = normalizedEntries.filter((entry) => entry.dateKey >= currentStartKey && entry.dateKey <= todayKey);
+  const previousEntries = normalizedEntries.filter((entry) => entry.dateKey >= previousStartKey && entry.dateKey <= previousEndKey);
+
+  const average = (items, field) => {
+    const values = items
+      .map((item) => Number(item?.[field]))
+      .filter((value) => Number.isFinite(value));
+
+    if (!values.length) {
+      return { value: 0, count: 0 };
+    }
+
+    const total = values.reduce((sum, value) => sum + value, 0);
+    return { value: total / values.length, count: values.length };
+  };
+
+  const currentMood = average(currentEntries, 'mood');
+  const previousMood = average(previousEntries, 'mood');
+  const currentSleep = average(currentEntries, 'sleep');
+  const previousSleep = average(previousEntries, 'sleep');
+
+  const percentChange = (currentValue, previousValue, previousCount) => {
+    if (!previousCount || previousValue === 0) {
+      return 0;
+    }
+
+    return Number((((currentValue - previousValue) / previousValue) * 100).toFixed(1));
+  };
+
+  return {
+    current: {
+      mood: currentMood.value.toFixed(2),
+      sleep: currentSleep.value.toFixed(2),
+      entryCount: currentEntries.length,
+      sleepEntryCount: currentSleep.count
+    },
+    previous: {
+      mood: previousMood.value.toFixed(2),
+      sleep: previousSleep.value.toFixed(2),
+      entryCount: previousEntries.length,
+      sleepEntryCount: previousSleep.count
+    },
+    moodChange: percentChange(currentMood.value, previousMood.value, previousEntries.length),
+    sleepChange: percentChange(currentSleep.value, previousSleep.value, previousSleep.count)
+  };
+};
 
 function App() {
   const storedTheme = localStorage.getItem('mood_theme') || 'light';
@@ -21,7 +95,13 @@ function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const previousActiveTabRef = React.useRef('dashboard');
+  const previousActiveTabRef = useRef('dashboard');
+  const latestLoadRequestRef = useRef(0);
+  const activeUserIdRef = useRef(null);
+
+  useEffect(() => {
+    activeUserIdRef.current = currentUser?.id ?? null;
+  }, [currentUser]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -46,6 +126,7 @@ function App() {
     const initializeSession = async () => {
       try {
         const response = await authService.me();
+        activeUserIdRef.current = response.data.id;
         setCurrentUser(response.data);
         loadUserData(response.data.id);
       } catch (error) {
@@ -58,20 +139,30 @@ function App() {
   }, []);
 
   const loadUserData = async (userId) => {
+    const requestId = ++latestLoadRequestRef.current;
+    const localToday = getLocalDateString();
+
     try {
-      const [todayRes, recentRes, comparisonRes] = await Promise.all([
-        moodEntryService.getToday(userId),
+      const [todayRes, recentRes, allRes] = await Promise.all([
+        moodEntryService.getToday(userId, localToday),
         moodEntryService.getRecent(userId),
-        moodEntryService.getComparison(userId)
+        moodEntryService.getAll(userId)
       ]);
+
+      // Ignore out-of-order responses from a previous account/session.
+      if (requestId !== latestLoadRequestRef.current || activeUserIdRef.current !== userId) {
+        return;
+      }
 
       setTodaysEntry(todayRes.data);
       setRecentEntries(recentRes.data);
-      setComparison(comparisonRes.data);
+      setComparison(buildComparisonFromEntries(allRes.data, localToday));
     } catch (error) {
       console.error('Failed to load user data:', error);
     } finally {
-      setLoading(false);
+      if (requestId === latestLoadRequestRef.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -84,18 +175,28 @@ function App() {
   };
 
   const handleAuthSuccess = (user) => {
+    latestLoadRequestRef.current += 1;
+    activeUserIdRef.current = user.id;
     setCurrentUser(user);
+    setTodaysEntry(null);
+    setRecentEntries([]);
+    setComparison(null);
+    setSelectedEntry(null);
+    setEditingEntry(null);
     setActiveTab('dashboard');
     loadUserData(user.id);
   };
 
   const handleLogout = () => {
+    latestLoadRequestRef.current += 1;
+    activeUserIdRef.current = null;
     clearAuthToken();
     setCurrentUser(null);
     setTodaysEntry(null);
     setRecentEntries([]);
     setComparison(null);
     setSelectedEntry(null);
+    setEditingEntry(null);
     setActiveTab('dashboard');
   };
 
@@ -114,6 +215,24 @@ function App() {
 
   const handleCancelEdit = () => {
     setEditingEntry(null);
+    setActiveTab('dashboard');
+  };
+
+  const handleDeleteEntry = (deletedEntryId) => {
+    setEditingEntry(null);
+
+    if (selectedEntry?.id === deletedEntryId) {
+      setSelectedEntry(null);
+    }
+
+    if (todaysEntry?.id === deletedEntryId) {
+      setTodaysEntry(null);
+    }
+
+    if (currentUser) {
+      loadUserData(currentUser.id);
+    }
+
     setActiveTab('dashboard');
   };
 
@@ -343,7 +462,7 @@ function App() {
                 </h2>
                 <p className="section-description">Your mood entry for today</p>
               </div>
-              <TodaysEntry entry={todaysEntry} onEdit={handleEditEntry} />
+              <TodaysEntry entry={todaysEntry} onEdit={handleEditEntry} onLogMood={() => setActiveTab('log')} />
             </section>
 
             {selectedEntry && (
@@ -399,7 +518,8 @@ function App() {
             todaysEntry={todaysEntry}
             onSuccess={handleMoodSaved}
             onCancel={handleCancelEdit}
-            onStartEditToday={() => handleEditEntry(todaysEntry)}
+            onStartEditToday={(entry = todaysEntry) => handleEditEntry(entry)}
+            onDelete={handleDeleteEntry}
           />
         )}
 

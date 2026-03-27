@@ -527,7 +527,7 @@
 /* Main Content Area */
 .app-content {
   flex: 1;
-  max-width: 1080px;
+  max-width: 1400px;
   width: 100%;
   margin: $spacing-xl auto;
   padding: 0 $spacing-md;
@@ -765,13 +765,21 @@
   margin-bottom: $spacing-md;
   border-bottom: 2px solid $bg-lighter;
   padding-bottom: $spacing-sm;
+  display: grid;
+  grid-template-rows: auto auto;
+  row-gap: $spacing-xs;
+
+  &::before {
+    content: none;
+    display: none;
+  }
 
   h2 {
     display: flex;
     align-items: center;
     gap: $spacing-sm;
     color: $primary-color;
-    margin-bottom: $spacing-sm;
+    margin: 0;
     font-size: $font-size-xl;
   }
 
@@ -786,6 +794,7 @@
   color: $text-light;
   font-size: $font-size-base;
   margin: 0;
+  line-height: 1.45;
 
   @include mobile {
     font-size: $font-size-sm;

@@ -2,14 +2,26 @@ import React, { useEffect, useState } from 'react';
 import { moodEntryService } from '../services/api';
 import '../styles/MoodForm.scss';
 
-const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, onCancel, onStartEditToday }) => {
+const getLocalDateString = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, onCancel, onStartEditToday, onDelete }) => {
   const [mood, setMood] = useState('5');
   const [feelings, setFeelings] = useState([]);
   const [reflection, setReflection] = useState('');
   const [sleep, setSleep] = useState('');
+  const [selectedDate, setSelectedDate] = useState(getLocalDateString());
+  const [existingEntryForDate, setExistingEntryForDate] = useState(null);
+  const [checkingSelectedDate, setCheckingSelectedDate] = useState(false);
   const [errors, setErrors] = useState({});
 
   const feelingsOptions = ['Happy', 'Sad', 'Anxious', 'Calm', 'Energetic', 'Tired', 'Hopeful', 'Stressed'];
+  const today = getLocalDateString();
 
   useEffect(() => {
     if (!entryToEdit) {
@@ -17,6 +29,8 @@ const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, o
       setFeelings([]);
       setReflection('');
       setSleep('');
+      setSelectedDate(getLocalDateString());
+      setExistingEntryForDate(null);
       setErrors({});
       return;
     }
@@ -29,8 +43,53 @@ const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, o
     setFeelings(parsedFeelings);
     setReflection(entryToEdit.reflection || '');
     setSleep(entryToEdit.sleep ?? '');
+    setSelectedDate(String(entryToEdit.date).split('T')[0]);
+    setExistingEntryForDate(null);
     setErrors({});
   }, [entryToEdit]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    if (!userId || entryToEdit || !selectedDate) {
+      setExistingEntryForDate(null);
+      setCheckingSelectedDate(false);
+      return undefined;
+    }
+
+    if (selectedDate === today && todaysEntry) {
+      setExistingEntryForDate(todaysEntry);
+      setCheckingSelectedDate(false);
+      return undefined;
+    }
+
+    setCheckingSelectedDate(true);
+
+    moodEntryService.getByDate(userId, selectedDate)
+      .then((response) => {
+        if (!isActive) {
+          return;
+        }
+
+        setExistingEntryForDate(response.data || null);
+      })
+      .catch(() => {
+        if (!isActive) {
+          return;
+        }
+
+        setExistingEntryForDate(null);
+      })
+      .finally(() => {
+        if (isActive) {
+          setCheckingSelectedDate(false);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, [entryToEdit, selectedDate, today, todaysEntry, userId]);
 
   const handleFeelingToggle = (feeling) => {
     if (feelings.includes(feeling)) {
@@ -42,6 +101,7 @@ const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, o
 
   const validateForm = () => {
     const newErrors = {};
+    if (!selectedDate) newErrors.date = 'Date is required';
     if (!mood) newErrors.mood = 'Mood is required';
     if (feelings.length === 0) newErrors.feelings = 'At least one feeling is required';
     if (sleep && (isNaN(sleep) || sleep < 0 || sleep > 24)) newErrors.sleep = 'Sleep must be 0-24';
@@ -52,6 +112,11 @@ const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, o
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
+
+    if (!entryToEdit && !Number.isFinite(Number(userId))) {
+      setErrors({ submit: 'Session error. Please sign out and sign back in.' });
+      return;
+    }
 
     try {
       const payload = {
@@ -64,10 +129,9 @@ const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, o
       if (entryToEdit?.id) {
         await moodEntryService.update(entryToEdit.id, payload);
       } else {
-        const today = new Date().toISOString().split('T')[0];
         await moodEntryService.create({
-          userId,
-          date: today,
+          userId: Number(userId),
+          date: selectedDate,
           ...payload
         });
       }
@@ -76,30 +140,39 @@ const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, o
       setFeelings([]);
       setReflection('');
       setSleep('');
+      setSelectedDate(getLocalDateString());
+      setExistingEntryForDate(null);
       setErrors({});
       onSuccess && onSuccess();
     } catch (error) {
       const backendError = error.response?.data?.error;
-      const isDuplicateToday = typeof backendError === 'string' && backendError.toLowerCase().includes('duplicate');
-      setErrors({ submit: isDuplicateToday ? 'You already have an entry for today. Edit today\'s mood instead.' : (backendError || 'Failed to save entry') });
+      const isDuplicateForDate = typeof backendError === 'string' && backendError.toLowerCase().includes('already have an entry');
+      setErrors({ submit: isDuplicateForDate ? 'You already have an entry for this date. Edit it instead or choose another date.' : (backendError || 'Failed to save entry') });
     }
   };
 
-  if (todaysEntry && !entryToEdit) {
-    return (
-      <div className="mood-form mood-form--locked">
-        <div className="form-header">
-          <h2>Today's Mood Already Logged</h2>
-          <p>You can only log one mood entry per day. Edit today's entry if you want to make changes.</p>
-        </div>
-        <div className="limit-notice-actions">
-          <button type="button" className="submit-btn" onClick={onStartEditToday}>
-            Edit Today's Entry
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const handleDelete = async () => {
+    if (!entryToEdit?.id) {
+      return;
+    }
+
+    const confirmed = window.confirm('Delete this mood entry? This action cannot be undone.');
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await moodEntryService.delete(entryToEdit.id);
+      setErrors({});
+      onDelete && onDelete(entryToEdit.id);
+    } catch (error) {
+      const backendError = error.response?.data?.error;
+      setErrors({ submit: backendError || 'Failed to delete entry' });
+    }
+  };
+
+  const selectedEntryAlreadyExists = !entryToEdit && !!existingEntryForDate;
+  const isTodaySelected = selectedDate === today;
 
   return (
     <form className="mood-form" onSubmit={handleSubmit}>
@@ -108,10 +181,49 @@ const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, o
         <p>
           {entryToEdit
             ? 'Update your mood details to keep your record accurate.'
-            : 'Take a moment to reflect on how you\'re feeling. This entry will help you understand your emotional patterns.'}
+            : 'Take a moment to reflect on how you\'re feeling. You can log today or add an entry for a missed day.'}
         </p>
       </div>
-      
+
+      <div className="form-group">
+        <label htmlFor="entry-date">Entry date</label>
+        <p className="field-description">Choose today or a past day you missed.</p>
+        <input
+          id="entry-date"
+          type="date"
+          value={selectedDate}
+          max={today}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          disabled={Boolean(entryToEdit)}
+        />
+        {errors.date && <span className="error">{errors.date}</span>}
+      </div>
+
+      {selectedEntryAlreadyExists && (
+        <div className="existing-entry-notice">
+          <p>
+            {isTodaySelected
+              ? 'You already logged mood for today.'
+              : 'You already have a mood entry for the selected date.'}
+          </p>
+          <div className="limit-notice-actions">
+            <button
+              type="button"
+              className="secondary-btn"
+              onClick={() => onStartEditToday && onStartEditToday(existingEntryForDate)}
+            >
+              Edit Existing Entry
+            </button>
+          </div>
+        </div>
+      )}
+
+      {checkingSelectedDate && !entryToEdit && (
+        <div className="date-check-note">Checking whether you already have an entry for this date…</div>
+      )}
+
+      {!selectedEntryAlreadyExists && (
+      <>
       <div className="form-group">
         <label>How are you feeling? <span className="required">*</span></label>
         <div className="mood-slider-container">
@@ -184,12 +296,21 @@ const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, o
       {errors.submit && <div className="error-message">{errors.submit}</div>}
       <div className="form-actions-row">
         {entryToEdit && (
+          <button type="button" className="delete-btn" onClick={handleDelete}>
+            Delete Entry
+          </button>
+        )}
+        {entryToEdit && (
           <button type="button" className="secondary-btn" onClick={onCancel}>
             Cancel
           </button>
         )}
-        <button type="submit" className="submit-btn">{entryToEdit ? 'Update Mood Entry' : 'Save Mood Entry'}</button>
+        <button type="submit" className="submit-btn" disabled={checkingSelectedDate}>
+          {entryToEdit ? 'Update Mood Entry' : 'Save Mood Entry'}
+        </button>
       </div>
+      </>
+      )}
     </form>
   );
 };

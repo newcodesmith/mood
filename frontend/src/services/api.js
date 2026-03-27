@@ -72,7 +72,14 @@ export const userService = {
 
 export const moodEntryService = {
   getAll: (userId) => API.get(`/mood-entries/user/${userId}`),
-  getToday: (userId) => API.get(`/mood-entries/user/${userId}/today`),
+  getToday: (userId, date) =>
+    API.get(`/mood-entries/user/${userId}/today`, {
+      params: date ? { date } : undefined
+    }),
+  getByDate: (userId, date) =>
+    API.get(`/mood-entries/user/${userId}/by-date`, {
+      params: { date }
+    }),
   getRecent: (userId) => API.get(`/mood-entries/user/${userId}/recent`),
   getById: (id) => API.get(`/mood-entries/${id}`),
   create: (entryData) => API.post('/mood-entries', entryData),

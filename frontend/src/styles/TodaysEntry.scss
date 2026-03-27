@@ -14,9 +14,14 @@
   }
 }
 
-.entry-toolbar {
+.entry-actions {
   display: flex;
   justify-content: flex-end;
+  margin-top: $spacing-sm;
+
+  @include mobile {
+    justify-content: stretch;
+  }
 }
 
 .edit-entry-btn {
@@ -33,6 +38,10 @@
   &:hover {
     background: rgba($primary-color, 0.14);
     border-color: rgba($primary-color, 0.38);
+  }
+
+  @include mobile {
+    width: 100%;
   }
 }
 

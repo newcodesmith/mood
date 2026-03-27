@@ -17,6 +17,25 @@
   }
 }
 
+.existing-entry-notice,
+.date-check-note {
+  margin-bottom: $spacing-lg;
+  padding: $spacing-md;
+  border-radius: $radius-md;
+  border: 1px solid rgba($primary-color, 0.2);
+  background: rgba($primary-color, 0.08);
+
+  p {
+    margin: 0 0 20px 0;
+    color: $text-primary;
+  }
+}
+
+.date-check-note {
+  color: $text-secondary;
+  font-size: $font-size-sm;
+}
+
 .limit-notice-actions {
   display: flex;
   justify-content: center;
@@ -74,7 +93,7 @@
   outline: none;
   -webkit-appearance: none;
   cursor: pointer;
-  margin-bottom: $spacing-md;
+  margin-bottom: $spacing-lg;
 
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -198,6 +217,7 @@
 
 .form-group {
   textarea,
+  input[type="date"],
   input[type="number"],
   input[type="text"] {
     @include form-input;
@@ -228,7 +248,7 @@
 
 .submit-btn {
   width: 100%;
-  padding: $spacing-lg;
+  padding: 0.72rem $spacing-md;
   background: $gradient-primary;
   color: $bg-white;
   border: none;
@@ -282,7 +302,7 @@
 
 .secondary-btn {
   width: 100%;
-  padding: $spacing-lg;
+  padding: 0.72rem $spacing-md;
   background: $bg-white;
   color: $text-primary;
   border: 1px solid $border-color;
@@ -298,6 +318,30 @@
   }
 }
 
+.delete-btn {
+  width: 100%;
+  padding: 0.72rem $spacing-md;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: $bg-white;
+  border: 1px solid rgba(#991b1b, 0.45);
+  border-radius: $radius-md;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: transform $transition-fast, box-shadow $transition-fast, filter $transition-fast;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(185, 28, 28, 0.35);
+    filter: saturate(1.03);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(153, 27, 27, 0.28);
+  }
+}
+
 :root[data-theme='dark'] .secondary-btn {
   background: rgba(108, 187, 223, 0.15);
   color: #c0f0ff;
@@ -307,5 +351,28 @@
     background: rgba(131, 201, 234, 0.25);
     border-color: rgba(170, 216, 246, 0.6);
     color: #ffffff;
+  }
+}
+
+:root[data-theme='dark'] .delete-btn {
+  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+  color: #2c0606;
+  border-color: rgba(254, 202, 202, 0.5);
+
+  &:hover {
+    box-shadow: 0 8px 18px rgba(127, 29, 29, 0.45);
+  }
+}
+
+:root[data-theme='dark'] {
+  .existing-entry-notice,
+  .date-check-note {
+    background: rgba(39, 88, 136, 0.22);
+    border-color: rgba(146, 197, 248, 0.38);
+
+    p,
+    & {
+      color: #e6f1ff;
+    }
   }
 }
