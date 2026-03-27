@@ -820,8 +820,12 @@
 
 .inline-action-btn {
   margin-top: $spacing-md;
-  padding: 0.7rem 1rem;
-  border: 1px solid rgba($primary-color, 0.22);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  padding: 0.65rem 1rem;
+  border: 1px solid rgba($primary-color, 0.2);
   background: rgba($primary-color, 0.08);
   color: $text-primary;
   border-radius: $radius-md;
@@ -832,7 +836,20 @@
 
   &:hover {
     background: rgba($primary-color, 0.14);
-    border-color: rgba($primary-color, 0.4);
+    border-color: rgba($primary-color, 0.38);
+  }
+}
+
+:root[data-theme='dark'] .inline-action-btn {
+  background: rgba(108, 187, 223, 0.2);
+  color: #f4f9ff;
+  border-color: rgba(170, 216, 246, 0.55);
+  font-weight: 700;
+
+  &:hover {
+    background: rgba(131, 201, 234, 0.3);
+    border-color: rgba(191, 226, 250, 0.75);
+    color: #ffffff;
   }
 }
 

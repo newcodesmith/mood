@@ -84,6 +84,10 @@ const buildComparisonFromEntries = (entries, todayKey) => {
 
 function App() {
   const storedTheme = localStorage.getItem('mood_theme') || 'light';
+  const resolveThemePreference = (user, fallbackTheme = 'light') => {
+    const serverTheme = String(user?.theme_preference || '').toLowerCase();
+    return serverTheme === 'dark' ? 'dark' : serverTheme === 'light' ? 'light' : fallbackTheme;
+  };
   const [theme, setTheme] = useState(storedTheme);
   const [savedTheme, setSavedTheme] = useState(storedTheme);
   const [currentUser, setCurrentUser] = useState(null);
@@ -126,6 +130,9 @@ function App() {
     const initializeSession = async () => {
       try {
         const response = await authService.me();
+        const preferredTheme = resolveThemePreference(response.data, storedTheme);
+        setTheme(preferredTheme);
+        setSavedTheme(preferredTheme);
         activeUserIdRef.current = response.data.id;
         setCurrentUser(response.data);
         loadUserData(response.data.id);
@@ -175,8 +182,11 @@ function App() {
   };
 
   const handleAuthSuccess = (user) => {
+    const preferredTheme = resolveThemePreference(user, storedTheme);
     latestLoadRequestRef.current += 1;
     activeUserIdRef.current = user.id;
+    setTheme(preferredTheme);
+    setSavedTheme(preferredTheme);
     setCurrentUser(user);
     setTodaysEntry(null);
     setRecentEntries([]);
