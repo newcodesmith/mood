@@ -281,6 +281,16 @@ function App() {
       <main className="app-content">
         {activeTab === 'dashboard' && (
           <div className="dashboard">
+            {recentEntries.length === 0 && (
+              <section className="dashboard-section empty-state dashboard-empty-state">
+                <div className="empty-state-content">
+                  <h3>👋 Welcome to Mood Tracker!</h3>
+                  <p>Start by logging your first mood entry to see your data here.</p>
+                  <button className="cta-button" onClick={() => setActiveTab('log')}>Log Your First Mood</button>
+                </div>
+              </section>
+            )}
+
             <section className="dashboard-section dashboard-summary">
               <div className="summary-header">
                 <h2>
@@ -324,16 +334,6 @@ function App() {
                 </article>
               </div>
             </section>
-
-            {recentEntries.length === 0 && (
-              <section className="dashboard-section empty-state dashboard-empty-state">
-                <div className="empty-state-content">
-                  <h3>👋 Welcome to Mood Tracker!</h3>
-                  <p>Start by logging your first mood entry to see your data here.</p>
-                  <button className="cta-button" onClick={() => setActiveTab('log')}>Log Your First Mood</button>
-                </div>
-              </section>
-            )}
 
             <section className="dashboard-section dashboard-daily-mood">
               <div className="section-header">

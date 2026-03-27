@@ -552,6 +552,15 @@
       'trends trends'
       'details details';
     align-items: stretch;
+
+    &:has(.dashboard-empty-state) {
+      grid-template-areas:
+        'empty empty'
+        'summary summary'
+        'daily insights'
+        'trends trends'
+        'details details';
+    }
   }
 }
 
@@ -610,6 +619,7 @@
 
 .dashboard-empty-state {
   @include desktop {
+    grid-area: empty;
     grid-column: 1 / -1;
   }
 }
