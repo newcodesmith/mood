@@ -81,6 +81,7 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Upload/change avatar from local files or image URL
 - Preview and remove avatar before saving
 - Store theme preference and profile preferences
+- Save theme preference to the user account so it syncs across devices after login
 
 ### 11. Mobile-Friendly Design
 - Responsive layout that works seamlessly on mobile, tablet, and desktop
@@ -100,6 +101,8 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Users can switch between light and dark mode in Settings
 - Theme changes preview immediately in Settings
 - Theme choice only persists after user saves Settings
+- Saved theme preference is loaded from the authenticated user profile on login and session restore
+- Theme preference now persists across different browsers/devices for the same account
 - Unsaved theme changes revert when leaving the Settings page
 - Theme tokens are shared through SCSS variables and CSS custom properties
 - Dark mode includes contrast-tuned chart tabs and action buttons for readability
@@ -118,6 +121,7 @@ A time-series mood tracking application that allows users to log daily mood, fee
   "name": "string",
   "email": "string (unique)",
   "avatar": "string (url/path)",
+  "theme_preference": "string ('light' | 'dark')",
   "password_hash": "string (DB only)",
   "created_at": "timestamp",
   "updated_at": "timestamp"
@@ -203,7 +207,7 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - [x] Mood and sleep comparison analytics
 - [x] Mood quote logic based on score bands
 - [x] Settings/profile (name, avatar upload/url, avatar preview/remove)
-- [x] Theme preferences (light/dark preview and save behavior)
+- [x] Theme preferences (light/dark preview, save behavior, and cross-device persistence)
 - [x] Mobile-responsive navigation and layout polish
 - [x] Shared SCSS design system and component styling cleanup
 - [ ] Cypress E2E coverage for full auth, mood logging, edit, and settings flows

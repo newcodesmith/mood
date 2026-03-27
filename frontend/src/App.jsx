@@ -16,6 +16,14 @@ const getLocalDateString = () => {
   return `${year}-${month}-${day}`;
 };
 
+const getStoredTheme = () => {
+  if (typeof window === 'undefined') {
+    return 'light';
+  }
+
+  return localStorage.getItem('mood_theme') || 'light';
+};
+
 const shiftDateKey = (dateKey, offsetDays) => {
   const [year, month, day] = String(dateKey).split('-').map(Number);
   const shifted = new Date(year, month - 1, day + offsetDays);
@@ -83,13 +91,12 @@ const buildComparisonFromEntries = (entries, todayKey) => {
 };
 
 function App() {
-  const storedTheme = localStorage.getItem('mood_theme') || 'light';
   const resolveThemePreference = (user, fallbackTheme = 'light') => {
     const serverTheme = String(user?.theme_preference || '').toLowerCase();
     return serverTheme === 'dark' ? 'dark' : serverTheme === 'light' ? 'light' : fallbackTheme;
   };
-  const [theme, setTheme] = useState(storedTheme);
-  const [savedTheme, setSavedTheme] = useState(storedTheme);
+  const [theme, setTheme] = useState(getStoredTheme);
+  const [savedTheme, setSavedTheme] = useState(getStoredTheme);
   const [currentUser, setCurrentUser] = useState(null);
   const [todaysEntry, setTodaysEntry] = useState(null);
   const [recentEntries, setRecentEntries] = useState([]);
@@ -130,7 +137,7 @@ function App() {
     const initializeSession = async () => {
       try {
         const response = await authService.me();
-        const preferredTheme = resolveThemePreference(response.data, storedTheme);
+        const preferredTheme = resolveThemePreference(response.data, getStoredTheme());
         setTheme(preferredTheme);
         setSavedTheme(preferredTheme);
         activeUserIdRef.current = response.data.id;
@@ -182,7 +189,7 @@ function App() {
   };
 
   const handleAuthSuccess = (user) => {
-    const preferredTheme = resolveThemePreference(user, storedTheme);
+    const preferredTheme = resolveThemePreference(user, getStoredTheme());
     latestLoadRequestRef.current += 1;
     activeUserIdRef.current = user.id;
     setTheme(preferredTheme);
