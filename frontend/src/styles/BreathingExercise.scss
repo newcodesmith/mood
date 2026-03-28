@@ -436,6 +436,12 @@
   margin: 0 0 $spacing-lg 0;
 }
 
+.selected-exercise-meta {
+  font-size: $font-size-sm;
+  color: $text-light;
+  margin-top: -$spacing-md;
+}
+
 .phase-inhale {
   background: var(--core-2, #0ea5a4);
 }
@@ -726,6 +732,10 @@
 
   .selected-exercise-name {
     color: var(--core-1, #9be9ff);
+  }
+
+  .selected-exercise-meta {
+    color: #d8e9ff;
   }
 
   .countdown-number {

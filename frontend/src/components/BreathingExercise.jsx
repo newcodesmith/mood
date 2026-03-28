@@ -10,6 +10,8 @@ import "../styles/BreathingExercise.scss";
 
 const MIN_SECONDS = 1;
 const MAX_SECONDS = 60;
+const MIN_CYCLES = 1;
+const MAX_CYCLES = 50;
 
 const PHASE_AUDIO = {
   inhale: { primary: 164.81, secondary: 207.65 },
@@ -129,6 +131,15 @@ const clampSeconds = (value) => {
   return Math.max(MIN_SECONDS, Math.min(MAX_SECONDS, Math.round(numeric)));
 };
 
+const clampCycleCount = (value) => {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) {
+    return 5;
+  }
+
+  return Math.max(MIN_CYCLES, Math.min(MAX_CYCLES, Math.round(numeric)));
+};
+
 const normalizeAudioLevel = (value) => {
   const numeric = Number(value);
   if (!Number.isFinite(numeric)) {
@@ -175,6 +186,9 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
     hold: clampSeconds(settings?.hold ?? 4),
     exhale: clampSeconds(settings?.exhale ?? 6),
   });
+  const [cycleCount, setCycleCount] = useState(
+    clampCycleCount(settings?.cycleCount ?? 5),
+  );
   const [phaseIndex, setPhaseIndex] = useState(0);
   const [secondsRemaining, setSecondsRemaining] = useState(durations.inhale);
   const [isRunning, setIsRunning] = useState(false);
@@ -203,6 +217,7 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
   const latestSettingsRef = useRef(null);
   const saveStateTimeoutRef = useRef(null);
   const profileSaveTimeoutRef = useRef(null);
+  const shouldStopAtCycleBoundaryRef = useRef(false);
 
   useEffect(() => {
     setDurations({
@@ -210,6 +225,7 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
       hold: clampSeconds(settings?.hold ?? 4),
       exhale: clampSeconds(settings?.exhale ?? 6),
     });
+    setCycleCount(clampCycleCount(settings?.cycleCount ?? 5));
     setAudioEnabled(
       typeof settings?.audioEnabled === "boolean"
         ? settings.audioEnabled
@@ -220,6 +236,7 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
   }, [
     settings?.audioEnabled,
     settings?.audioLevel,
+    settings?.cycleCount,
     settings?.colorPalette,
     settings?.exhale,
     settings?.hold,
@@ -407,27 +424,51 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
           return current - 1;
         }
 
+        let nextSeconds = durations.inhale;
+
         setPhaseIndex((currentPhaseIndex) => {
           const nextPhaseIndex = (currentPhaseIndex + 1) % PHASES.length;
 
           if (nextPhaseIndex === 0) {
-            setCompletedCycles((cycles) => cycles + 1);
+            setCompletedCycles((cycles) => {
+              const nextCompletedCycles = cycles + 1;
+              if (nextCompletedCycles >= cycleCount) {
+                shouldStopAtCycleBoundaryRef.current = true;
+              }
+              return nextCompletedCycles;
+            });
+            nextSeconds = durations.inhale;
+          } else {
+            nextSeconds = durations[PHASES[nextPhaseIndex].key];
           }
 
-          const nextPhaseKey = PHASES[nextPhaseIndex].key;
-          const nextDuration = durations[nextPhaseKey];
-          setSecondsRemaining(nextDuration);
           return nextPhaseIndex;
         });
 
-        return 1;
+        return nextSeconds;
       });
     }, 1000);
 
     return () => {
       window.clearInterval(timerId);
     };
-  }, [durations, isRunning]);
+  }, [cycleCount, durations, isRunning]);
+
+  useEffect(() => {
+    if (
+      !isRunning ||
+      !shouldStopAtCycleBoundaryRef.current ||
+      completedCycles < cycleCount
+    ) {
+      return;
+    }
+
+    shouldStopAtCycleBoundaryRef.current = false;
+    stopActiveCue(0.03);
+    setIsRunning(false);
+    setPhaseIndex(0);
+    setSecondsRemaining(durations.inhale);
+  }, [completedCycles, cycleCount, durations.inhale, isRunning, stopActiveCue]);
 
   useEffect(() => {
     if (!isRunning || !audioEnabled) {
@@ -436,7 +477,9 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
     }
 
     if (previousPhaseIndexRef.current !== phaseIndex) {
-      playPhaseCue(PHASES[phaseIndex].key);
+      if (!shouldStopAtCycleBoundaryRef.current) {
+        playPhaseCue(PHASES[phaseIndex].key);
+      }
     }
 
     previousPhaseIndexRef.current = phaseIndex;
@@ -475,6 +518,7 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
       inhale: clampSeconds(durations.inhale),
       hold: clampSeconds(durations.hold),
       exhale: clampSeconds(durations.exhale),
+      cycleCount: clampCycleCount(cycleCount),
       audioEnabled,
       audioLevel: normalizeAudioLevel(audioLevel),
       colorPalette: normalizeColorPalette(colorPalette),
@@ -515,6 +559,7 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
   }, [
     audioEnabled,
     audioLevel,
+    cycleCount,
     colorPalette,
     durations.exhale,
     durations.hold,
@@ -541,6 +586,25 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
 
   const adjustDuration = (key, delta) => {
     updateDuration(key, durations[key] + delta);
+  };
+
+  const updateCycleCount = (value) => {
+    const nextValue = clampCycleCount(value);
+    setActiveProfileId(editingProfileId);
+    setCycleCount(nextValue);
+    setCompletedCycles((current) => Math.min(current, nextValue));
+
+    if (isRunning && completedCycles >= nextValue) {
+      shouldStopAtCycleBoundaryRef.current = false;
+      stopActiveCue(0.03);
+      setIsRunning(false);
+      setPhaseIndex(0);
+      setSecondsRemaining(durations.inhale);
+    }
+  };
+
+  const adjustCycleCount = (delta) => {
+    updateCycleCount(cycleCount + delta);
   };
 
   const handleAudioEnabledChange = (event) => {
@@ -673,18 +737,29 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
   };
 
   const handleStart = () => {
+    const shouldRestartCycleSet = completedCycles >= cycleCount;
+
+    shouldStopAtCycleBoundaryRef.current = false;
+    if (shouldRestartCycleSet) {
+      setPhaseIndex(0);
+      setCompletedCycles(0);
+      setSecondsRemaining(durations.inhale);
+    }
+
     if (audioEnabled) {
-      playPhaseCue(PHASES[phaseIndex].key);
+      playPhaseCue(PHASES[shouldRestartCycleSet ? 0 : phaseIndex].key);
     }
     setIsRunning(true);
   };
 
   const handlePause = () => {
+    shouldStopAtCycleBoundaryRef.current = false;
     stopActiveCue(0.03);
     setIsRunning(false);
   };
 
   const handleReset = () => {
+    shouldStopAtCycleBoundaryRef.current = false;
     stopActiveCue(0.03);
     setIsRunning(false);
     setPhaseIndex(0);
@@ -884,6 +959,44 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
                 </div>
               ))}
 
+              <div className="breathing-setting-row">
+                <div className="breathing-setting-text">
+                  <label htmlFor="breathing-cycle-count">Cycles</label>
+                  <span>
+                    Stop automatically after this many full breathing cycles.
+                  </span>
+                </div>
+                <div
+                  className="breathing-stepper"
+                  role="group"
+                  aria-label="Breathing cycle count"
+                >
+                  <button
+                    type="button"
+                    className="step-btn"
+                    onClick={() => adjustCycleCount(-1)}
+                  >
+                    -
+                  </button>
+                  <input
+                    id="breathing-cycle-count"
+                    type="number"
+                    min={MIN_CYCLES}
+                    max={MAX_CYCLES}
+                    value={cycleCount}
+                    onChange={(event) => updateCycleCount(event.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="step-btn"
+                    onClick={() => adjustCycleCount(1)}
+                  >
+                    +
+                  </button>
+                  <span className="step-unit">cycles</span>
+                </div>
+              </div>
+
               <div className="breathing-total">
                 <strong>Total cycle:</strong> {totalCycleSeconds} sec
               </div>
@@ -1039,9 +1152,13 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
             }}
           >
             <div className="selected-exercise-summary">
+              <span className="selected-exercise-label">Selected exercise</span>
               <strong className="selected-exercise-name">
                 {selectedExerciseName}
               </strong>
+              <span className="selected-exercise-meta">
+                {cycleCount} cycle{cycleCount === 1 ? "" : "s"} target
+              </span>
             </div>
             <div className={`phase-pill phase-${activePhase.key}`}>
               {activePhase.label}
@@ -1083,7 +1200,9 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
             </div>
 
             <div className="breathing-stats">
-              <span>Completed cycles: {completedCycles}</span>
+              <span>
+                Completed cycles: {completedCycles}/{cycleCount}
+              </span>
               <span>Total cycle: {totalCycleSeconds} sec</span>
             </div>
 

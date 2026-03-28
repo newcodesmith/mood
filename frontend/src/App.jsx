@@ -122,6 +122,15 @@ function App() {
         return Math.max(1, Math.min(60, Math.round(parsed)));
       };
 
+      const normalizeCycleCount = (value, fallback) => {
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed)) {
+          return fallback;
+        }
+
+        return Math.max(1, Math.min(50, Math.round(parsed)));
+      };
+
       const normalizeAudioLevel = (value, fallback) => {
         const parsed = Number(value);
         if (!Number.isFinite(parsed)) {
@@ -136,6 +145,7 @@ function App() {
         inhale: normalizeDuration(user?.breathing_inhale_seconds, 4),
         hold: normalizeDuration(user?.breathing_hold_seconds, 4),
         exhale: normalizeDuration(user?.breathing_exhale_seconds, 6),
+        cycleCount: normalizeCycleCount(user?.breathing_cycle_count, 5),
         audioEnabled: typeof user?.breathing_audio_enabled === 'boolean' ? user.breathing_audio_enabled : true,
         audioLevel: normalizeAudioLevel(user?.breathing_audio_level, 0.22),
         colorPalette: normalizeColorPalette(user?.breathing_color_palette)
@@ -322,6 +332,7 @@ function App() {
         breathingInhaleSeconds: nextSettings.inhale,
         breathingHoldSeconds: nextSettings.hold,
         breathingExhaleSeconds: nextSettings.exhale,
+        breathingCycleCount: nextSettings.cycleCount,
         breathingAudioEnabled: nextSettings.audioEnabled,
         breathingAudioLevel: nextSettings.audioLevel,
         breathingColorPalette: nextSettings.colorPalette
