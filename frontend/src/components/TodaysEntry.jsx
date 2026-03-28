@@ -6,9 +6,9 @@ const TodaysEntry = ({ entry, onEdit, onLogMood }) => {
   if (!entry) {
     return (
       <div className="todays-entry empty">
-        No entry for today yet.{` `}
+        No health check-in for today yet.{` `}
         <button type="button" className="inline-action-btn" onClick={() => onLogMood && onLogMood()}>
-          Log your mood now!
+          Log your check-in now!
         </button>
       </div>
     );
@@ -41,10 +41,24 @@ const TodaysEntry = ({ entry, onEdit, onLogMood }) => {
         </div>
       )}
 
-      {entry.sleep && (
+      {entry.sleep !== null && entry.sleep !== undefined && (
         <div className="entry-detail">
           <h3>Sleep</h3>
           <p>{entry.sleep} hours</p>
+        </div>
+      )}
+
+      {entry.water_oz !== null && entry.water_oz !== undefined && (
+        <div className="entry-detail">
+          <h3>Water Intake</h3>
+          <p>{entry.water_oz} oz</p>
+        </div>
+      )}
+
+      {entry.weight_lbs !== null && entry.weight_lbs !== undefined && (
+        <div className="entry-detail">
+          <h3>Weight</h3>
+          <p>{entry.weight_lbs} lbs</p>
         </div>
       )}
 

@@ -1,7 +1,7 @@
-# Mood Tracker
+# Health Tracker
 
 ## Project Overview
-A time-series mood tracking application that allows users to log daily mood, feelings, reflections, and sleep patterns. The app provides analytics, visualizations, and insights based on collected data.
+A time-series health tracking application centered on mood, sleep, hydration, weight, and guided breathing exercises. Users can log daily entries, monitor trends, review weekly insights, and use customizable breathing routines for focus, calm, and sleep support.
 
 ## Tech Stack
 - **Frontend:** React 18.2.0, Axios, Chart.js 4.2.1, Sass 1.69.0
@@ -36,23 +36,25 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Login failures return generic messages (no account-enumeration leaks)
 - Password hashes are never returned in API responses
 
-### 3. Daily Mood Logging
-- Users can log mood, feelings, reflections, and sleep data
-- Simple form with input validation
+### 3. Daily Health Check-In Logging
+- Users can log mood, feelings, reflections, sleep, water intake (oz), and weight (lbs)
+- Simple form with input validation and spinner/picker controls for numeric tracking values
 - Single entry per day
-- If an entry already exists for today, the Log Mood screen shows a notice and routes users to edit today's entry
-- Store: mood score (1-10), feelings (array/string), reflection (text), sleep hours (number)
+- If an entry already exists for today, the Log Check-In screen shows a notice and routes users to edit today's entry
+- Store: mood score (1-10), feelings (array/string), reflection (text), sleep hours (number), water oz (number), weight lbs (number)
 
 ### 4. Form Validation
 - Required fields: mood score, at least one feeling
 - Reflection: optional
 - Sleep: optional, must be valid number (0-24)
+- Water intake: optional, must be valid number (0-1000 oz)
+- Weight: optional, must be valid number (0-1400 lbs)
 - User name: required, min/max length
 - Avatar: optional, image file or URL with file size/format validation
 
 ### 5. Today's Entry View
 - Display current day's complete mood entry
-- Show all fields: mood, feelings, reflections, sleep
+- Show all fields: mood, feelings, reflections, sleep, water intake, weight
 - Option to edit/update today's entry
 - Quick access from dashboard
 
@@ -61,29 +63,36 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Different quotes for different mood ranges (low, neutral, high)
 
 ### 7. Mood Graph
-- Line or bar chart showing last 11 mood records
-- Tabbed metric switcher to view Mood Trend and Sleep Trend in the same chart panel
+- Line chart showing last 11 health records
+- Tabbed metric switcher to view Mood, Sleep, Water, and Weight trends in the same chart panel
 - X-axis: dates
-- Y-axis: mood score (1-10) or sleep hours (0-24)
+- Y-axis adapts by metric: mood (1-10), sleep (0-24), water (oz), and weight (lbs)
 
 ### 8. Interactive Chart
 - Click/tap on chart points to view details
-- Show full data for selected day: mood, feelings, reflections, sleep
+- Show full data for selected day: mood, feelings, reflections, sleep, water, weight
 - Allow editing a selected mood entry from its detail view
 
-### 9. Mood & Sleep Comparisons
+### 9. Health Metric Comparisons
 - Compare average mood from last 5 check-ins vs. previous 5 check-ins
 - Compare average sleep from last 5 check-ins vs. previous 5 check-ins
+- Compare average water intake from last 5 check-ins vs. previous 5 check-ins
+- Compare average weight from last 5 check-ins vs. previous 5 check-ins
 - Display percentage change and insight narrative
 
-### 10. Settings & Profile
+### 10. Dashboard Health Pillars
+- Dashboard summary is split into distinct metric cards: Mood, Sleep, Hydration, and Weight
+- Each metric card includes an average, progress bar, weekly delta, and mini insight text
+- Check-in count remains visible in summary context
+
+### 11. Settings & Profile
 - Update user name
 - Upload/change avatar from local files or image URL
 - Preview and remove avatar before saving
 - Store theme preference and profile preferences
 - Save theme preference to the user account so it syncs across devices after login
 
-### 11. Mobile-Friendly Design
+### 12. Mobile-Friendly Design
 - Responsive layout that works seamlessly on mobile, tablet, and desktop
 - Navigation buttons remain visible and accessible on mobile screens
 - Primary navigation is displayed below the header on larger screens
@@ -97,7 +106,7 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Forms and input fields optimized for mobile interaction
 - No content is hidden or inaccessible on mobile views
 
-### 12. Appearance Preferences
+### 13. Appearance Preferences
 - Users can switch between light and dark mode in Settings
 - Theme changes preview immediately in Settings
 - Theme choice only persists after user saves Settings
@@ -106,6 +115,28 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Unsaved theme changes revert when leaving the Settings page
 - Theme tokens are shared through SCSS variables and CSS custom properties
 - Dark mode includes contrast-tuned chart tabs and action buttons for readability
+
+### 14. Guided Breathing Exercise
+- Users can open a dedicated breathing experience with Exercise and Settings tabs
+- Breathing runs through inhale, hold, and exhale phases with a live countdown and animated shape
+- Phase labels and countdown visuals reflect the active breathing color palette
+- Users can start, pause, and reset the breathing cycle
+- Audio cues play distinct tones per phase and stop immediately on pause or reset
+- Hold tone is intentionally higher than inhale and exhale, while exhale remains lower than inhale
+- Audio fades during the back half of each phase for a softer transition
+- The Exercise tab shows the currently selected breathing exercise name
+- Selecting a profile from Settings routes users directly back to the Exercise tab
+
+### 15. Breathing Preferences & Profiles
+- Users can configure inhale, hold, and exhale durations in Settings
+- Users can toggle breathing audio on/off and adjust volume
+- Users can choose from saved breathing color palettes: Ocean, Sunrise, Forest, Lavender, and Ember
+- Breathing preferences persist to the authenticated user account and restore on login, refresh, and new devices
+- Users can save named breathing profiles from their current settings
+- Users can edit previously saved breathing profiles
+- Preset breathing profiles are available for quick start: Calm Reset, Focus Box, and Deep Sleep 4-7-8
+- Saved and preset profiles can be loaded into the active exercise from either tab
+- Profile cards display iconography, timing summary, and audio state
 
 ## Deployment Notes
 - Frontend production builds rely on `/frontend/.env.production`
@@ -122,6 +153,9 @@ A time-series mood tracking application that allows users to log daily mood, fee
   "email": "string (unique)",
   "avatar": "string (url/path)",
   "theme_preference": "string ('light' | 'dark')",
+  "breathing_audio_enabled": "boolean",
+  "breathing_audio_level": "number (0.00-0.60)",
+  "breathing_color_palette": "string ('ocean' | 'sunrise' | 'forest' | 'lavender' | 'ember')",
   "password_hash": "string (DB only)",
   "created_at": "timestamp",
   "updated_at": "timestamp"
@@ -138,6 +172,24 @@ A time-series mood tracking application that allows users to log daily mood, fee
   "feelings": "array<string>",
   "reflection": "string",
   "sleep": "number (hours)",
+  "water_oz": "number (ounces)",
+  "weight_lbs": "number (pounds)",
+  "created_at": "timestamp",
+  "updated_at": "timestamp"
+}
+```
+
+### Breathing Profile
+```json
+{
+  "id": "number",
+  "user_id": "number",
+  "name": "string",
+  "inhale_seconds": "number",
+  "hold_seconds": "number",
+  "exhale_seconds": "number",
+  "audio_enabled": "boolean",
+  "audio_level": "number (0.00-0.60)",
   "created_at": "timestamp",
   "updated_at": "timestamp"
 }
@@ -148,7 +200,7 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - `/frontend/src/styles/_mixins.scss`: reusable mixins (flexbox, grid, responsive breakpoints)
 - `/frontend/src/styles/index.scss`: global base styles and theme system
 - `/frontend/src/styles/App.scss`: app shell, header/nav, responsive layouts
-- Component style files: MoodForm, TodaysEntry, MoodChart, MoodComparison, Settings, EntryDetails, AuthForm
+- Component style files: MoodForm, TodaysEntry, MoodChart, MoodComparison, Settings, EntryDetails, AuthForm, BreathingExercise
 
 ### Mobile Responsive Design
 - Breakpoints: Mobile (< 768px), Tablet (768px - 1024px), Desktop (> 1024px)
@@ -168,19 +220,26 @@ A time-series mood tracking application that allows users to log daily mood, fee
 ## Test Suggestions
 - Auth happy path: register, login, restore session on refresh, logout
 - Auth validation: weak password rejection, mismatched confirm password, invalid login generic error
-- Add mood entry: create today's mood with feeling, reflection, and sleep; verify dashboard updates
+- Add health check-in: create today's entry with mood, sleep, water, and weight; verify dashboard updates
 - One-entry-per-day guard: second create attempt for same day should show edit redirect/notice
 - Edit mood entry: open edit from Today's Entry and from chart detail, update fields, verify persisted changes
-- Mood form validation: required feeling, mood bounds, sleep range (0-24), optional reflection behavior
+- Health form validation: required feeling, mood bounds, sleep range, water range, weight range, optional reflection behavior
 - Settings profile updates: change name and avatar URL/upload, preview/remove avatar, save success state
 - Theme behavior: switch light/dark preview, save persistence, unsaved theme reverts when leaving Settings
 - Theme styling QA: verify text contrast, chart readability, borders, and component backgrounds in both light and dark mode
 - Mood chart interactions: last 11 entries render, selecting a point opens matching entry details
-- Trend tab coverage: switch between Mood Trend and Sleep Trend, verify chart data/axes update correctly
+- Trend tab coverage: switch between Mood, Sleep, Water, and Weight tabs; verify chart data/axes update correctly
+- Spinner/picker controls: verify increment/decrement controls for sleep, water, and weight fields
 - Dark mode button contrast: verify chart tabs, inline edit actions, form submit/secondary buttons remain readable and distinct
 - Comparison analytics: validate current vs previous 5 check-ins and percentage/trend labels
 - Mobile UX regression: viewport checks for slide-out menu, nav visibility, and touch-target usability
 - Mobile dashboard stacking: confirm Entry Details does not render behind other cards and appears after trend/insight cards
+- Breathing exercise flow: start, pause, reset, and verify countdown/phase changes
+- Breathing audio: confirm phase tones differ, stop on pause/reset, and respect audio toggle/volume
+- Breathing profile flow: load preset, save named profile, edit saved profile, and verify active exercise selection updates
+- Breathing theme persistence: save a palette, reload session, log in on another device/browser, and confirm palette restores
+- Breathing tab navigation: selecting a profile from Settings should return the user to Exercise with the chosen routine shown
+- Dark mode breathing QA: verify active palette colors apply to shapes, phase pill, countdown, and themed primary action
 - API failure handling: network/server errors for auth, mood save, and settings save display safe user messages
 - Production smoke checks: REACT_APP_API_URL is set, auth works from hosted frontend, CORS preflight passes
 
@@ -193,6 +252,7 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - Avatar uploads are stored as validated image data and limited to 2MB on the frontend
 - Navigation styling must preserve readable contrast in both light and dark mode
 - All dashboard and form CSS must be reviewed in both themes to ensure readable typography, visible chart labels, accessible contrast, and clear button states
+- Breathing exercise colors and audio settings should remain palette-driven and account-persistent across theme changes
 
 ## Build Status
 - [x] Project setup (frontend, backend, environment config)
@@ -202,12 +262,19 @@ A time-series mood tracking application that allows users to log daily mood, fee
 - [x] Core mood entry API (CRUD + one-entry-per-day rule)
 - [x] Frontend auth screens (login/register/reset/change password)
 - [x] Mood logging form and validation
+- [x] Health check-in form extensions (sleep section + water/weight spinner controls)
 - [x] Today's entry dashboard card with edit flow
-- [x] Mood chart (last 11 entries) with Mood/Sleep trend tabs and interactive detail view
-- [x] Mood and sleep comparison analytics
+- [x] Health chart (last 11 entries) with Mood/Sleep/Water/Weight trend tabs and interactive detail view
+- [x] Mood, sleep, water, and weight comparison analytics
+- [x] Dashboard health pillar cards with per-metric mini insights
 - [x] Mood quote logic based on score bands
 - [x] Settings/profile (name, avatar upload/url, avatar preview/remove)
 - [x] Theme preferences (light/dark preview, save behavior, and cross-device persistence)
+- [x] Guided breathing exercise with inhale/hold/exhale countdown and animated visual
+- [x] Breathing audio cues with pause/reset stop behavior and phase-aware pitch tuning
+- [x] Breathing settings persistence across login, refresh, and devices
+- [x] Breathing color palette selection with light/dark theme support
+- [x] Saved and preset breathing profiles with create/edit/load flows
 - [x] Mobile-responsive navigation and layout polish
 - [x] Shared SCSS design system and component styling cleanup
 - [ ] Cypress E2E coverage for full auth, mood logging, edit, and settings flows

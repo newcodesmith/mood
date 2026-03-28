@@ -1,6 +1,6 @@
-# Mood Tracker
+# Health Tracker
 
-A mood tracking app where you log daily mood (1-10), feelings, reflections, and sleep patterns with analytics and visualizations.
+A health tracking app where you log daily mood (1-10), feelings, reflections, sleep, water intake (oz), and weight (lbs), with analytics, visualizations, and a guided breathing experience with saved routines.
 
 ## Setup
 
@@ -40,10 +40,16 @@ npm run dev
 
 ## Features
 
-- **Log Mood** - Rate mood (1-10), select emotions, add reflections, log sleep
-- **Dashboard** - View today's entry and motivation quote
-- **Mood Trends** - Interactive chart of last 11 entries
-- **Weekly Insights** - Compare mood & sleep (last 5 entries vs. previous 5)
+- **Log Health Check-In** - Rate mood, select emotions, add reflections, and track sleep/water/weight
+- **Spinner Controls** - Increment/decrement pickers for sleep, water intake, and weight fields
+- **Dashboard Health Pillars** - Dedicated cards for Mood, Sleep, Hydration, and Weight with mini insights
+- **Health Trends** - Interactive chart tabs for Mood, Sleep, Water, and Weight over the last 11 entries
+- **Weekly Insights** - Compare mood, sleep, hydration, and weight (last 5 check-ins vs. previous 5)
+- **Today's Check-In** - View full current-day details including all tracked metrics
+- **Guided Breathing Exercise** - Run inhale/hold/exhale cycles with animated visuals, countdown, start/pause/reset controls, and per-phase tones
+- **Breathing Profiles** - Save named breathing routines, edit them later, and load built-in presets for focus, calm, or sleep
+- **Breathing Theme Palettes** - Choose a breathing color palette that updates the shapes and related exercise UI
+- **Cross-Device Breathing Preferences** - Breathing audio settings and color palette persist to the user account
 - **Settings** - Update name, avatar, theme, change password
 - **Authentication** - Register/login with JWT, password reset
 - **Responsive** - Mobile-first design
@@ -62,6 +68,14 @@ npm run dev
 - `POST /api/mood-entries` - Create entry
 - `PUT /api/mood-entries/:id` - Update entry
 
+Payload supports:
+- `mood` (1-10, required)
+- `feelings` (array, required)
+- `reflection` (optional)
+- `sleep` (0-24, optional)
+- `water_oz` (0-1000, optional)
+- `weight_lbs` (0-1400, optional)
+
 **Auth:**
 - `POST /api/auth/register` - Register user
 - `POST /api/auth/login` - Login
@@ -70,10 +84,28 @@ npm run dev
 **User:**
 - `GET /api/users/:id` - Get user
 - `PUT /api/users/:id` - Update user
+- `PATCH /api/users/:id/preferences` - Update persisted user preferences including breathing audio and color palette
+- `GET /api/users/:id/breathing-profiles` - List saved breathing profiles
+- `POST /api/users/:id/breathing-profiles` - Create a breathing profile
+- `PATCH /api/users/:id/breathing-profiles/:profileId` - Update a saved breathing profile
+
+Breathing preference payload supports:
+- `breathing_audio_enabled` or `breathingAudioEnabled` (boolean)
+- `breathing_audio_level` or `breathingAudioLevel` (0.00-0.60)
+- `breathing_color_palette` or `breathingColorPalette` (`ocean`, `sunrise`, `forest`, `lavender`, `ember`)
+
+Breathing profile payload supports:
+- `name` (required)
+- `inhale_seconds` or `inhaleSeconds` (required)
+- `hold_seconds` or `holdSeconds` (required)
+- `exhale_seconds` or `exhaleSeconds` (required)
+- `audio_enabled` or `audioEnabled` (optional)
+- `audio_level` or `audioLevel` (optional)
 
 ## Notes
 
-- One mood entry per day
+- One health check-in entry per day
 - Mobile-responsive design
 - Entries are private per user
-- See `claude.md` for full project specs
+- Breathing preferences and saved breathing profiles are private per user
+- See CLAUDE.md for full project specs

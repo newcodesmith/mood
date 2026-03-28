@@ -10,11 +10,49 @@ const getLocalDateString = () => {
   return `${year}-${month}-${day}`;
 };
 
+const NumberSpinner = ({ id, label, description, value, onChange, min, max, step = 1, unit, placeholder, error }) => {
+  const handleAdjust = (direction) => {
+    const numeric = Number(value);
+    const current = Number.isFinite(numeric) ? numeric : 0;
+    const adjusted = Math.max(min, Math.min(max, Number((current + (direction * step)).toFixed(2))));
+    onChange(String(adjusted));
+  };
+
+  return (
+    <div className="form-group">
+      <label htmlFor={id}>{label}</label>
+      {description && <p className="field-description">{description}</p>}
+      <div className="number-spinner" role="group" aria-label={label}>
+        <button type="button" className="spinner-btn" onClick={() => handleAdjust(-1)} aria-label={`Decrease ${label}`}>
+          -
+        </button>
+        <input
+          id={id}
+          type="number"
+          step={step}
+          min={min}
+          max={max}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+        />
+        <button type="button" className="spinner-btn" onClick={() => handleAdjust(1)} aria-label={`Increase ${label}`}>
+          +
+        </button>
+        {unit && <span className="spinner-unit">{unit}</span>}
+      </div>
+      {error && <span className="error">{error}</span>}
+    </div>
+  );
+};
+
 const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, onCancel, onStartEditToday, onDelete }) => {
   const [mood, setMood] = useState('5');
   const [feelings, setFeelings] = useState([]);
   const [reflection, setReflection] = useState('');
   const [sleep, setSleep] = useState('');
+  const [waterOz, setWaterOz] = useState('');
+  const [weightLbs, setWeightLbs] = useState('');
   const [selectedDate, setSelectedDate] = useState(getLocalDateString());
   const [existingEntryForDate, setExistingEntryForDate] = useState(null);
   const [checkingSelectedDate, setCheckingSelectedDate] = useState(false);
@@ -29,6 +67,8 @@ const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, o
       setFeelings([]);
       setReflection('');
       setSleep('');
+      setWaterOz('');
+      setWeightLbs('');
       setSelectedDate(getLocalDateString());
       setExistingEntryForDate(null);
       setErrors({});
@@ -43,6 +83,8 @@ const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, o
     setFeelings(parsedFeelings);
     setReflection(entryToEdit.reflection || '');
     setSleep(entryToEdit.sleep ?? '');
+    setWaterOz(entryToEdit.water_oz ?? '');
+    setWeightLbs(entryToEdit.weight_lbs ?? '');
     setSelectedDate(String(entryToEdit.date).split('T')[0]);
     setExistingEntryForDate(null);
     setErrors({});
@@ -105,6 +147,8 @@ const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, o
     if (!mood) newErrors.mood = 'Mood is required';
     if (feelings.length === 0) newErrors.feelings = 'At least one feeling is required';
     if (sleep && (isNaN(sleep) || sleep < 0 || sleep > 24)) newErrors.sleep = 'Sleep must be 0-24';
+    if (waterOz && (isNaN(waterOz) || waterOz < 0 || waterOz > 1000)) newErrors.water_oz = 'Water must be 0-1000 oz';
+    if (weightLbs && (isNaN(weightLbs) || weightLbs < 0 || weightLbs > 1400)) newErrors.weight_lbs = 'Weight must be 0-1400 lbs';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -123,7 +167,9 @@ const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, o
         mood: parseInt(mood, 10),
         feelings,
         reflection: reflection || null,
-        sleep: sleep ? parseFloat(sleep) : null
+        sleep: sleep ? parseFloat(sleep) : null,
+        water_oz: waterOz ? parseFloat(waterOz) : null,
+        weight_lbs: weightLbs ? parseFloat(weightLbs) : null
       };
 
       if (entryToEdit?.id) {
@@ -140,6 +186,8 @@ const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, o
       setFeelings([]);
       setReflection('');
       setSleep('');
+      setWaterOz('');
+      setWeightLbs('');
       setSelectedDate(getLocalDateString());
       setExistingEntryForDate(null);
       setErrors({});
@@ -177,11 +225,11 @@ const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, o
   return (
     <form className="mood-form" onSubmit={handleSubmit}>
       <div className="form-header">
-        <h2>{entryToEdit ? 'Edit Mood Entry' : 'Log Your Mood'}</h2>
+        <h2>{entryToEdit ? 'Edit Health Check-In' : 'Log Health Check-In'}</h2>
         <p>
           {entryToEdit
-            ? 'Update your mood details to keep your record accurate.'
-            : 'Take a moment to reflect on how you\'re feeling. You can log today or add an entry for a missed day.'}
+            ? 'Update your health check-in details to keep your record accurate.'
+            : 'Track mood, sleep, hydration, and weight. You can log today or add a missed day.'}
         </p>
       </div>
 
@@ -278,19 +326,51 @@ const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, o
         />
       </div>
 
-      <div className="form-group">
-        <label>Sleep last night (hours)</label>
-        <p className="field-description">Optional: How many hours of sleep did you get?</p>
-        <input
-          type="number"
-          step="0.5"
-          min="0"
-          max="24"
+      <div className="tracking-section">
+        <h3 className="tracking-section-title">Sleep Tracking</h3>
+        <NumberSpinner
+          id="sleep-hours"
+          label="Sleep last night"
+          description="Optional: record your sleep duration"
           value={sleep}
-          onChange={(e) => setSleep(e.target.value)}
-          placeholder="e.g., 7.5"
+          onChange={setSleep}
+          min={0}
+          max={24}
+          step={0.5}
+          unit="hours"
+          placeholder="7.5"
+          error={errors.sleep}
         />
-        {errors.sleep && <span className="error">{errors.sleep}</span>}
+      </div>
+
+      <div className="tracking-section">
+        <h3 className="tracking-section-title">Body & Hydration Tracking</h3>
+        <NumberSpinner
+          id="water-oz"
+          label="Water intake"
+          description="Optional: total water consumed for the day"
+          value={waterOz}
+          onChange={setWaterOz}
+          min={0}
+          max={1000}
+          step={1}
+          unit="oz"
+          placeholder="64"
+          error={errors.water_oz}
+        />
+        <NumberSpinner
+          id="weight-lbs"
+          label="Weight"
+          description="Optional: daily weight entry"
+          value={weightLbs}
+          onChange={setWeightLbs}
+          min={0}
+          max={1400}
+          step={0.1}
+          unit="lbs"
+          placeholder="170.0"
+          error={errors.weight_lbs}
+        />
       </div>
 
       {errors.submit && <div className="error-message">{errors.submit}</div>}
@@ -306,7 +386,7 @@ const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, o
           </button>
         )}
         <button type="submit" className="submit-btn" disabled={checkingSelectedDate}>
-          {entryToEdit ? 'Update Mood Entry' : 'Save Mood Entry'}
+          {entryToEdit ? 'Update Check-In' : 'Save Check-In'}
         </button>
       </div>
       </>

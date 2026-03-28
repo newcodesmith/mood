@@ -76,6 +76,59 @@
   }
 }
 
+.tracking-section {
+  margin-bottom: $spacing-xl;
+  padding: $spacing-md;
+  border: 1px solid rgba($primary-color, 0.16);
+  border-radius: $radius-md;
+  background: rgba($primary-color, 0.04);
+}
+
+.tracking-section-title {
+  margin: 0 0 $spacing-md;
+  color: $primary-color;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+}
+
+.number-spinner {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) 46px auto;
+  align-items: center;
+  gap: $spacing-sm;
+
+  @include mobile {
+    grid-template-columns: 40px minmax(0, 1fr) 40px auto;
+  }
+
+  input[type="number"] {
+    margin: 0;
+  }
+}
+
+.spinner-btn {
+  height: 42px;
+  border-radius: $radius-md;
+  border: 1px solid rgba($primary-color, 0.25);
+  background: rgba($primary-color, 0.08);
+  color: $text-primary;
+  font-size: 1.2rem;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: rgba($primary-color, 0.18);
+    border-color: rgba($primary-color, 0.4);
+  }
+}
+
+.spinner-unit {
+  color: $text-light;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+}
+
 .required {
   color: $error-color;
 }
@@ -374,5 +427,29 @@
     & {
       color: #e6f1ff;
     }
+  }
+
+  .tracking-section {
+    background: rgba(39, 88, 136, 0.24);
+    border-color: rgba(146, 197, 248, 0.4);
+  }
+
+  .tracking-section-title {
+    color: #eaf3ff;
+  }
+
+  .spinner-btn {
+    background: rgba(108, 187, 223, 0.2);
+    color: #eaf3ff;
+    border-color: rgba(131, 201, 234, 0.42);
+
+    &:hover {
+      background: rgba(131, 201, 234, 0.3);
+      border-color: rgba(170, 216, 246, 0.58);
+    }
+  }
+
+  .spinner-unit {
+    color: #d7e8fb;
   }
 }

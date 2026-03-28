@@ -14,6 +14,7 @@
 .chart-tabs {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
   gap: $spacing-xs;
   padding: $spacing-sm;
   border-radius: 10px;
