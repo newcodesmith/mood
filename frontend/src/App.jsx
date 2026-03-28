@@ -5,7 +5,8 @@ import TodaysEntry from './components/TodaysEntry';
 import MoodChart from './components/MoodChart';
 import MoodComparison from './components/MoodComparison';
 import Settings from './components/Settings';
-import { authService, clearAuthToken, moodEntryService } from './services/api';
+import BreathingExercise from './components/BreathingExercise';
+import { authService, clearAuthToken, moodEntryService, userService } from './services/api';
 import './styles/App.scss';
 
 const getLocalDateString = () => {
@@ -63,6 +64,10 @@ const buildComparisonFromEntries = (entries, todayKey) => {
   const previousMood = average(previousEntries, 'mood');
   const currentSleep = average(currentEntries, 'sleep');
   const previousSleep = average(previousEntries, 'sleep');
+  const currentWater = average(currentEntries, 'water_oz');
+  const previousWater = average(previousEntries, 'water_oz');
+  const currentWeight = average(currentEntries, 'weight_lbs');
+  const previousWeight = average(previousEntries, 'weight_lbs');
 
   const percentChange = (currentValue, previousValue, previousCount) => {
     if (!previousCount || previousValue === 0) {
@@ -76,21 +81,67 @@ const buildComparisonFromEntries = (entries, todayKey) => {
     current: {
       mood: currentMood.value.toFixed(2),
       sleep: currentSleep.value.toFixed(2),
+      water_oz: currentWater.value.toFixed(2),
+      weight_lbs: currentWeight.value.toFixed(2),
       entryCount: currentEntries.length,
-      sleepEntryCount: currentSleep.count
+      sleepEntryCount: currentSleep.count,
+      waterEntryCount: currentWater.count,
+      weightEntryCount: currentWeight.count
     },
     previous: {
       mood: previousMood.value.toFixed(2),
       sleep: previousSleep.value.toFixed(2),
+      water_oz: previousWater.value.toFixed(2),
+      weight_lbs: previousWeight.value.toFixed(2),
       entryCount: previousEntries.length,
-      sleepEntryCount: previousSleep.count
+      sleepEntryCount: previousSleep.count,
+      waterEntryCount: previousWater.count,
+      weightEntryCount: previousWeight.count
     },
+    waterChange: percentChange(currentWater.value, previousWater.value, previousWater.count),
+    weightChange: percentChange(currentWeight.value, previousWeight.value, previousWeight.count),
     moodChange: percentChange(currentMood.value, previousMood.value, previousEntries.length),
     sleepChange: percentChange(currentSleep.value, previousSleep.value, previousSleep.count)
   };
 };
 
 function App() {
+    const normalizeColorPalette = (value) => {
+      const allowed = ['ocean', 'sunrise', 'forest', 'lavender', 'ember'];
+      const normalized = String(value || '').trim().toLowerCase();
+      return allowed.includes(normalized) ? normalized : 'ocean';
+    };
+
+    const getBreathingSettingsFromUser = (user) => {
+      const normalizeDuration = (value, fallback) => {
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed)) {
+          return fallback;
+        }
+
+        return Math.max(1, Math.min(60, Math.round(parsed)));
+      };
+
+      const normalizeAudioLevel = (value, fallback) => {
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed)) {
+          return fallback;
+        }
+
+        const clamped = Math.max(0, Math.min(0.6, parsed));
+        return Number(clamped.toFixed(2));
+      };
+
+      return {
+        inhale: normalizeDuration(user?.breathing_inhale_seconds, 4),
+        hold: normalizeDuration(user?.breathing_hold_seconds, 4),
+        exhale: normalizeDuration(user?.breathing_exhale_seconds, 6),
+        audioEnabled: typeof user?.breathing_audio_enabled === 'boolean' ? user.breathing_audio_enabled : true,
+        audioLevel: normalizeAudioLevel(user?.breathing_audio_level, 0.22),
+        colorPalette: normalizeColorPalette(user?.breathing_color_palette)
+      };
+    };
+
   const resolveThemePreference = (user, fallbackTheme = 'light') => {
     const serverTheme = String(user?.theme_preference || '').toLowerCase();
     return serverTheme === 'dark' ? 'dark' : serverTheme === 'light' ? 'light' : fallbackTheme;
@@ -261,11 +312,40 @@ function App() {
     }
   };
 
+  const handleBreathingSettingsSave = async (nextSettings) => {
+    if (!currentUser?.id) {
+      return false;
+    }
+
+    try {
+      const response = await userService.updatePreferences(currentUser.id, {
+        breathingInhaleSeconds: nextSettings.inhale,
+        breathingHoldSeconds: nextSettings.hold,
+        breathingExhaleSeconds: nextSettings.exhale,
+        breathingAudioEnabled: nextSettings.audioEnabled,
+        breathingAudioLevel: nextSettings.audioLevel,
+        breathingColorPalette: nextSettings.colorPalette
+      });
+
+      setCurrentUser(response.data);
+      return true;
+    } catch (error) {
+      console.error('Failed to save breathing settings:', error);
+      return false;
+    }
+  };
+
   const moodValues = recentEntries
     .map((entry) => Number(entry?.mood))
     .filter((value) => Number.isFinite(value));
   const sleepValues = recentEntries
     .map((entry) => Number(entry?.sleep))
+    .filter((value) => Number.isFinite(value));
+  const waterValues = recentEntries
+    .map((entry) => Number(entry?.water_oz))
+    .filter((value) => Number.isFinite(value));
+  const weightValues = recentEntries
+    .map((entry) => Number(entry?.weight_lbs))
     .filter((value) => Number.isFinite(value));
   const averageMood = moodValues.length
     ? moodValues.reduce((sum, value) => sum + value, 0) / moodValues.length
@@ -273,8 +353,20 @@ function App() {
   const averageSleep = sleepValues.length
     ? sleepValues.reduce((sum, value) => sum + value, 0) / sleepValues.length
     : 0;
+  const averageWater = waterValues.length
+    ? waterValues.reduce((sum, value) => sum + value, 0) / waterValues.length
+    : 0;
+  const averageWeight = weightValues.length
+    ? weightValues.reduce((sum, value) => sum + value, 0) / weightValues.length
+    : 0;
   const moodGaugeValue = Math.max(0, Math.min(100, Math.round((averageMood / 10) * 100)));
+  const sleepGaugeValue = Math.max(0, Math.min(100, Math.round((averageSleep / 10) * 100)));
+  const waterGaugeValue = Math.max(0, Math.min(100, Math.round((averageWater / 128) * 100)));
+  const weightGaugeValue = weightValues.length
+    ? Math.max(0, Math.min(100, Math.round((averageWeight / 300) * 100)))
+    : 0;
   const totalCheckIns = recentEntries.length;
+  const latestWeight = weightValues.length ? weightValues[weightValues.length - 1] : null;
   const averageMoodIcon =
     totalCheckIns === 0
       ? '🙂'
@@ -285,6 +377,53 @@ function App() {
           : averageMood <= 7
             ? '🙂'
             : '😄';
+
+  const formatChange = (value) => {
+    if (!Number.isFinite(Number(value)) || Number(value) === 0) {
+      return 'Baseline building';
+    }
+
+    return `${Number(value) > 0 ? '+' : ''}${Number(value).toFixed(1)}% vs previous week`;
+  };
+
+  const healthPillars = [
+    {
+      key: 'mood',
+      title: 'Mood',
+      icon: averageMoodIcon,
+      value: `${averageMood ? averageMood.toFixed(1) : '0.0'}/10`,
+      track: moodGaugeValue,
+      detail: formatChange(comparison?.moodChange),
+      insight: averageMood >= 7 ? 'Mini insight: steady positive emotional trend.' : averageMood >= 5 ? 'Mini insight: moderate mood stability this window.' : 'Mini insight: lower mood trend, consider recovery habits.'
+    },
+    {
+      key: 'sleep',
+      title: 'Sleep',
+      icon: '🌙',
+      value: `${averageSleep ? averageSleep.toFixed(1) : '0.0'}h`,
+      track: sleepGaugeValue,
+      detail: formatChange(comparison?.sleepChange),
+      insight: averageSleep >= 7 ? 'Mini insight: sleep duration is in a strong range.' : averageSleep >= 6 ? 'Mini insight: sleep is fair, small gains could help recovery.' : 'Mini insight: short sleep trend, prioritize consistency.'
+    },
+    {
+      key: 'water',
+      title: 'Hydration',
+      icon: '💧',
+      value: `${averageWater ? averageWater.toFixed(1) : '0.0'} oz`,
+      track: waterGaugeValue,
+      detail: formatChange(comparison?.waterChange),
+      insight: averageWater >= 64 ? 'Mini insight: hydration is meeting a common daily target.' : 'Mini insight: hydration is below target; add water reminders.'
+    },
+    {
+      key: 'weight',
+      title: 'Weight',
+      icon: '⚖️',
+      value: `${averageWeight ? averageWeight.toFixed(1) : '0.0'} lbs`,
+      track: weightGaugeValue,
+      detail: formatChange(comparison?.weightChange),
+      insight: latestWeight === null ? 'Mini insight: add weight logs for trend visibility.' : `Mini insight: latest recorded weight is ${latestWeight.toFixed(1)} lbs.`
+    }
+  ];
 
   if (loading) {
     return <div className="app loading">Loading...</div>;
@@ -309,8 +448,8 @@ function App() {
               <span className="dot dot-three" />
             </div>
             <div className="brand-copy">
-              <h1>Mood Tracker</h1>
-              <p>Track patterns, not just moments</p>
+              <h1>Health Tracker</h1>
+              <p>Track patterns across your health</p>
             </div>
           </div>
         </div>
@@ -376,6 +515,15 @@ function App() {
                 <button
                   className="mobile-menu-item"
                   onClick={() => {
+                    setActiveTab('breathing');
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  🌬️ Breathing
+                </button>
+                <button
+                  className="mobile-menu-item"
+                  onClick={() => {
                     setActiveTab('settings');
                     setMobileMenuOpen(false);
                   }}
@@ -409,7 +557,13 @@ function App() {
             className={`header-nav-btn ${activeTab === 'log' ? 'active' : ''}`}
             onClick={() => setActiveTab('log')}
           >
-            ✏️ Log Mood
+            ✏️ Log Check-In
+          </button>
+          <button
+            className={`header-nav-btn ${activeTab === 'breathing' ? 'active' : ''}`}
+            onClick={() => setActiveTab('breathing')}
+          >
+            🌬️ Breathing
           </button>
         </nav>
       )}
@@ -420,9 +574,9 @@ function App() {
             {recentEntries.length === 0 && (
               <section className="dashboard-section empty-state dashboard-empty-state">
                 <div className="empty-state-content">
-                  <h3>👋 Welcome to Mood Tracker!</h3>
-                  <p>Start by logging your first mood entry to see your data here.</p>
-                  <button className="cta-button" onClick={() => setActiveTab('log')}>Log Your First Mood</button>
+                  <h3>👋 Welcome to Health Tracker!</h3>
+                  <p>Start by logging your first health check-in to see your data here.</p>
+                  <button className="cta-button" onClick={() => setActiveTab('log')}>Log Your First Check-In</button>
                 </div>
               </section>
             )}
@@ -433,41 +587,24 @@ function App() {
                   <span className="section-icon" aria-hidden="true">✨</span>
                   Quick Insights
                 </h2>
-                <p className="section-description">A visual snapshot of your latest check-ins.</p>
+                <p className="section-description">A visual snapshot of your latest health check-ins.</p>
+                <p className="summary-meta">{totalCheckIns} check-ins in your current 11-entry trend window.</p>
               </div>
-              <div className="summary-grid">
-                <article className="summary-card mood-ring-card">
-                  <div className="summary-card-head">
-                    <h3>Average Mood</h3>
-                    <span className="summary-icon" aria-hidden="true">{averageMoodIcon}</span>
-                  </div>
-                  <div className="mood-ring" style={{ '--fill': `${moodGaugeValue}%` }}>
-                    <div className="mood-ring-center">
-                      <strong>{averageMood ? averageMood.toFixed(1) : '0.0'}</strong>
-                      <span>/10</span>
+              <div className="health-pillars-grid">
+                {healthPillars.map((pillar) => (
+                  <article key={pillar.key} className="health-pillar-card">
+                    <div className="health-pillar-head">
+                      <h3>{pillar.title}</h3>
+                      <span className="summary-icon" aria-hidden="true">{pillar.icon}</span>
                     </div>
-                  </div>
-                </article>
-
-                <article className="summary-card">
-                  <div className="summary-card-head">
-                    <h3>Avg Sleep</h3>
-                    <span className="summary-icon" aria-hidden="true">🌙</span>
-                  </div>
-                  <p className="summary-value">{averageSleep ? averageSleep.toFixed(1) : '0.0'}h</p>
-                  <div className="summary-bar-track" aria-hidden="true">
-                    <span style={{ width: `${Math.max(0, Math.min(100, Math.round((averageSleep / 10) * 100)))}%` }} />
-                  </div>
-                </article>
-
-                <article className="summary-card">
-                  <div className="summary-card-head">
-                    <h3>Check-ins</h3>
-                    <span className="summary-icon" aria-hidden="true">📅</span>
-                  </div>
-                  <p className="summary-value">{totalCheckIns}</p>
-                  <p className="summary-note">From your latest 11-day trend window.</p>
-                </article>
+                    <p className="summary-value">{pillar.value}</p>
+                    <div className="summary-bar-track" aria-hidden="true">
+                      <span style={{ width: `${pillar.track}%` }} />
+                    </div>
+                    <p className="summary-note">{pillar.detail}</p>
+                    <p className="summary-note summary-note-strong">{pillar.insight}</p>
+                  </article>
+                ))}
               </div>
             </section>
 
@@ -475,9 +612,9 @@ function App() {
               <div className="section-header">
                 <h2>
                   <span className="section-icon" aria-hidden="true">💬</span>
-                  Daily Mood
+                  Today's Check-In
                 </h2>
-                <p className="section-description">Your mood entry for today</p>
+                <p className="section-description">Your health tracking details for today</p>
               </div>
               <TodaysEntry entry={todaysEntry} onEdit={handleEditEntry} onLogMood={() => setActiveTab('log')} />
             </section>
@@ -496,7 +633,9 @@ function App() {
                   <p><strong>Mood:</strong> {selectedEntry.mood}/10</p>
                   <p><strong>Feelings:</strong> {typeof selectedEntry.feelings === 'string' ? JSON.parse(selectedEntry.feelings).join(', ') : selectedEntry.feelings.join(', ')}</p>
                   {selectedEntry.reflection && <p><strong>Reflection:</strong> {selectedEntry.reflection}</p>}
-                  {selectedEntry.sleep && <p><strong>Sleep:</strong> {selectedEntry.sleep} hours</p>}
+                  {selectedEntry.sleep !== null && selectedEntry.sleep !== undefined && <p><strong>Sleep:</strong> {selectedEntry.sleep} hours</p>}
+                  {selectedEntry.water_oz !== null && selectedEntry.water_oz !== undefined && <p><strong>Water:</strong> {selectedEntry.water_oz} oz</p>}
+                  {selectedEntry.weight_lbs !== null && selectedEntry.weight_lbs !== undefined && <p><strong>Weight:</strong> {selectedEntry.weight_lbs} lbs</p>}
                   <button type="button" className="inline-action-btn" onClick={() => handleEditEntry(selectedEntry)}>
                     Edit This Entry
                   </button>
@@ -508,9 +647,9 @@ function App() {
               <div className="section-header">
                 <h2>
                   <span className="section-icon" aria-hidden="true">📊</span>
-                  Weekly Insights
+                  Weekly Health Insights
                 </h2>
-                <p className="section-description">Compare your mood and sleep patterns week-over-week</p>
+                <p className="section-description">Compare mood, sleep, water, and weight week-over-week</p>
               </div>
               <MoodComparison comparison={comparison} />
             </section>
@@ -519,9 +658,9 @@ function App() {
               <div className="section-header">
                 <h2>
                   <span className="section-icon" aria-hidden="true">📈</span>
-                  Mood Trends
+                  Health Trends
                 </h2>
-                <p className="section-description">Visual history of your last 11 mood entries. Click on any bar to see details.</p>
+                <p className="section-description">Visual history of your last 11 health check-ins. Click on any point to see details.</p>
               </div>
               <MoodChart entries={recentEntries} onSelectEntry={handleSelectEntry} />
             </section>
@@ -548,10 +687,18 @@ function App() {
             onThemeChange={handleThemeChange}
           />
         )}
+
+        {activeTab === 'breathing' && currentUser && (
+          <BreathingExercise
+            userId={currentUser.id}
+            settings={getBreathingSettingsFromUser(currentUser)}
+            onSettingsChange={handleBreathingSettingsSave}
+          />
+        )}
       </main>
 
       <footer className="app-footer">
-        <p>Take care of yourself. Your mental health matters.</p>
+        <p>Take care of yourself. Your health trends matter.</p>
       </footer>
     </div>
   );

@@ -67,6 +67,10 @@ export const userService = {
   getById: (id) => API.get(`/users/${id}`),
   create: (userData) => API.post('/users', userData),
   update: (id, userData) => API.put(`/users/${id}`, userData),
+  updatePreferences: (id, preferences) => API.patch(`/users/${id}/preferences`, preferences),
+  getBreathingProfiles: (id) => API.get(`/users/${id}/breathing-profiles`),
+  createBreathingProfile: (id, profileData) => API.post(`/users/${id}/breathing-profiles`, profileData),
+  updateBreathingProfile: (id, profileId, profileData) => API.patch(`/users/${id}/breathing-profiles/${profileId}`, profileData),
   delete: (id) => API.delete(`/users/${id}`)
 };
 

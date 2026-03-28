@@ -57,7 +57,10 @@ h4 {
 .settings .form-section,
 .settings-info,
 .entry-details,
-.auth-card {
+.auth-card,
+.breathing-page,
+.breathing-settings-card,
+.breathing-player-card {
   background: var(--surface) !important;
   color: var(--text-main) !important;
   border: 1px solid var(--border-soft) !important;

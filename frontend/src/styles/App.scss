@@ -530,13 +530,13 @@
   max-width: 1400px;
   width: 100%;
   margin: $spacing-xl auto;
-  padding: 0 $spacing-md;
+  padding: $spacing-sm $spacing-md $spacing-md;
   display: grid;
   gap: $spacing-md;
 
   @include mobile {
     margin: $spacing-lg auto;
-    padding: 0 $spacing-sm;
+    padding: $spacing-xs $spacing-sm $spacing-sm;
   }
 }
 
@@ -647,6 +647,12 @@
   }
 }
 
+.summary-meta {
+  margin: $spacing-xs 0 0;
+  color: $text-light;
+  font-size: $font-size-sm;
+}
+
 .section-icon {
   width: 30px;
   height: 30px;
@@ -664,6 +670,40 @@
   @include mobile {
     grid-template-columns: 1fr;
   }
+}
+
+.health-pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $spacing-md;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
+}
+
+.health-pillar-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(239, 247, 255, 0.85));
+  border: 1px solid rgba($primary-color, 0.22);
+  border-radius: 14px;
+  padding: $spacing-md;
+  box-shadow: 0 8px 24px rgba(8, 44, 74, 0.08);
+  display: grid;
+  gap: $spacing-sm;
+
+  h3 {
+    margin: 0;
+    color: $text-secondary;
+    font-size: $font-size-sm;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+}
+
+.health-pillar-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .summary-card {
@@ -745,6 +785,11 @@
   margin: 0;
   color: $text-light;
   font-size: $font-size-sm;
+}
+
+.summary-note-strong {
+  color: $text-secondary;
+  font-weight: $font-weight-medium;
 }
 
 .summary-bar-track {
@@ -955,6 +1000,16 @@
 
 :root[data-theme='dark'] {
   .summary-card {
+    background: linear-gradient(145deg, rgba(21, 40, 63, 0.95), rgba(17, 33, 53, 0.95));
+    border-color: rgba(176, 204, 237, 0.28);
+    box-shadow: 0 10px 26px rgba(1, 8, 18, 0.55);
+
+    h3 {
+      color: #cfe1fb;
+    }
+  }
+
+  .health-pillar-card {
     background: linear-gradient(145deg, rgba(21, 40, 63, 0.95), rgba(17, 33, 53, 0.95));
     border-color: rgba(176, 204, 237, 0.28);
     box-shadow: 0 10px 26px rgba(1, 8, 18, 0.55);

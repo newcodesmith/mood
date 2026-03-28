@@ -1,4 +1,4 @@
-describe('Mood Tracker frontend flows', () => {
+describe('Health Tracker frontend flows', () => {
   const user = {
     id: 1,
     name: 'Test User',
@@ -84,25 +84,25 @@ describe('Mood Tracker frontend flows', () => {
     cy.contains('Need an account? Register').should('be.visible');
   });
 
-  it('adds a mood entry from Log Mood', () => {
+    it('adds a mood entry from Log Check-In', () => {
     bootAuthenticatedApp();
 
-    cy.contains('button', 'Log Mood').click();
-    cy.get('h2').contains('Log Your Mood').should('be.visible');
+      cy.contains('button', 'Log Check-In').click();
+      cy.get('h2').contains('Log Health Check-In').should('be.visible');
 
     cy.get('input[type="range"]').invoke('val', '8').trigger('input').trigger('change');
     cy.contains('button', 'Happy').click();
     cy.get('textarea').type('Solid day and feeling productive.');
-    cy.get('input[type="number"]').type('7.5');
+    cy.get('#sleep-hours').type('7.5');
 
-    cy.contains('button', 'Save Mood Entry').click();
+    cy.contains('button', 'Save Check-In').click();
     cy.wait('@createMood').its('request.body').should((body) => {
       expect(body).to.include({ reflection: 'Solid day and feeling productive.', sleep: 7.5 });
       expect(body.mood).to.be.a('number');
       expect(body.feelings).to.deep.equal(['Happy']);
     });
 
-    cy.contains('h2', 'Daily Mood').should('be.visible');
+      cy.contains('h2', 'Today\'s Check-In').should('be.visible');
     cy.contains('.todays-entry', 'Solid day and feeling productive.').should('be.visible');
   });
 
@@ -123,21 +123,21 @@ describe('Mood Tracker frontend flows', () => {
     });
 
     cy.contains('button', 'Edit Entry').click();
-    cy.get('h2').contains('Edit Mood Entry').should('be.visible');
+    cy.get('h2').contains('Edit Health Check-In').should('be.visible');
 
     cy.get('input[type="range"]').invoke('val', '9').trigger('input').trigger('change');
     cy.contains('button', 'Hopeful').click();
     cy.get('textarea').clear().type('Updated reflection after a better afternoon.');
-    cy.get('input[type="number"]').clear().type('8');
+    cy.get('#sleep-hours').clear().type('8');
 
-    cy.contains('button', 'Update Mood Entry').click();
+    cy.contains('button', 'Update Check-In').click();
     cy.wait('@updateMood').its('request.body').should((body) => {
       expect(body).to.include({ reflection: 'Updated reflection after a better afternoon.', sleep: 8 });
       expect(body.mood).to.be.a('number');
       expect(body.feelings).to.include('Hopeful');
     });
 
-    cy.contains('h2', 'Daily Mood').should('be.visible');
+      cy.contains('h2', 'Today\'s Check-In').should('be.visible');
     cy.contains('.todays-entry', 'Updated reflection after a better afternoon.').should('be.visible');
   });
 
