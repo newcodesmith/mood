@@ -354,6 +354,7 @@
   height: 190px;
   display: grid;
   place-items: center;
+  transform: rotate(0deg);
 }
 
 .breath-core,
@@ -424,6 +425,10 @@
   animation: holdPulse 1.2s ease-in-out infinite;
 }
 
+.breathing-player-card.phase-state-hold.is-running .breath-visual {
+  animation: holdSpin var(--phase-ms, 900ms) linear 1;
+}
+
 @keyframes holdPulse {
   0%,
   100% {
@@ -432,6 +437,16 @@
 
   50% {
     box-shadow: 0 10px 30px var(--core-shadow-strong, rgba(14, 165, 164, 0.62));
+  }
+}
+
+@keyframes holdSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
   }
 }
 
