@@ -71,6 +71,7 @@ export const userService = {
   getBreathingProfiles: (id) => API.get(`/users/${id}/breathing-profiles`),
   createBreathingProfile: (id, profileData) => API.post(`/users/${id}/breathing-profiles`, profileData),
   updateBreathingProfile: (id, profileId, profileData) => API.patch(`/users/${id}/breathing-profiles/${profileId}`, profileData),
+  deleteBreathingProfile: (id, profileId) => API.delete(`/users/${id}/breathing-profiles/${profileId}`),
   delete: (id) => API.delete(`/users/${id}`)
 };
 

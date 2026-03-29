@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import AuthForm from './components/AuthForm';
 import MoodForm from './components/MoodForm';
 import TodaysEntry from './components/TodaysEntry';
@@ -23,6 +23,52 @@ const getStoredTheme = () => {
   }
 
   return localStorage.getItem('mood_theme') || 'light';
+};
+
+const normalizeBreathingColorPalette = (value) => {
+  const allowed = ['ocean', 'sunrise', 'forest', 'lavender', 'ember'];
+  const normalized = String(value || '').trim().toLowerCase();
+  return allowed.includes(normalized) ? normalized : 'ocean';
+};
+
+const getBreathingSettingsFromUser = (user) => {
+  const normalizeDuration = (value, fallback) => {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed)) {
+      return fallback;
+    }
+
+    return Math.max(1, Math.min(60, Math.round(parsed)));
+  };
+
+  const normalizeCycleCount = (value, fallback) => {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed)) {
+      return fallback;
+    }
+
+    return Math.max(1, Math.min(50, Math.round(parsed)));
+  };
+
+  const normalizeAudioLevel = (value, fallback) => {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed)) {
+      return fallback;
+    }
+
+    const clamped = Math.max(0, Math.min(0.6, parsed));
+    return Number(clamped.toFixed(2));
+  };
+
+  return {
+    inhale: normalizeDuration(user?.breathing_inhale_seconds, 4),
+    hold: normalizeDuration(user?.breathing_hold_seconds, 4),
+    exhale: normalizeDuration(user?.breathing_exhale_seconds, 6),
+    cycleCount: normalizeCycleCount(user?.breathing_cycle_count, 5),
+    audioEnabled: typeof user?.breathing_audio_enabled === 'boolean' ? user.breathing_audio_enabled : true,
+    audioLevel: normalizeAudioLevel(user?.breathing_audio_level, 0.22),
+    colorPalette: normalizeBreathingColorPalette(user?.breathing_color_palette)
+  };
 };
 
 const shiftDateKey = (dateKey, offsetDays) => {
@@ -106,52 +152,6 @@ const buildComparisonFromEntries = (entries, todayKey) => {
 };
 
 function App() {
-    const normalizeColorPalette = (value) => {
-      const allowed = ['ocean', 'sunrise', 'forest', 'lavender', 'ember'];
-      const normalized = String(value || '').trim().toLowerCase();
-      return allowed.includes(normalized) ? normalized : 'ocean';
-    };
-
-    const getBreathingSettingsFromUser = (user) => {
-      const normalizeDuration = (value, fallback) => {
-        const parsed = Number(value);
-        if (!Number.isFinite(parsed)) {
-          return fallback;
-        }
-
-        return Math.max(1, Math.min(60, Math.round(parsed)));
-      };
-
-      const normalizeCycleCount = (value, fallback) => {
-        const parsed = Number(value);
-        if (!Number.isFinite(parsed)) {
-          return fallback;
-        }
-
-        return Math.max(1, Math.min(50, Math.round(parsed)));
-      };
-
-      const normalizeAudioLevel = (value, fallback) => {
-        const parsed = Number(value);
-        if (!Number.isFinite(parsed)) {
-          return fallback;
-        }
-
-        const clamped = Math.max(0, Math.min(0.6, parsed));
-        return Number(clamped.toFixed(2));
-      };
-
-      return {
-        inhale: normalizeDuration(user?.breathing_inhale_seconds, 4),
-        hold: normalizeDuration(user?.breathing_hold_seconds, 4),
-        exhale: normalizeDuration(user?.breathing_exhale_seconds, 6),
-        cycleCount: normalizeCycleCount(user?.breathing_cycle_count, 5),
-        audioEnabled: typeof user?.breathing_audio_enabled === 'boolean' ? user.breathing_audio_enabled : true,
-        audioLevel: normalizeAudioLevel(user?.breathing_audio_level, 0.22),
-        colorPalette: normalizeColorPalette(user?.breathing_color_palette)
-      };
-    };
-
   const resolveThemePreference = (user, fallbackTheme = 'light') => {
     const serverTheme = String(user?.theme_preference || '').toLowerCase();
     return serverTheme === 'dark' ? 'dark' : serverTheme === 'light' ? 'light' : fallbackTheme;
@@ -170,6 +170,7 @@ function App() {
   const previousActiveTabRef = useRef('dashboard');
   const latestLoadRequestRef = useRef(0);
   const activeUserIdRef = useRef(null);
+  const latestBreathingSaveRequestRef = useRef(0);
 
   useEffect(() => {
     activeUserIdRef.current = currentUser?.id ?? null;
@@ -327,6 +328,8 @@ function App() {
       return false;
     }
 
+    const requestId = ++latestBreathingSaveRequestRef.current;
+
     try {
       const response = await userService.updatePreferences(currentUser.id, {
         breathingInhaleSeconds: nextSettings.inhale,
@@ -338,7 +341,9 @@ function App() {
         breathingColorPalette: nextSettings.colorPalette
       });
 
-      setCurrentUser(response.data);
+      if (requestId === latestBreathingSaveRequestRef.current) {
+        setCurrentUser(response.data);
+      }
       return true;
     } catch (error) {
       console.error('Failed to save breathing settings:', error);
@@ -435,6 +440,11 @@ function App() {
       insight: latestWeight === null ? 'Mini insight: add weight logs for trend visibility.' : `Mini insight: latest recorded weight is ${latestWeight.toFixed(1)} lbs.`
     }
   ];
+
+  const breathingSettings = useMemo(
+    () => getBreathingSettingsFromUser(currentUser),
+    [currentUser]
+  );
 
   if (loading) {
     return <div className="app loading">Loading...</div>;
@@ -702,7 +712,7 @@ function App() {
         {activeTab === 'breathing' && currentUser && (
           <BreathingExercise
             userId={currentUser.id}
-            settings={getBreathingSettingsFromUser(currentUser)}
+            settings={breathingSettings}
             onSettingsChange={handleBreathingSettingsSave}
           />
         )}
