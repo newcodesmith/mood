@@ -59,13 +59,20 @@ h4 {
 .entry-details,
 .auth-card,
 .breathing-page,
-.breathing-settings-card,
 .breathing-player-card {
   background: var(--surface) !important;
   color: var(--text-main) !important;
   border: 1px solid var(--border-soft) !important;
   box-shadow: var(--card-shadow) !important;
   backdrop-filter: blur(10px);
+}
+
+.breathing-settings-card {
+  background: transparent !important;
+  color: var(--text-main) !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
 }
 
 .section-description,

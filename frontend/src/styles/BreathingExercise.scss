@@ -56,9 +56,15 @@
 
 .breathing-settings-card,
 .breathing-player-card {
-  border: 1px solid rgba($primary-color, 0.16);
-  background: rgba($primary-color, 0.05);
   border-radius: $radius-md;
+}
+
+.breathing-player-card {
+  background: rgba($primary-color, 0.05);
+}
+
+.breathing-player-card {
+  border: 1px solid rgba($primary-color, 0.16);
   padding: $spacing-xl;
 }
 
@@ -659,6 +665,9 @@
   }
 
   .breathing-settings-card,
+  .breathing-player-card {
+  }
+
   .breathing-player-card {
     background: rgba(33, 58, 88, 0.46);
     border-color: rgba(146, 197, 248, 0.3);
