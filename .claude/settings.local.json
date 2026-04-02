@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.flowninja.com)",
+      "WebFetch(domain:uploads-ssl.webflow.com)",
+      "Bash(curl -s \"https://www.flowninja.com/\")",
+      "Bash(curl -s \"https://cdn.prod.website-files.com/690b3bcdf6317aa397de2a16/css/flowninja-rebrand-2026.shared.250bae21f.min.css\")",
+      "Bash(curl -s \"https://cdn.prod.website-files.com/690b3bcdf6317aa397de2a16/css/flowninja-rebrand-2026.690b3bcdf6317aa397de2a0f-00df1f78e.min.css\")",
+      "Bash(npm run:*)",
+      "Bash(sed:*)",
+      "Bash(heroku config:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(heroku run:*)"
+    ]
+  }
+}

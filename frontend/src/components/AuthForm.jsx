@@ -32,7 +32,6 @@ const passwordRules = [
 const AuthForm = ({ onSuccess }) => {
   const [mode, setMode] = useState('login');
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -40,7 +39,7 @@ const AuthForm = ({ onSuccess }) => {
   const [error, setError] = useState('');
   const [passwordIssues, setPasswordIssues] = useState([]);
   const [submitting, setSubmitting] = useState(false);
-  const [resetStep, setResetStep] = useState('email'); // 'email' | 'new-password' | 'done'
+  const [resetStep, setResetStep] = useState('username'); // 'username' | 'new-password' | 'done'
 
   const isLogin = mode === 'login';
   const isRegister = mode === 'register';
@@ -58,14 +57,13 @@ const AuthForm = ({ onSuccess }) => {
 
   const resetForm = () => {
     setName('');
-    setEmail('');
     setPassword('');
     setConfirmPassword('');
     setShowPassword(false);
     setShowConfirmPassword(false);
     setError('');
     setPasswordIssues([]);
-    setResetStep('email');
+    setResetStep('username');
   };
 
   const toggleMode = () => {
@@ -89,19 +87,19 @@ const AuthForm = ({ onSuccess }) => {
     setPasswordIssues([]);
 
     if (isForgotPassword) {
-      if (resetStep === 'email') {
-        if (!email) {
-          setError('Email is required');
+      if (resetStep === 'username') {
+        if (!name.trim()) {
+          setError('Username is required');
           return;
         }
         setSubmitting(true);
         try {
-          await authService.forgotPassword({ email });
+          await authService.forgotPassword({ name });
           setPassword('');
           setConfirmPassword('');
           setResetStep('new-password');
         } catch (err) {
-          setError(err.response?.data?.error || 'Could not verify email');
+          setError(err.response?.data?.error || 'Could not verify username');
         } finally {
           setSubmitting(false);
         }
@@ -119,7 +117,7 @@ const AuthForm = ({ onSuccess }) => {
         }
         setSubmitting(true);
         try {
-          await authService.resetPassword({ email, newPassword: password, confirmPassword });
+          await authService.resetPassword({ name, newPassword: password, confirmPassword });
           setResetStep('done');
         } catch (err) {
           const apiError = err.response?.data?.error || 'Password reset failed';
@@ -133,29 +131,22 @@ const AuthForm = ({ onSuccess }) => {
       }
     }
 
-    if (!email || !password) {
-      setError('Email and password are required');
+    if (!name.trim() || !password) {
+      setError('Username and password are required');
       return;
     }
 
-    if (isRegister) {
-      if (!name.trim()) {
-        setError('Name is required');
-        return;
-      }
-
-      if (password !== confirmPassword) {
-        setError('Passwords do not match');
-        return;
-      }
+    if (isRegister && password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
     }
 
     setSubmitting(true);
 
     try {
       const response = isLogin
-        ? await authService.login({ email, password })
-        : await authService.register({ name, email, password });
+        ? await authService.login({ name, password })
+        : await authService.register({ name, password });
 
       onSuccess(response.data.user);
     } catch (err) {
@@ -175,14 +166,14 @@ const AuthForm = ({ onSuccess }) => {
           <h2>
             {isLogin && 'Welcome Back'}
             {isRegister && 'Create Your Account'}
-            {isForgotPassword && resetStep === 'email' && 'Reset Password'}
+            {isForgotPassword && resetStep === 'username' && 'Reset Password'}
             {isForgotPassword && resetStep === 'new-password' && 'Set New Password'}
             {isForgotPassword && resetStep === 'done' && 'Password Reset'}
           </h2>
           <p>
             {isLogin && 'Sign in to continue tracking your mood journey.'}
             {isRegister && 'Set up secure access to your private mood data.'}
-            {isForgotPassword && resetStep === 'email' && 'Enter your email address to verify your account.'}
+            {isForgotPassword && resetStep === 'username' && 'Enter your username to verify your account.'}
             {isForgotPassword && resetStep === 'new-password' && 'Enter and confirm your new password below.'}
           </p>
         </div>
@@ -197,30 +188,16 @@ const AuthForm = ({ onSuccess }) => {
           </div>
         ) : (
         <form className="auth-form" onSubmit={handleSubmit}>
-          {isRegister && (
+          {(!isForgotPassword || resetStep === 'username') && (
             <div className="auth-field">
-              <label htmlFor="name">Name</label>
+              <label htmlFor="name">Username</label>
               <input
                 id="name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                autoComplete="name"
-                placeholder="Your name"
-              />
-            </div>
-          )}
-
-          {(!isForgotPassword || resetStep === 'email') && (
-            <div className="auth-field">
-              <label htmlFor="email">Email</label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                placeholder="you@example.com"
+                autoComplete="username"
+                placeholder="Your username"
               />
             </div>
           )}
@@ -396,8 +373,8 @@ const AuthForm = ({ onSuccess }) => {
                 ? 'Sign In'
                 : isRegister
                   ? 'Create Account'
-                  : isForgotPassword && resetStep === 'email'
-                    ? 'Verify Email'
+                  : isForgotPassword && resetStep === 'username'
+                    ? 'Verify Username'
                     : isForgotPassword && resetStep === 'new-password'
                       ? 'Reset Password'
                       : 'Continue'}

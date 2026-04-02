@@ -1,11 +1,14 @@
 @import './variables';
 @import './mixins';
 
-/* Main App Container */
+// ============================================================
+// App Shell
+// ============================================================
+
 .app {
   min-height: 100vh;
   @include flex-column;
-  background: $bg-light;
+  background: linear-gradient(160deg, #eff0f3 0%, #f4f5f7 40%, #f0f1f5 100%);
 
   &.loading {
     @include flex-center;
@@ -14,44 +17,39 @@
   }
 }
 
-/* Header Styles */
+// ============================================================
+// Header — Earthy gradient, layered depth
+// ============================================================
+
 .app-header {
   position: relative;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 12% 22%, rgba(255, 255, 255, 0.3) 0, rgba(255, 255, 255, 0) 32%),
-    radial-gradient(circle at 90% 15%, rgba(114, 196, 255, 0.28) 0, rgba(114, 196, 255, 0) 30%),
-    $gradient-primary;
-  color: $bg-white;
+  background: $gradient-hero-light;
+  color: #fff;
   padding: $spacing-lg $spacing-xl;
   @include flex-between;
   gap: $spacing-xl;
-  box-shadow: $shadow-xl;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
-  &::before,
+  // Soft highlight wash at top
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% -20%, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  // Warm glow blob — earth tone
   &::after {
     content: '';
     position: absolute;
-    border-radius: 50%;
+    width: 340px;
+    height: 340px;
+    right: -100px;
+    bottom: -140px;
+    background: radial-gradient(circle, rgba(162, 165, 116, 0.18) 0%, transparent 65%);
     pointer-events: none;
-    filter: blur(1px);
-  }
-
-  &::before {
-    width: 220px;
-    height: 220px;
-    right: -50px;
-    top: -80px;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.35) 0, rgba(255, 255, 255, 0) 65%);
-  }
-
-  &::after {
-    width: 160px;
-    height: 160px;
-    left: 35%;
-    bottom: -80px;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0, rgba(255, 255, 255, 0) 70%);
   }
 
   @include mobile {
@@ -73,38 +71,26 @@
   gap: $spacing-md;
 }
 
+// The dot-grid brand mark
 .brand-mark {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-md;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 5px;
+  gap: 4px;
   padding: 8px;
 
   .dot {
     border-radius: 50%;
-    background: $bg-white;
-    opacity: 0.8;
+    background: #fff;
   }
 
-  .dot-one {
-    opacity: 0.9;
-    transform: scale(0.85);
-  }
-
-  .dot-two {
-    opacity: 0.7;
-    transform: scale(1);
-  }
-
-  .dot-three {
-    opacity: 0.55;
-    transform: scale(1.1);
-  }
+  .dot-one   { opacity: 0.9;  transform: scale(0.85); }
+  .dot-two   { opacity: 0.65; transform: scale(1); }
+  .dot-three { opacity: 0.4;  transform: scale(1.1); }
 }
 
 .brand-copy {
@@ -112,33 +98,27 @@
   gap: 2px;
 
   h1 {
-    font-family: 'Sora', 'IBM Plex Sans', sans-serif;
-    font-size: 1.65rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.55rem;
     margin: 0;
-    font-weight: 800;
-    letter-spacing: -0.8px;
+    font-weight: 700;
+    letter-spacing: -0.045em;
     line-height: 1;
-    text-wrap: balance;
+    color: #ffffff;
   }
 
   p {
     margin: 0;
-    font-size: 0.8rem;
-    letter-spacing: 0.04em;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    opacity: 1;
-    font-weight: 600;
-    color: rgba(245, 251, 255, 0.95);
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.55);
   }
 
   @include mobile {
-    h1 {
-      font-size: 1.35rem;
-    }
-
-    p {
-      font-size: 0.7rem;
-    }
+    h1 { font-size: 1.3rem; }
+    p  { font-size: 0.6rem; }
   }
 }
 
@@ -156,67 +136,89 @@
   }
 }
 
-/* Navigation Bar (below header) */
+// ============================================================
+// Navigation Bar
+// ============================================================
+
 .app-nav {
-  margin-top: $spacing-md;
-  padding: $spacing-md $spacing-lg;
+  margin-top: $spacing-2xl;
+  padding: $spacing-xs $spacing-lg $spacing-md;
   display: flex;
   justify-content: center;
-  gap: $spacing-md;
 
   @include mobile {
-    padding: $spacing-sm $spacing-md;
-    gap: $spacing-sm;
+    padding: $spacing-xs $spacing-md $spacing-sm;
   }
 }
 
 .header-nav {
   display: flex;
-  gap: $spacing-sm;
-  background: rgba(14, 165, 164, 0.08);
-  border: 1px solid rgba(14, 165, 164, 0.3);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(10px);
-  padding: 6px;
-  border-radius: 999px;
+  gap: 4px;
+  background: rgba($primary-color, 0.08);
+  border: 1px solid rgba($primary-color, 0.22);
+  padding: 5px;
+  border-radius: 0;
   width: auto;
+  box-shadow: 0 2px 12px rgba($primary-color, 0.1);
 
   @include mobile {
-    width: auto;
     justify-content: center;
   }
 }
 
 .header-nav-btn {
-  padding: 10px 18px;
+  padding: 9px 22px;
   background: transparent;
   color: $text-primary;
-  border: 1px solid rgba($border-color, .5);
-  border-radius: 10px;
-  font-size: 0.9rem;
-  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: 0;
+  font-size: 0.9375rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all $transition-fast;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
   min-width: max-content;
+  margin: 0 5px;
 
   &:hover {
-    background: rgba($primary-color, 0.12);
-    border-color: rgba($primary-color, 0.3);
-    color: darken($text-primary, 4%);
+    background: rgba($primary-color, 0.1);
+    color: $primary-color;
+    border-color: rgba($primary-color, 0.2);
   }
 
   &.active {
-    background: #ffffff;
-    color: #0c4f67;
-    border-color: rgba($primary-color, 0.22);
-    font-weight: 700;
-    box-shadow: 0 8px 20px rgba(9, 48, 78, 0.28);
+    background: $gradient-primary;
+    color: #fff;
+    border-color: transparent;
+    font-weight: 600;
+    box-shadow: 0 2px 14px rgba($primary-color, 0.35);
   }
 
   @include mobile {
-    padding: 8px 14px;
+    padding: 6px 13px;
     font-size: 0.8rem;
+  }
+}
+
+:root[data-theme='dark'] .header-nav {
+  background: rgba($color-teal, 0.1);
+  border-color: rgba($color-teal, 0.28);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
+}
+
+:root[data-theme='dark'] .header-nav-btn {
+  color: rgba(226, 228, 231, 0.75);
+
+  &:hover {
+    background: rgba($color-teal, 0.12);
+    border-color: rgba($color-teal, 0.25);
+    color: #e2e4e7;
+  }
+
+  &.active {
+    background: $gradient-primary;
+    color: #fff;
+    box-shadow: 0 2px 16px rgba($primary-color, 0.4);
   }
 }
 
@@ -224,7 +226,7 @@
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  gap: $spacing-lg;
+  gap: $spacing-md;
   position: relative;
   z-index: 1;
 
@@ -245,46 +247,35 @@
 
 .mobile-menu-btn {
   display: none;
-  background: rgba(255, 255, 255, 0.24);
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  color: $bg-white;
-  border-radius: 12px;
-  width: 40px;
-  height: 40px;
-  font-size: 1.5rem;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #fff;
+  border-radius: $radius-md;
+  width: 38px;
+  height: 38px;
+  font-size: 1.3rem;
   cursor: pointer;
   @include flex-center;
-  transition: all $transition-normal;
+  transition: all $transition-fast;
   flex-shrink: 0;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.36);
-    border-color: rgba(255, 255, 255, 0.65);
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.42);
   }
 
-  @include mobile {
-    display: flex;
-    width: 36px;
-    height: 36px;
-    font-size: 1.25rem;
-  }
-
-  @include tablet {
-    display: none;
-  }
-
-  @include desktop {
-    display: none;
-  }
+  @include mobile    { display: flex; width: 34px; height: 34px; font-size: 1.15rem; }
+  @include tablet    { display: none; }
+  @include desktop   { display: none; }
 }
 
 .logout-btn {
-  background: rgba(255, 255, 255, 0.24);
-  color: $bg-white;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 10px;
-  padding: 8px 14px;
-  font-size: 0.8rem;
+  background: rgba(255, 255, 255, 0.11);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: $radius-md;
+  padding: 7px 13px;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -293,61 +284,52 @@
   flex-shrink: 0;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.38);
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.34);
     transform: translateY(-1px);
   }
 
-  @include mobile {
-    padding: 6px 10px;
-    font-size: 0.7rem;
-  }
+  @include mobile { padding: 5px 9px; font-size: 0.7rem; }
 }
 
 .user-info {
   display: flex;
   align-items: center;
   gap: $spacing-sm;
-  padding: $spacing-sm $spacing-md;
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: 0;
   flex-shrink: 0;
 
   @include mobile {
-    padding: $spacing-xs $spacing-sm;
-    
-    .user-name {
-      display: none;
-    }
+    padding: $spacing-xs;
+    .user-name { display: none; }
   }
 }
 
 .user-avatar {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: $radius-full;
-  border: 2px solid $bg-white;
+  border: 2px solid rgba(255, 255, 255, 0.45);
   object-fit: cover;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   flex-shrink: 0;
 
-  @include mobile {
-    width: 32px;
-    height: 32px;
-  }
+  @include mobile { width: 28px; height: 28px; }
 }
 
 .user-name {
   font-weight: $font-weight-medium;
-  font-size: $font-size-base;
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .user-name-btn {
-  background: rgba(255, 255, 255, 0.24);
-  color: $bg-white;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 10px;
-  padding: 8px 14px;
-  font-size: 0.8rem;
+  background: rgba(255, 255, 255, 0.11);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: $radius-md;
+  padding: 7px 13px;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -356,21 +338,22 @@
   flex-shrink: 0;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.38);
+    background: rgba(255, 255, 255, 0.2);
     transform: translateY(-1px);
   }
 
   &.active {
-  border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.32);
   }
 
-  @include mobile {
-    padding: 6px 10px;
-    font-size: 0.7rem;
-  }
+  @include mobile { padding: 5px 9px; font-size: 0.7rem; }
 }
 
-/* Mobile Menu Slide-out */
+// ============================================================
+// Mobile Menu
+// ============================================================
+
 .mobile-menu {
   display: none;
   position: fixed;
@@ -380,7 +363,7 @@
   max-width: 80vw;
   height: 100vh;
   background: $bg-white;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+  box-shadow: -4px 0 24px rgba(30, 45, 40, 0.1);
   z-index: 1000;
   transform: translateX(100%);
   transition: transform $transition-normal ease-in-out;
@@ -391,9 +374,7 @@
     flex-direction: column;
   }
 
-  &.open {
-    transform: translateX(0);
-  }
+  &.open { transform: translateX(0); }
 }
 
 .mobile-menu-header {
@@ -412,9 +393,9 @@
   flex: 1;
 
   .user-avatar {
-    width: 40px;
-    height: 40px;
-    border: 2px solid $primary-color;
+    width: 38px;
+    height: 38px;
+    border: 2px solid rgba($primary-color, 0.35);
   }
 }
 
@@ -426,7 +407,7 @@
 }
 
 .user-email-mobile {
-  margin: 4px 0 0 0;
+  margin: 3px 0 0;
   font-size: $font-size-sm;
   color: $text-light;
 }
@@ -444,15 +425,13 @@
   flex-shrink: 0;
   transition: transform $transition-fast;
 
-  &:hover {
-    transform: rotate(90deg);
-  }
+  &:hover { transform: rotate(90deg); }
 }
 
 .mobile-menu-nav {
   display: flex;
   flex-direction: column;
-  padding: $spacing-md 0;
+  padding: $spacing-sm 0;
   flex: 1;
 }
 
@@ -469,7 +448,7 @@
 
   &:hover {
     background: $bg-lighter;
-    border-left-color: $primary-color;
+    border-left-color: $secondary-color;
   }
 
   &.logout {
@@ -484,15 +463,11 @@
   }
 }
 
-/* Mobile menu overlay/backdrop */
 .mobile-menu-backdrop {
   display: none;
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
+  inset: 0;
+  background: rgba(12, 23, 21, 0.45);
   z-index: 999;
   opacity: 0;
   pointer-events: none;
@@ -500,31 +475,21 @@
 
   @include mobile {
     display: block;
-
-    &.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
+    &.open { opacity: 1; pointer-events: auto; }
   }
 }
 
-.app {
-  position: relative;
-}
+.app { position: relative; }
 
 @include tablet {
-  .app-header {
-    flex-wrap: wrap;
-    gap: $spacing-md;
-  }
-
-  .header-center {
-    order: 3;
-    flex-basis: 100%;
-  }
+  .app-header { flex-wrap: wrap; gap: $spacing-md; }
+  .header-center { order: 3; flex-basis: 100%; }
 }
 
-/* Main Content Area */
+// ============================================================
+// Main Content Area
+// ============================================================
+
 .app-content {
   flex: 1;
   max-width: 1400px;
@@ -539,6 +504,10 @@
     padding: $spacing-xs $spacing-sm $spacing-sm;
   }
 }
+
+// ============================================================
+// Dashboard Grid
+// ============================================================
 
 .dashboard {
   display: grid;
@@ -564,86 +533,60 @@
   }
 }
 
-.dashboard-summary {
-  @include desktop {
-    grid-area: summary;
-  }
-}
-
-.dashboard-daily-mood {
-  @include desktop {
-    grid-area: daily;
-  }
-
-  @include desktop {
-    height: 100%;
-  }
-}
-
-.dashboard-insights {
-  @include desktop {
-    grid-area: insights;
-  }
-
-  @include desktop {
-    height: 100%;
-  }
-
-  @include mobile {
-    order: 4;
-  }
-}
-
-.dashboard-trends {
-  @include desktop {
-    grid-area: trends;
-    grid-column: 1 / -1;
-  }
-
-  @include mobile {
-    order: 5;
-  }
-}
-
-.dashboard-entry-details {
-  @include desktop {
-    grid-area: details;
-  }
-
-  @include mobile {
-    order: 6;
-    position: relative;
-    z-index: 2;
-  }
-}
-
-.dashboard-empty-state {
-  @include desktop {
-    grid-area: empty;
-    grid-column: 1 / -1;
-  }
-}
+.dashboard-summary      { @include desktop { grid-area: summary; } }
+.dashboard-daily-mood   { @include desktop { grid-area: daily;   height: 100%; } }
+.dashboard-insights     { @include desktop { grid-area: insights; height: 100%; } @include mobile { order: 4; } }
+.dashboard-trends       { @include desktop { grid-area: trends; grid-column: 1 / -1; } @include mobile { order: 5; } }
+.dashboard-entry-details { @include desktop { grid-area: details; } @include mobile { order: 6; position: relative; z-index: 2; } }
+.dashboard-empty-state  { @include desktop { grid-area: empty; grid-column: 1 / -1; } }
 
 .dashboard-section {
   @include card;
   padding: $spacing-md $spacing-lg;
+  border-left: 4px solid transparent;
+  background-clip: padding-box;
+
+  &.dashboard-summary    { border-left-color: $color-slate; }
+  &.dashboard-daily-mood { border-left-color: $color-teal; }
+  &.dashboard-insights   { border-left-color: $color-olive; }
+  &.dashboard-trends     { border-left-color: $color-sage; }
 
   @include mobile {
     padding: $spacing-sm $spacing-md;
-    border-radius: $radius-md;
+    border-radius: $radius-lg;
   }
 }
+
+// ============================================================
+// Summary / Health Pillars
+// ============================================================
 
 .summary-header {
   margin-bottom: $spacing-md;
 
   h2 {
+    margin: 0 0 $spacing-xs;
+    font-size: $font-size-xl;
+    letter-spacing: -0.03em;
     display: flex;
     align-items: center;
     gap: $spacing-sm;
-    margin: 0 0 $spacing-xs;
-    color: $primary-color;
-    font-size: $font-size-xl;
+    background: linear-gradient(135deg, $color-slate 0%, $color-teal 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 1.1em;
+      background: $gradient-primary;
+      -webkit-background-clip: unset;
+      background-clip: unset;
+      -webkit-text-fill-color: initial;
+      flex-shrink: 0;
+    }
   }
 }
 
@@ -653,13 +596,9 @@
   font-size: $font-size-sm;
 }
 
-.section-icon {
-  width: 30px;
-  height: 30px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.95rem;
+.section-icon,
+.summary-icon {
+  display: none; // icons removed
 }
 
 .summary-grid {
@@ -667,9 +606,7 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: $spacing-md;
 
-  @include mobile {
-    grid-template-columns: 1fr;
-  }
+  @include mobile { grid-template-columns: 1fr; }
 }
 
 .health-pillars-grid {
@@ -677,53 +614,64 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: $spacing-md;
 
-  @include mobile {
-    grid-template-columns: 1fr;
-  }
+  @include mobile { grid-template-columns: 1fr; }
 }
 
-.health-pillar-card {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(239, 247, 255, 0.85));
-  border: 1px solid rgba($primary-color, 0.22);
-  border-radius: 14px;
-  padding: $spacing-md;
-  box-shadow: 0 8px 24px rgba(8, 44, 74, 0.08);
-  display: grid;
-  gap: $spacing-sm;
-
-  h3 {
-    margin: 0;
-    color: $text-secondary;
-    font-size: $font-size-sm;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-}
-
-.health-pillar-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
+// Pillar cards — each gets a unique accent color via data-key
+.health-pillar-card,
 .summary-card {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(239, 247, 255, 0.85));
-  border: 1px solid rgba($primary-color, 0.22);
-  border-radius: 14px;
+  background: $bg-white;
+  border: 1px solid $border-color;
+  border-left: 4px solid $color-slate;
+  border-radius: 0 $radius-lg $radius-lg 0;
   padding: $spacing-md;
-  box-shadow: 0 8px 24px rgba(8, 44, 74, 0.08);
+  box-shadow: $shadow-sm;
   display: grid;
   gap: $spacing-sm;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &:hover { box-shadow: $shadow-md; }
 
   h3 {
     margin: 0;
-    color: $text-secondary;
-    font-size: $font-size-sm;
+    font-size: $font-size-xs;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.07em;
+    font-weight: 700;
   }
 }
 
+// Per-pillar accent colors — border, background tint, label, value
+.health-pillar-card:nth-child(1) {
+  border-left-color: $color-slate;
+  background: linear-gradient(135deg, rgba($color-slate, 0.12) 0%, $bg-white 60%);
+  h3 { color: $color-slate; }
+  .summary-value { color: $color-slate; }
+  .summary-bar-track span { background: linear-gradient(90deg, rgba($color-slate, 0.6), $color-slate); }
+}
+.health-pillar-card:nth-child(2) {
+  border-left-color: $color-teal;
+  background: linear-gradient(135deg, rgba($color-teal, 0.12) 0%, $bg-white 60%);
+  h3 { color: $color-teal; }
+  .summary-value { color: darken($color-teal, 5%); }
+  .summary-bar-track span { background: linear-gradient(90deg, rgba($color-teal, 0.6), $color-teal); }
+}
+.health-pillar-card:nth-child(3) {
+  border-left-color: $color-sage;
+  background: linear-gradient(135deg, rgba($color-sage, 0.12) 0%, $bg-white 60%);
+  h3 { color: darken($color-sage, 8%); }
+  .summary-value { color: darken($color-sage, 8%); }
+  .summary-bar-track span { background: linear-gradient(90deg, rgba($color-sage, 0.6), $color-sage); }
+}
+.health-pillar-card:nth-child(4) {
+  border-left-color: $color-olive;
+  background: linear-gradient(135deg, rgba($color-olive, 0.12) 0%, $bg-white 60%);
+  h3 { color: darken($color-olive, 8%); }
+  .summary-value { color: darken($color-olive, 8%); }
+  .summary-bar-track span { background: linear-gradient(90deg, rgba($color-olive, 0.6), $color-olive); }
+}
+
+.health-pillar-head,
 .summary-card-head {
   display: flex;
   justify-content: space-between;
@@ -736,49 +684,43 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.9rem;
 }
 
-.mood-ring-card {
-  place-items: center;
-}
+.mood-ring-card { place-items: center; }
 
 .mood-ring {
   --fill: 0%;
   width: 108px;
   height: 108px;
   border-radius: 50%;
-  background: conic-gradient($primary-color var(--fill), rgba($primary-color, 0.16) 0);
+  background: conic-gradient(
+    $color-slate var(--fill),
+    rgba($color-slate, 0.1) 0
+  );
   display: grid;
   place-items: center;
+  box-shadow: 0 0 0 3px rgba($color-slate, 0.08);
 }
 
 .mood-ring-center {
-  width: 78px;
-  height: 78px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background: $bg-white;
   display: grid;
   place-items: center;
 
-  strong {
-    color: $text-primary;
-    font-size: $font-size-lg;
-    line-height: 1;
-  }
-
-  span {
-    color: $text-light;
-    font-size: $font-size-xs;
-  }
+  strong { color: $text-primary; font-size: $font-size-lg; line-height: 1; font-weight: 700; }
+  span   { color: $text-light;   font-size: $font-size-xs; }
 }
 
 .summary-value {
   margin: 0;
   color: $text-primary;
-  font-size: 1.8rem;
-  font-weight: $font-weight-bold;
+  font-size: 1.7rem;
+  font-weight: 700;
   line-height: 1;
+  letter-spacing: -0.04em;
 }
 
 .summary-note {
@@ -790,12 +732,15 @@
 .summary-note-strong {
   color: $text-secondary;
   font-weight: $font-weight-medium;
+  font-size: $font-size-xs;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .summary-bar-track {
-  background: rgba($primary-color, 0.14);
-  border-radius: 999px;
-  height: 10px;
+  background: rgba($primary-color, 0.15);
+  border-radius: 0;
+  height: 5px;
   overflow: hidden;
 
   span {
@@ -806,61 +751,71 @@
   }
 }
 
+// ============================================================
+// Section Headers
+// ============================================================
+
 .section-header {
   margin-bottom: $spacing-md;
-  border-bottom: 2px solid $bg-lighter;
+  border-bottom: 1px solid $border-color;
   padding-bottom: $spacing-sm;
   display: grid;
   grid-template-rows: auto auto;
   row-gap: $spacing-xs;
 
-  &::before {
-    content: none;
-    display: none;
-  }
+  &::before { content: none; display: none; }
 
   h2 {
+    color: $text-primary;
+    margin: 0;
+    font-size: $font-size-xl;
+    letter-spacing: -0.03em;
     display: flex;
     align-items: center;
     gap: $spacing-sm;
-    color: $primary-color;
-    margin: 0;
-    font-size: $font-size-xl;
+
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 1.1em;
+      background: $gradient-primary;
+      flex-shrink: 0;
+    }
   }
 
   @include mobile {
-    h2 {
-      font-size: $font-size-lg;
-    }
+    h2 { font-size: $font-size-lg; }
   }
 }
 
 .section-description {
   color: $text-light;
-  font-size: $font-size-base;
+  font-size: $font-size-sm;
   margin: 0;
-  line-height: 1.45;
+  line-height: 1.5;
 
-  @include mobile {
-    font-size: $font-size-sm;
-  }
+  @include mobile { font-size: $font-size-xs; }
 }
+
+// ============================================================
+// Entry Card (dashboard detail)
+// ============================================================
 
 .entry-card {
   @include bg-gradient-light;
   padding: $spacing-md;
   border-radius: $radius-md;
-  border-left: 4px solid $primary-color;
+  border-left: 4px solid $secondary-color;
 
   p {
     margin-bottom: $spacing-sm;
     color: $text-primary;
     line-height: 1.6;
+    font-size: $font-size-sm;
   }
 
-  strong {
-    color: $primary-color;
-  }
+  strong { color: $primary-color; }
 }
 
 .inline-action-btn {
@@ -869,10 +824,10 @@
   align-items: center;
   justify-content: center;
   gap: $spacing-xs;
-  padding: 0.65rem 1rem;
-  border: 1px solid rgba($primary-color, 0.2);
-  background: rgba($primary-color, 0.08);
-  color: $text-primary;
+  padding: 0.55rem 1rem;
+  border: 1px solid rgba($primary-color, 0.22);
+  background: rgba($primary-color, 0.07);
+  color: $primary-color;
   border-radius: $radius-md;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
@@ -881,174 +836,166 @@
 
   &:hover {
     background: rgba($primary-color, 0.14);
-    border-color: rgba($primary-color, 0.38);
+    border-color: rgba($primary-color, 0.36);
   }
 }
 
-:root[data-theme='dark'] .inline-action-btn {
-  background: rgba(108, 187, 223, 0.2);
-  color: #f4f9ff;
-  border-color: rgba(170, 216, 246, 0.55);
-  font-weight: 700;
-
-  &:hover {
-    background: rgba(131, 201, 234, 0.3);
-    border-color: rgba(191, 226, 250, 0.75);
-    color: #ffffff;
-  }
-}
-
-:root[data-theme='dark'] .entry-card .inline-action-btn {
-  background: rgba(108, 187, 223, 0.2);
-  color: #f4f9ff;
-  border-color: rgba(170, 216, 246, 0.55);
-  font-weight: 700;
-
-  &:hover {
-    background: rgba(131, 201, 234, 0.3);
-    border-color: rgba(191, 226, 250, 0.75);
-    color: #ffffff;
-  }
-}
-
-:root[data-theme='dark'] .dashboard-entry-details .entry-card .inline-action-btn {
-  background: #66b8de !important;
-  color: #06253a !important;
-  border: 1px solid #9ed7f1 !important;
-  box-shadow: 0 0 0 1px rgba(10, 37, 57, 0.22), 0 8px 18px rgba(6, 22, 35, 0.35) !important;
-}
-
-:root[data-theme='dark'] .dashboard-entry-details .entry-card .inline-action-btn:hover {
-  background: #7ac5e7 !important;
-  color: #041f31 !important;
-  border-color: #b7e5f8 !important;
-}
+// ============================================================
+// Empty State
+// ============================================================
 
 .empty-state {
   text-align: center;
-  padding: $spacing-lg $spacing-md;
+  padding: $spacing-xl $spacing-md;
 
-  @include mobile {
-    padding: $spacing-md;
-  }
+  @include mobile { padding: $spacing-lg $spacing-md; }
 }
 
 .empty-state-content {
   display: grid;
   gap: $spacing-md;
 
-  h3 {
-    color: $primary-color;
-    font-size: $font-size-xl;
-  }
-
-  p {
-    color: $text-light;
-    font-size: $font-size-md;
-  }
+  h3 { color: $text-primary; font-size: $font-size-xl; letter-spacing: -0.03em; }
+  p  { color: $text-light; font-size: $font-size-md; }
 
   @include mobile {
-    h3 {
-      font-size: $font-size-lg;
-    }
-
-    p {
-      font-size: $font-size-sm;
-    }
+    h3 { font-size: $font-size-lg; }
+    p  { font-size: $font-size-sm; }
   }
 }
 
+// ============================================================
+// CTA Button
+// ============================================================
+
 .cta-button {
-  padding: $spacing-md $spacing-lg;
+  padding: 0.875rem $spacing-lg;
   background: $gradient-primary;
-  color: $bg-white;
+  color: #fff;
   border: none;
   border-radius: $radius-md;
   font-size: $font-size-md;
   font-weight: $font-weight-semibold;
   cursor: pointer;
-  transition: transform $transition-fast, box-shadow $transition-fast;
+  transition: all $transition-fast;
   align-self: center;
   max-width: 300px;
   margin: 20px auto;
+  letter-spacing: 0.005em;
+  box-shadow: 0 2px 14px rgba($primary-color, 0.2);
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba($primary-color, 0.3);
+    box-shadow: 0 5px 22px rgba($primary-color, 0.28);
+    filter: brightness(1.06);
   }
 
-  &:active {
-    transform: translateY(0);
-  }
+  &:active { transform: translateY(0); }
 
   @include mobile {
-    padding: $spacing-md $spacing-md;
+    padding: $spacing-md;
     font-size: $font-size-base;
     max-width: 100%;
   }
 }
 
-/* Footer */
+// ============================================================
+// Footer
+// ============================================================
+
 .app-footer {
   text-align: center;
   padding: $spacing-xl;
-  color: $text-secondary;
+  color: $text-light;
   background: $bg-white;
   border-top: 1px solid $border-color;
   margin-top: auto;
+  font-size: $font-size-sm;
 }
 
+// ============================================================
+// Dark Mode — Dashboard
+// ============================================================
+
 :root[data-theme='dark'] {
-  .summary-card {
-    background: linear-gradient(145deg, rgba(21, 40, 63, 0.95), rgba(17, 33, 53, 0.95));
-    border-color: rgba(176, 204, 237, 0.28);
-    box-shadow: 0 10px 26px rgba(1, 8, 18, 0.55);
-
-    h3 {
-      color: #cfe1fb;
-    }
-  }
-
+  .summary-card,
   .health-pillar-card {
-    background: linear-gradient(145deg, rgba(21, 40, 63, 0.95), rgba(17, 33, 53, 0.95));
-    border-color: rgba(176, 204, 237, 0.28);
-    box-shadow: 0 10px 26px rgba(1, 8, 18, 0.55);
+    background: $dark-surface;
+    border-color: rgba(107, 160, 147, 0.12);
+    box-shadow: none;
 
-    h3 {
-      color: #cfe1fb;
-    }
+    &:hover { border-color: rgba(107, 160, 147, 0.24); }
   }
 
-  .summary-value,
-  .summary-note,
-  .summary-icon,
-  .section-icon {
-    color: #f2f8ff;
+  .health-pillar-card:nth-child(1) {
+    border-left-color: rgba($color-slate, 0.65);
+    background: linear-gradient(135deg, rgba($color-slate, 0.18) 0%, $dark-surface 55%);
+    h3 { color: rgba($color-slate, 0.9); }
+    .summary-value { color: lighten($color-slate, 12%); }
+    .summary-bar-track span { background: linear-gradient(90deg, rgba($color-slate, 0.5), rgba($color-slate, 0.85)); }
+  }
+  .health-pillar-card:nth-child(2) {
+    border-left-color: rgba($color-teal, 0.65);
+    background: linear-gradient(135deg, rgba($color-teal, 0.18) 0%, $dark-surface 55%);
+    h3 { color: rgba($color-teal, 0.9); }
+    .summary-value { color: lighten($color-teal, 12%); }
+    .summary-bar-track span { background: linear-gradient(90deg, rgba($color-teal, 0.5), rgba($color-teal, 0.85)); }
+  }
+  .health-pillar-card:nth-child(3) {
+    border-left-color: rgba($color-sage, 0.65);
+    background: linear-gradient(135deg, rgba($color-sage, 0.18) 0%, $dark-surface 55%);
+    h3 { color: rgba($color-sage, 0.9); }
+    .summary-value { color: lighten($color-sage, 8%); }
+    .summary-bar-track span { background: linear-gradient(90deg, rgba($color-sage, 0.5), rgba($color-sage, 0.85)); }
+  }
+  .health-pillar-card:nth-child(4) {
+    border-left-color: rgba($color-olive, 0.65);
+    background: linear-gradient(135deg, rgba($color-olive, 0.18) 0%, $dark-surface 55%);
+    h3 { color: rgba($color-olive, 0.9); }
+    .summary-value { color: lighten($color-olive, 12%); }
+    .summary-bar-track span { background: linear-gradient(90deg, rgba($color-olive, 0.5), rgba($color-olive, 0.85)); }
   }
 
-  .summary-bar-track {
-    background: rgba(173, 207, 244, 0.22);
-  }
+  .summary-note  { color: rgba(226, 228, 231, 0.45); }
+  .summary-bar-track { background: rgba(107, 160, 147, 0.1); }
 
   .mood-ring-center {
-    background: #10243c;
-
-    strong {
-      color: #f2f8ff;
-    }
-
-    span {
-      color: #c7dcf8;
-    }
+    background: #252a2f;
+    strong { color: #e2e4e7; }
+    span   { color: rgba(226, 228, 231, 0.45); }
   }
 
   .entry-card {
-    background: rgba(20, 40, 63, 0.92);
-    border-left-color: #63c7d1;
+    background: rgba(107, 160, 147, 0.07);
+    border-left-color: rgba($color-teal, 0.5);
+    p, strong { color: #e2e4e7; }
+  }
 
-    p,
-    strong {
-      color: #eaf3ff;
-    }
+  .app {
+    background: linear-gradient(160deg, #0f1215 0%, #111214 40%, #111419 100%);
+  }
+
+  .dashboard-section {
+    &.dashboard-summary    { border-left-color: $color-slate; }
+    &.dashboard-daily-mood { border-left-color: $color-teal; }
+    &.dashboard-insights   { border-left-color: $color-olive; }
+    &.dashboard-trends     { border-left-color: $color-sage; }
+  }
+
+  .section-header h2,
+  .summary-header h2 {
+    color: #e2e4e7;
+    &::before { background: $gradient-primary; }
+  }
+  .section-description { color: rgba(226, 228, 231, 0.45); }
+
+  .mood-ring {
+    background: conic-gradient(rgba($color-slate, 0.85) var(--fill), rgba($color-slate, 0.08) 0);
+    box-shadow: 0 0 0 3px rgba($color-slate, 0.12);
+  }
+  .mood-ring-center {
+    background: $dark-surface-2;
+    strong { color: #e2e4e7; }
+    span   { color: rgba(226, 228, 231, 0.45); }
   }
 }

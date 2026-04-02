@@ -22,36 +22,36 @@ const MoodComparison = ({ comparison }) => {
   const hasPreviousWeightData = Number(comparison.previous?.weightEntryCount) > 0;
 
   const getMoodTrend = () => {
-    if (!hasPreviousMoodData) return '➡️ Building baseline';
-    if (moodDelta >= 1) return '📈 Improved significantly';
-    if (moodDelta > 0) return '📈 Slight improvement';
-    if (moodDelta === 0) return '➡️ No change';
-    return '📉 Declined';
+    if (!hasPreviousMoodData) return 'Building baseline';
+    if (moodDelta >= 1) return 'Improved significantly';
+    if (moodDelta > 0) return 'Slight improvement';
+    if (moodDelta === 0) return 'No change';
+    return 'Declined';
   };
 
   const getSleepTrend = () => {
-    if (!hasPreviousSleepData) return '➡️ Building baseline';
-    if (sleepDelta >= 1) return '📈 More sleep';
-    if (sleepDelta > 0) return '📈 Slightly more sleep';
-    if (sleepDelta === 0) return '➡️ Same sleep';
-    return '📉 Less sleep';
+    if (!hasPreviousSleepData) return 'Building baseline';
+    if (sleepDelta >= 1) return 'More sleep';
+    if (sleepDelta > 0) return 'Slightly more sleep';
+    if (sleepDelta === 0) return 'Same sleep';
+    return 'Less sleep';
   };
 
   const getWaterTrend = () => {
-    if (!hasPreviousWaterData) return '➡️ Building baseline';
-    if (waterDelta >= 12) return '📈 Hydration up';
-    if (waterDelta > 0) return '📈 Slightly more hydrated';
-    if (waterDelta === 0) return '➡️ Same hydration';
-    return '📉 Hydration down';
+    if (!hasPreviousWaterData) return 'Building baseline';
+    if (waterDelta >= 12) return 'Hydration up';
+    if (waterDelta > 0) return 'Slightly more hydrated';
+    if (waterDelta === 0) return 'Same hydration';
+    return 'Hydration down';
   };
 
   const getWeightTrend = () => {
-    if (!hasPreviousWeightData) return '➡️ Building baseline';
-    if (weightDelta >= 2) return '📈 Weight up';
-    if (weightDelta > 0) return '📈 Slight increase';
-    if (weightDelta === 0) return '➡️ Stable';
-    if (weightDelta <= -2) return '📉 Weight down';
-    return '📉 Slight decrease';
+    if (!hasPreviousWeightData) return 'Building baseline';
+    if (weightDelta >= 2) return 'Weight up';
+    if (weightDelta > 0) return 'Slight increase';
+    if (weightDelta === 0) return 'Stable';
+    if (weightDelta <= -2) return 'Weight down';
+    return 'Slight decrease';
   };
 
   return (

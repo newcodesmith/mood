@@ -1,69 +1,101 @@
-// Colors
-$primary-color: #0ea5a4;
-$secondary-color: #2563eb;
-$success-color: #22c55e;
-$warning-color: #f59e0b;
-$error-color: #ef4444;
+// ============================================================
+// Design Tokens — Earthy Wellness Palette
+// ============================================================
 
-$text-primary: #162031;
-$text-secondary: #44546c;
-$text-dark: $text-primary;
-$text-light: #6a7b94;
-$text-lighter: #eaf0f8;
+// Brand Palette
+$color-slate:  #58809B;   // muted slate blue
+$color-teal:   #6BA093;   // muted teal
+$color-sage:   #8BC695;   // sage green
+$color-olive:  #A2A574;   // warm olive
+$color-earth:  #8C7664;   // warm earth brown
 
-$bg-white: #fff;
-$bg-light: #f2f7fb;
-$bg-lighter: #eef4fa;
-$border-color: #cfd9e6;
+// Per-pillar accent map (used in card left-borders)
+$pillar-mood:   $color-slate;
+$pillar-sleep:  $color-teal;
+$pillar-water:  $color-sage;
+$pillar-weight: $color-olive;
+
+// Primary roles
+$primary-color:    $color-slate;   // main CTA, links, focus rings
+$secondary-color:  $color-teal;    // hover, secondary actions
+$success-color:    #5a9a6e;
+$warning-color:    $color-olive;
+$error-color:      #c0574a;
+
+// Light Mode Text
+$text-primary:   #1e2d28;    // deep forest
+$text-secondary: #3a5046;    // mid forest
+$text-dark:      #1e2d28;
+$text-light:     #6b8279;    // muted green-grey
+$text-lighter:   #e8f0ed;    // near-white (for dark bg text)
+
+// Light Mode Backgrounds
+$bg-white:    #ffffff;
+$bg-light:    #f4f5f7;       // neutral cool-white page bg
+$bg-lighter:  #eaecf0;       // secondary surface
+$border-color: rgba(88, 128, 155, 0.22);
+
+// Dark Mode Surfaces (used in mixins & dark-mode overrides)
+$dark-bg:          #111214;
+$dark-surface:     #1d2025;
+$dark-surface-2:   #252a2f;
+$dark-border:      rgba(107, 160, 147, 0.15);
 
 // Gradients
-$gradient-primary: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
-$gradient-primary-light: linear-gradient(135deg, rgba($primary-color, 0.05) 0%, rgba($secondary-color, 0.05) 100%);
-$gradient-primary-transparent: linear-gradient(to right, $secondary-color, $warning-color, $primary-color);
+$gradient-primary:        linear-gradient(135deg, $color-slate 0%, $color-teal 100%);
+$gradient-primary-light:  linear-gradient(135deg, rgba($color-slate, 0.07) 0%, rgba($color-teal, 0.07) 100%);
+$gradient-primary-transparent: linear-gradient(to right, $color-slate, $color-teal, $color-sage);
+$gradient-hero-light:     linear-gradient(150deg, #3d6f85 0%, #4e8275 45%, #3d6f85 100%);
+$gradient-hero-dark:      linear-gradient(150deg, #111214 0%, #181b1e 50%, #111214 100%);
 
-// Spacing
-$spacing-xs: 0.25rem;
-$spacing-sm: 0.5rem;
-$spacing-md: 1rem;
-$spacing-lg: 1.5rem;
-$spacing-xl: 2rem;
+// Spacing (8px base)
+$spacing-xs:  0.25rem;
+$spacing-sm:  0.5rem;
+$spacing-md:  1rem;
+$spacing-lg:  1.5rem;
+$spacing-xl:  2rem;
 $spacing-2xl: 3rem;
 
 // Border Radius
-$radius-sm: 4px;
-$radius-md: 6px;
-$radius-lg: 8px;
+$radius-sm:   0;
+$radius-md:   0;
+$radius-lg:   0;
+$radius-xl:   0;
 $radius-full: 50%;
 
 // Font Sizes
-$font-size-xs: 0.75rem;
-$font-size-sm: 0.85rem;
-$font-size-base: 0.95rem;
-$font-size-md: 1rem;
-$font-size-lg: 1.1rem;
-$font-size-xl: 1.5rem;
-$font-size-2xl: 1.75rem;
-$font-size-3xl: 2rem;
-$font-size-4xl: 4rem;
+$font-size-xs:   0.6875rem;   // 11px
+$font-size-sm:   0.8125rem;   // 13px
+$font-size-base: 0.9375rem;   // 15px
+$font-size-md:   1rem;        // 16px
+$font-size-lg:   1.125rem;    // 18px
+$font-size-xl:   1.375rem;    // 22px
+$font-size-2xl:  1.75rem;     // 28px
+$font-size-3xl:  2.25rem;     // 36px
+$font-size-4xl:  3.25rem;     // 52px
 
 // Font Weights
-$font-weight-normal: 400;
-$font-weight-medium: 500;
+$font-weight-normal:   400;
+$font-weight-medium:   500;
 $font-weight-semibold: 600;
-$font-weight-bold: 700;
+$font-weight-bold:     700;
 
 // Breakpoints
-$mobile: 480px;
-$tablet: 768px;
+$mobile:  480px;
+$tablet:  768px;
 $desktop: 1024px;
 
-// Shadows
-$shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-$shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
-$shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.15);
-$shadow-xl: 0 4px 16px rgba(0, 0, 0, 0.15);
+// Shadows — light mode: warm tinted elevation; dark: none + border
+$shadow-sm:  0 1px 4px rgba(30, 45, 40, 0.06);
+$shadow-md:  0 2px 14px rgba(30, 45, 40, 0.08);
+$shadow-lg:  0 4px 24px rgba(30, 45, 40, 0.1);
+$shadow-xl:  0 8px 40px rgba(30, 45, 40, 0.12);
+
+// Earthy glow (dark mode only)
+$glow-teal:        0 4px 60px rgba(107, 160, 147, 0.2);
+$glow-teal-subtle: 0 0 30px rgba(107, 160, 147, 0.12);
 
 // Transitions
-$transition-fast: 0.2s ease;
-$transition-normal: 0.3s ease;
-$transition-slow: 0.5s ease;
+$transition-fast:   0.18s ease;
+$transition-normal: 0.28s ease;
+$transition-slow:   0.45s ease;

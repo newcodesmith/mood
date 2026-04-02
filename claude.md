@@ -123,14 +123,18 @@ A time-series health tracking application centered on mood, sleep, hydration, we
 - Users can start, pause, and reset the breathing cycle
 - Audio cues play distinct tones per phase and stop immediately on pause or reset
 - Hold tone is intentionally higher than inhale and exhale, while exhale remains lower than inhale
-- Audio fades during the back half of each phase for a softer transition
+- Audio fades completely to silence before the next phase sound begins (300ms+ silence gap between phases)
 - The Exercise tab shows the currently selected breathing exercise name
 - Selecting a profile from Settings routes users directly back to the Exercise tab
 
 ### 15. Breathing Preferences & Profiles
 - Users can configure inhale, hold, and exhale durations in Settings
 - Users can toggle breathing audio on/off and adjust volume
+- Audio toggle displays a live On/Off status badge and only the toggle switch itself is clickable (not the label row)
+- Volume slider uses the site's earthy gradient (slate → teal → sage) matching the mood slider style
+- Maximum audio volume is capped at 0.30 (reduced from 0.60) with lower defaults across all presets
 - Users can choose from saved breathing color palettes: Ocean, Sunrise, Forest, Lavender, and Ember
+- Palette swatches are displayed as circles
 - Breathing preferences persist to the authenticated user account and restore on login, refresh, and new devices
 - Users can save named breathing profiles from their current settings
 - Users can edit previously saved breathing profiles
@@ -154,7 +158,7 @@ A time-series health tracking application centered on mood, sleep, hydration, we
   "avatar": "string (url/path)",
   "theme_preference": "string ('light' | 'dark')",
   "breathing_audio_enabled": "boolean",
-  "breathing_audio_level": "number (0.00-0.60)",
+  "breathing_audio_level": "number (0.00-0.30)",
   "breathing_color_palette": "string ('ocean' | 'sunrise' | 'forest' | 'lavender' | 'ember')",
   "password_hash": "string (DB only)",
   "created_at": "timestamp",
@@ -189,7 +193,7 @@ A time-series health tracking application centered on mood, sleep, hydration, we
   "hold_seconds": "number",
   "exhale_seconds": "number",
   "audio_enabled": "boolean",
-  "audio_level": "number (0.00-0.60)",
+  "audio_level": "number (0.00-0.30)",
   "created_at": "timestamp",
   "updated_at": "timestamp"
 }
@@ -198,9 +202,20 @@ A time-series health tracking application centered on mood, sleep, hydration, we
 ## Styling Architecture
 - `/frontend/src/styles/_variables.scss`: design tokens (colors, spacing, typography)
 - `/frontend/src/styles/_mixins.scss`: reusable mixins (flexbox, grid, responsive breakpoints)
-- `/frontend/src/styles/index.scss`: global base styles and theme system
-- `/frontend/src/styles/App.scss`: app shell, header/nav, responsive layouts
+- `/frontend/src/styles/index.scss`: global base styles, CSS custom property theme system, and dark mode overrides
+- `/frontend/src/styles/App.scss`: app shell, header/nav, dashboard sections, responsive layouts
 - Component style files: MoodForm, TodaysEntry, MoodChart, MoodComparison, Settings, EntryDetails, AuthForm, BreathingExercise
+
+### Design System
+- **Palette:** Earthy wellness tones — slate (`#58809B`), teal (`#6BA093`), sage (`#8BC695`), olive (`#A2A574`), earth (`#8C7664`)
+- **Light mode:** Neutral cool-white surfaces (`#f4f5f7` page bg, `#ffffff` cards), dark navy text
+- **Dark mode:** Neutral charcoal surfaces (`#111214` page bg, `#1d2025` cards), no green tint
+- **Theme switching:** CSS custom properties (`--surface`, `--input-bg`, `--text-main`, etc.) toggled via `[data-theme='dark']` on `:root`
+- **`@mixin card`** uses `var(--surface, $bg-white)` so all cards automatically respect the active theme
+- **`@mixin form-input`** uses `var(--input-bg)` / `var(--input-bg-focus)` for consistent dark-mode inputs
+- **Left border accent pattern:** Cards and section headings use a 4px colored left border (or `::before` bar on `h2`) to identify the pillar: slate = mood/summary, teal = sleep/daily, olive = insights, sage = trends
+- **Flat design:** All `$radius-sm/md/lg/xl` are `0`; only `$radius-full: 50%` for circles
+- **Spinner buttons** (`spinner-btn`, `step-btn`) use `align-self: stretch` so they always match the adjacent input height; both files share identical visual style
 
 ### Mobile Responsive Design
 - Breakpoints: Mobile (< 768px), Tablet (768px - 1024px), Desktop (> 1024px)
@@ -235,7 +250,8 @@ A time-series health tracking application centered on mood, sleep, hydration, we
 - Mobile UX regression: viewport checks for slide-out menu, nav visibility, and touch-target usability
 - Mobile dashboard stacking: confirm Entry Details does not render behind other cards and appears after trend/insight cards
 - Breathing exercise flow: start, pause, reset, and verify countdown/phase changes
-- Breathing audio: confirm phase tones differ, stop on pause/reset, and respect audio toggle/volume
+- Breathing audio: confirm phase tones differ, stop on pause/reset, respect audio toggle/volume, and verify silence gap between phases
+- Breathing audio toggle: confirm the label row is not clickable; only the toggle switch triggers the on/off state
 - Breathing profile flow: load preset, save named profile, edit saved profile, and verify active exercise selection updates
 - Breathing theme persistence: save a palette, reload session, log in on another device/browser, and confirm palette restores
 - Breathing tab navigation: selecting a profile from Settings should return the user to Exercise with the chosen routine shown
@@ -253,6 +269,9 @@ A time-series health tracking application centered on mood, sleep, hydration, we
 - Navigation styling must preserve readable contrast in both light and dark mode
 - All dashboard and form CSS must be reviewed in both themes to ensure readable typography, visible chart labels, accessible contrast, and clear button states
 - Breathing exercise colors and audio settings should remain palette-driven and account-persistent across theme changes
+- Dark mode surfaces use neutral charcoal tones — avoid green-tinted backgrounds; accent colors (teal borders, sage gradients) provide the earthy feel
+- Input dark mode overrides in `index.scss` use `var(--input-bg)` and `var(--border-soft)` — do not hardcode hex values so the theme stays consistent
+- The `index.scss` card block must not include a `border !important` shorthand on `.comparison-card` or other components that manage their own per-pillar border colors
 
 ## Build Status
 - [x] Project setup (frontend, backend, environment config)

@@ -13,28 +13,28 @@ const MAX_SECONDS = 60;
 const MIN_CYCLES = 1;
 const MAX_CYCLES = 50;
 
-const PHASE_AUDIO = {
-  inhale: { primary: 164.81, secondary: 207.65 },
-  hold: { primary: 246.94, secondary: 311.13 },
-  exhale: { primary: 146.83, secondary: 185.0 },
+const PHASE_WIND = {
+  inhale: { freqStart: 280, freqEnd: 750, q: 1.1 },
+  hold:   { freqStart: 450, freqEnd: 450, q: 0.7 },
+  exhale: { freqStart: 750, freqEnd: 220, q: 1.4 },
 };
 
 const COLOR_PALETTES = [
   {
     id: "ocean",
     label: "Ocean",
-    core: ["#7edff5", "#0ea5a4", "#0a5f79"],
+    core: ["#9ecfdf", "#3d8fa8", "#1a5570"],
     orb: [
       "rgba(255, 255, 255, 0.96)",
       "rgba(71, 166, 226, 0.9)",
       "rgba(22, 88, 148, 0.96)",
     ],
     shadow: {
-      core: "rgba(14, 165, 164, 0.45)",
-      coreSoft: "rgba(14, 165, 164, 0.38)",
-      coreStrong: "rgba(14, 165, 164, 0.62)",
+      core: "rgba(61, 143, 168, 0.45)",
+      coreSoft: "rgba(61, 143, 168, 0.38)",
+      coreStrong: "rgba(61, 143, 168, 0.62)",
       orb: "rgba(24, 100, 166, 0.34)",
-      coreDark: "rgba(81, 191, 255, 0.5)",
+      coreDark: "rgba(158, 207, 223, 0.5)",
       orbDark: "rgba(64, 157, 236, 0.45)",
     },
   },
@@ -130,34 +130,31 @@ const PRESET_PROFILES = [
   {
     id: "preset-calm-reset",
     name: "Calm Reset",
-    icon: "🌊",
     inhale_seconds: 4,
     hold_seconds: 4,
     exhale_seconds: 6,
     audio_enabled: true,
-    audio_level: 0.18,
+    audio_level: 0.09,
     color_palette: "ocean",
   },
   {
     id: "preset-focus-box",
     name: "Focus Box",
-    icon: "🎯",
     inhale_seconds: 4,
     hold_seconds: 4,
     exhale_seconds: 4,
     audio_enabled: true,
-    audio_level: 0.16,
+    audio_level: 0.08,
     color_palette: "forest",
   },
   {
     id: "preset-deep-sleep",
     name: "Deep Sleep 4-7-8",
-    icon: "🌙",
     inhale_seconds: 4,
     hold_seconds: 7,
     exhale_seconds: 8,
     audio_enabled: true,
-    audio_level: 0.12,
+    audio_level: 0.06,
     color_palette: "lavender",
   },
 ];
@@ -183,10 +180,10 @@ const clampCycleCount = (value) => {
 const normalizeAudioLevel = (value) => {
   const numeric = Number(value);
   if (!Number.isFinite(numeric)) {
-    return 0.22;
+    return 0.12;
   }
 
-  const clamped = Math.max(0, Math.min(0.6, numeric));
+  const clamped = Math.max(0, Math.min(0.3, numeric));
   return Number(clamped.toFixed(2));
 };
 
@@ -200,25 +197,7 @@ const normalizeColorPalette = (value) => {
   return hasPalette ? normalized : "ocean";
 };
 
-const getProfileIcon = (profile) => {
-  if (profile?.icon) {
-    return profile.icon;
-  }
-
-  const inhale = Number(profile?.inhale_seconds) || 0;
-  const hold = Number(profile?.hold_seconds) || 0;
-  const exhale = Number(profile?.exhale_seconds) || 0;
-
-  if (exhale >= inhale + 2) {
-    return "🫁";
-  }
-
-  if (inhale === hold && hold === exhale) {
-    return "📦";
-  }
-
-  return "✨";
-};
+const getProfileIcon = () => null;
 
 const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
   const [durations, setDurations] = useState({
@@ -240,7 +219,7 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
     typeof settings?.audioEnabled === "boolean" ? settings.audioEnabled : true,
   );
   const [audioLevel, setAudioLevel] = useState(
-    normalizeAudioLevel(settings?.audioLevel ?? 0.22),
+    normalizeAudioLevel(settings?.audioLevel ?? 0.12),
   );
   const [colorPalette, setColorPalette] = useState(
     normalizeColorPalette(settings?.colorPalette),
@@ -288,7 +267,7 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
         ? settings.audioEnabled
         : true,
     );
-    setAudioLevel(normalizeAudioLevel(settings?.audioLevel ?? 0.22));
+    setAudioLevel(normalizeAudioLevel(settings?.audioLevel ?? 0.12));
     setColorPalette(normalizeColorPalette(settings?.colorPalette));
 
     durationsRef.current = syncedDurations;
@@ -425,9 +404,9 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
         return;
       }
 
-      const phaseSound = PHASE_AUDIO[phaseKey];
+      const phaseConfig = PHASE_WIND[phaseKey];
       const context = ensureAudioContext();
-      if (!context || !phaseSound) {
+      if (!context || !phaseConfig) {
         return;
       }
 
@@ -437,59 +416,70 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
         0.35,
         Number(currentDurations[phaseKey]) || 1,
       );
-      const fadeInTime = Math.min(0.35, phaseDurationSeconds * 0.2);
+      const fadeInTime = Math.min(1.2, phaseDurationSeconds * 0.45);
       const endTime = now + phaseDurationSeconds;
       const fadeOutStart =
         phaseKey === "exhale"
           ? now + phaseDurationSeconds * 0.42
           : now + phaseDurationSeconds * 0.5;
-      const tailFadeSeconds = Math.min(0.08, phaseDurationSeconds * 0.08);
-      const audibleEndTime = Math.max(
-        fadeOutStart + 0.02,
-        endTime - tailFadeSeconds,
-      );
-      const audibleFloor = Math.max(audioLevel * 0.18, 0.02);
+      // Fade completely to silence at least 300ms before the phase ends
+      const fadeOutEnd = Math.max(fadeOutStart + 0.4, endTime - 0.3);
 
       stopActiveCue(0.03);
 
+      // White noise buffer shared by both sources
+      const bufferSize = Math.ceil(context.sampleRate * (phaseDurationSeconds + 0.1));
+      const noiseBuffer = context.createBuffer(1, bufferSize, context.sampleRate);
+      const channelData = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < channelData.length; i++) {
+        channelData[i] = Math.random() * 2 - 1;
+      }
+
+      // Primary source: bandpass sweep — the body of the wind
+      const sourceMain = context.createBufferSource();
+      sourceMain.buffer = noiseBuffer;
+      const bandpass = context.createBiquadFilter();
+      bandpass.type = "bandpass";
+      bandpass.frequency.setValueAtTime(phaseConfig.freqStart, now);
+      bandpass.frequency.linearRampToValueAtTime(phaseConfig.freqEnd, endTime);
+      bandpass.Q.setValueAtTime(phaseConfig.q, now);
+
+      // Secondary source: highpass — airy overtone layer
+      const sourceAiry = context.createBufferSource();
+      sourceAiry.buffer = noiseBuffer;
+      const highpass = context.createBiquadFilter();
+      highpass.type = "highpass";
+      highpass.frequency.setValueAtTime(2200, now);
+      highpass.Q.setValueAtTime(0.5, now);
+      const airyGain = context.createGain();
+      airyGain.gain.setValueAtTime(0.22, now);
+
+      // Master gain envelope — fades fully to silence before phase end
       const gain = context.createGain();
-      const filter = context.createBiquadFilter();
-      filter.type = "bandpass";
-      filter.frequency.setValueAtTime(520, now);
-      filter.frequency.linearRampToValueAtTime(360, endTime);
-      filter.Q.setValueAtTime(1.1, now);
       gain.gain.setValueAtTime(0.0001, now);
       gain.gain.linearRampToValueAtTime(audioLevel, now + fadeInTime);
       gain.gain.setValueAtTime(audioLevel, fadeOutStart);
-      // Fade starts halfway through, but keep a clearly audible tone until near phase end.
-      gain.gain.linearRampToValueAtTime(audibleFloor, audibleEndTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, endTime);
-      gain.connect(filter);
-      filter.connect(context.destination);
+      gain.gain.linearRampToValueAtTime(0.0001, fadeOutEnd);
 
-      const oscPrimary = context.createOscillator();
-      oscPrimary.type = "square";
-      oscPrimary.frequency.setValueAtTime(phaseSound.primary, now);
-      oscPrimary.connect(gain);
+      sourceMain.connect(bandpass);
+      bandpass.connect(gain);
+      sourceAiry.connect(highpass);
+      highpass.connect(airyGain);
+      airyGain.connect(gain);
+      gain.connect(context.destination);
 
-      const oscSecondary = context.createOscillator();
-      oscSecondary.type = "sawtooth";
-      oscSecondary.frequency.setValueAtTime(phaseSound.secondary, now);
-      oscSecondary.detune.setValueAtTime(-10, now);
-      oscSecondary.connect(gain);
-
-      oscPrimary.start(now);
-      oscSecondary.start(now);
-      oscPrimary.stop(endTime);
-      oscSecondary.stop(endTime);
+      sourceMain.start(now);
+      sourceAiry.start(now);
+      sourceMain.stop(endTime);
+      sourceAiry.stop(endTime);
 
       activeCueRef.current = {
         gain,
-        oscillators: [oscPrimary, oscSecondary],
+        oscillators: [sourceMain, sourceAiry],
       };
 
-      oscSecondary.onended = () => {
-        if (activeCueRef.current?.oscillators?.includes(oscSecondary)) {
+      sourceMain.onended = () => {
+        if (activeCueRef.current?.oscillators?.includes(sourceMain)) {
           activeCueRef.current = null;
         }
       };
@@ -1191,18 +1181,22 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
             <section className="settings-section-card settings-section-audio">
               <div className="audio-settings-block">
               <h4>Audio Cues</h4>
-              <label
-                className="audio-toggle-row"
-                htmlFor="breathing-audio-enabled"
-              >
-                <span>Play calming tones for inhale, hold, and exhale</span>
-                <input
-                  id="breathing-audio-enabled"
-                  type="checkbox"
-                  checked={audioEnabled}
-                  onChange={handleAudioEnabledChange}
-                />
-              </label>
+              <div className="audio-toggle-row">
+                <span>
+                  Play calming tones for inhale, hold, and exhale
+                  <span className={`audio-toggle-status ${audioEnabled ? "is-on" : "is-off"}`}>
+                    {audioEnabled ? "On" : "Off"}
+                  </span>
+                </span>
+                <label htmlFor="breathing-audio-enabled" className="audio-toggle-label">
+                  <input
+                    id="breathing-audio-enabled"
+                    type="checkbox"
+                    checked={audioEnabled}
+                    onChange={handleAudioEnabledChange}
+                  />
+                </label>
+              </div>
 
               <label
                 className="audio-volume-row"
@@ -1213,7 +1207,7 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
                   id="breathing-audio-volume"
                   type="range"
                   min="0"
-                  max="0.6"
+                  max="0.3"
                   step="0.01"
                   value={audioLevel}
                   onChange={handleAudioLevelChange}
