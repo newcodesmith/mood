@@ -19,7 +19,11 @@
       "Bash(python3 /tmp/verify_unused.py)",
       "Bash(npx knex:*)",
       "Bash(heroku git:remote -a mood--backend)",
-      "Bash(git subtree:*)"
+      "Bash(git subtree:*)",
+      "Bash(ls *.json)",
+      "Bash(heroku apps:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }
