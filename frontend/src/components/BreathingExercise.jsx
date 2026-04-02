@@ -295,17 +295,13 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
     setCompletedCycles(0);
     shouldStopAtCycleBoundaryRef.current = false;
     setIsRunning(false);
-  }, [
-    userId,
-    settings?.audioEnabled,
-    settings?.audioLevel,
-    settings?.cycleCount,
-    settings?.colorPalette,
-    settings?.visualShape,
-    settings?.exhale,
-    settings?.hold,
-    settings?.inhale,
-  ]);
+  // Only re-sync when the user changes (login/logout/switch).
+  // Individual settings deps are intentionally omitted: after the component
+  // mounts and initialises from the server, local state is the source of
+  // truth. Re-syncing on every save response creates a race where an
+  // in-flight save with stale values overwrites changes the user just made.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   useEffect(() => {
     if (!userId) {

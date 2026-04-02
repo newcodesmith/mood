@@ -30,7 +30,7 @@ const passwordRules = [
 ];
 
 const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
-  const [name, setName] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [avatar, setAvatar] = useState('');
   const [themePreference, setThemePreference] = useState(theme || 'light');
   const [errors, setErrors] = useState({});
@@ -58,7 +58,7 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
   // Initialize form with user data
   useEffect(() => {
     if (user) {
-      setName(user.name || '');
+      setDisplayName(user.display_name || '');
       // Validate avatar from user data - clear if invalid (like email addresses)
       const avatarUrl = user.avatar || '';
       setAvatar(isValidImageUrl(avatarUrl) ? avatarUrl : '');
@@ -170,14 +170,12 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!name || name.trim().length === 0) {
-      newErrors.name = 'Name is required';
+    const trimmed = displayName.trim();
+    if (trimmed.length > 0 && trimmed.length < 2) {
+      newErrors.displayName = 'Display name must be at least 2 characters';
     }
-    if (name.length < 2) {
-      newErrors.name = 'Name must be at least 2 characters';
-    }
-    if (name.length > 50) {
-      newErrors.name = 'Name must be 50 characters or less';
+    if (trimmed.length > 50) {
+      newErrors.displayName = 'Display name must be 50 characters or less';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -188,7 +186,7 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
     if (!validateForm()) return;
 
     try {
-      const updated = await userService.update(user.id, { name, avatar });
+      const updated = await userService.update(user.id, { displayName: displayName.trim() || null, avatar });
       if (onThemeChange) {
         onThemeChange(themePreference, { persist: true });
       }
@@ -256,16 +254,18 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
 
       <form onSubmit={handleSubmit} className="settings-form">
         <div className="form-section">
-          <h3>Name</h3>
+          <h3>Display Name</h3>
           <div className="form-group">
             <input
+              id="display-name-field"
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Your name"
-              className={errors.name ? 'input-error' : ''}
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              placeholder={user?.name || 'Enter a display name'}
+              className={errors.displayName ? 'input-error' : ''}
             />
-            {errors.name && <span className="error">{errors.name}</span>}
+            {errors.displayName && <span className="error">{errors.displayName}</span>}
+            <small>Login username: <strong>{user?.name}</strong></small>
           </div>
         </div>
 

@@ -485,14 +485,14 @@ function App() {
               </button>
               <div className="user-section">
                 <div className="user-info">
-                  {currentUser.avatar && <img src={currentUser.avatar} alt={currentUser.name} className="user-avatar" />}
+                  {currentUser.avatar && <img src={currentUser.avatar} alt={currentUser.display_name || currentUser.name} className="user-avatar" />}
                   <button
                     type="button"
                     className={`user-name-btn ${activeTab === 'settings' ? 'active' : ''}`}
                     onClick={() => setActiveTab('settings')}
                     title="Open settings"
                   >
-                    {currentUser.name}
+                    {currentUser.display_name || currentUser.name}
                   </button>
                 </div>
                 <button className="logout-btn" onClick={handleLogout} title="Sign out">
@@ -512,9 +512,9 @@ function App() {
             <div className={`mobile-menu ${mobileMenuOpen ? 'open' : ''}`}>
               <div className="mobile-menu-header">
                 <div className="user-info-mobile">
-                  {currentUser.avatar && <img src={currentUser.avatar} alt={currentUser.name} className="user-avatar" />}
+                  {currentUser.avatar && <img src={currentUser.avatar} alt={currentUser.display_name || currentUser.name} className="user-avatar" />}
                   <div>
-                    <p className="user-name-mobile">{currentUser.name}</p>
+                    <p className="user-name-mobile">{currentUser.display_name || currentUser.name}</p>
                     <p className="user-email-mobile">{currentUser.email}</p>
                   </div>
                 </div>
