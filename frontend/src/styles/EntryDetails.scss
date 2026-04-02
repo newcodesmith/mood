@@ -124,7 +124,7 @@
   background: rgba($primary-color, 0.08);
   padding: $spacing-md $spacing-lg;
   border-radius: 0 $radius-md $radius-md 0;
-  border-left: 4px solid rgba($primary-color, 0.55);
+  border-left: 3px solid rgba($primary-color, 0.55);
   font-style: italic;
   color: $text-secondary;
   line-height: 1.7;
@@ -239,7 +239,7 @@
 @include mobile {
   .entry-header     { flex-direction: column; }
   .entry-mood-badge { width: 46px; height: 46px; font-size: $font-size-xl; }
-  .reflection-box   { border-left-width: 4px; }
+  .reflection-box   { border-left-width: 3px; }
 }
 
 :root[data-theme='dark'] {

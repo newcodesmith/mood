@@ -18,12 +18,13 @@ const TodaysEntry = ({ entry, onEdit, onLogMood }) => {
 
   return (
     <div className="todays-entry">
-      <div className="mood-display">
-        <div className="mood-score">{entry.mood}</div>
-        <div className="mood-label">out of 10</div>
+      <div className="mood-hero">
+        <div className="mood-display">
+          <div className="mood-score">{entry.mood}</div>
+          <div className="mood-label">out of 10</div>
+        </div>
+        <div className="quote">{getQuoteByMood(entry.mood)}</div>
       </div>
-
-      <div className="quote">{getQuoteByMood(entry.mood)}</div>
 
       <div className="entry-detail">
         <h3>Feelings</h3>

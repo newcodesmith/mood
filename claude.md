@@ -15,8 +15,9 @@ A time-series health tracking application centered on mood, sleep, hydration, we
 ## Core Features
 
 ### 1. User Login & Registration
-- Users can register with name, email, and password
-- Users can log in with email and password
+- Users register with a unique username and password (no email required)
+- Users log in with their username and password
+- Username serves as the account identifier (2–50 characters, must be unique at registration)
 - Users can toggle password visibility (show/hide) on login and registration forms
 - Authenticated users can change their password from the Settings page by providing current password + new password confirmation
 - Frontend stores auth token and restores session on refresh
@@ -86,7 +87,7 @@ A time-series health tracking application centered on mood, sleep, hydration, we
 - Check-in count remains visible in summary context
 
 ### 11. Settings & Profile
-- Update user name
+- Update display name (non-unique — multiple users may share a display name)
 - Upload/change avatar from local files or image URL
 - Preview and remove avatar before saving
 - Store theme preference and profile preferences
@@ -153,8 +154,7 @@ A time-series health tracking application centered on mood, sleep, hydration, we
 ```json
 {
   "id": "number",
-  "name": "string",
-  "email": "string (unique)",
+  "name": "string (unique login username / display name)",
   "avatar": "string (url/path)",
   "theme_preference": "string ('light' | 'dark')",
   "breathing_audio_enabled": "boolean",
@@ -213,13 +213,15 @@ A time-series health tracking application centered on mood, sleep, hydration, we
 - **Theme switching:** CSS custom properties (`--surface`, `--input-bg`, `--text-main`, etc.) toggled via `[data-theme='dark']` on `:root`
 - **`@mixin card`** uses `var(--surface, $bg-white)` so all cards automatically respect the active theme
 - **`@mixin form-input`** uses `var(--input-bg)` / `var(--input-bg-focus)` for consistent dark-mode inputs
-- **Left border accent pattern:** Cards and section headings use a 4px colored left border (or `::before` bar on `h2`) to identify the pillar: slate = mood/summary, teal = sleep/daily, olive = insights, sage = trends
+- **Left border accent pattern:** Cards and section headings use a 3px colored left border (or `::before` bar on `h2`) to identify the pillar: slate = mood/summary, teal = sleep/daily, olive = insights, sage = trends
+- **Nav buttons:** Header navigation buttons use a subtle filled background and visible border in all states (inactive and active), not transparent. Active state applies the primary gradient.
 - **Flat design:** All `$radius-sm/md/lg/xl` are `0`; only `$radius-full: 50%` for circles
 - **Spinner buttons** (`spinner-btn`, `step-btn`) use `align-self: stretch` so they always match the adjacent input height; both files share identical visual style
 
 ### Mobile Responsive Design
 - Breakpoints: Mobile (< 768px), Tablet (768px - 1024px), Desktop (> 1024px)
 - Mobile-first approach with `@include mobile`, `@include tablet`, `@include desktop` mixins
+- At 440px and below: profile cards expand to 100% width and center; breathing stepper content centers
 - Desktop/tablet navigation sits below the header rather than stretching across it
 - Mobile account actions use a slide-out panel with backdrop and close control
 - Font sizes, padding, and gaps scale down on mobile for optimal viewing
@@ -233,8 +235,8 @@ A time-series health tracking application centered on mood, sleep, hydration, we
 - Open UI: `cd frontend && npm run cy:open`
 
 ## Test Suggestions
-- Auth happy path: register, login, restore session on refresh, logout
-- Auth validation: weak password rejection, mismatched confirm password, invalid login generic error
+- Auth happy path: register with username, login, restore session on refresh, logout
+- Auth validation: weak password rejection, mismatched confirm password, invalid username/password generic error
 - Add health check-in: create today's entry with mood, sleep, water, and weight; verify dashboard updates
 - One-entry-per-day guard: second create attempt for same day should show edit redirect/notice
 - Edit mood entry: open edit from Today's Entry and from chart detail, update fields, verify persisted changes
@@ -295,6 +297,8 @@ A time-series health tracking application centered on mood, sleep, hydration, we
 - [x] Breathing color palette selection with light/dark theme support
 - [x] Saved and preset breathing profiles with create/edit/load flows
 - [x] Mobile-responsive navigation and layout polish
-- [x] Shared SCSS design system and component styling cleanup
+- [x] Shared SCSS design system and component styling cleanup (removed unused variables, duplicate rules, dead overrides)
+- [x] Auth switched from email to username-based login
+- [x] Display name unique constraint dropped (migration 013)
 - [ ] Cypress E2E coverage for full auth, mood logging, edit, and settings flows
 - [x] Production deployment checks (REACT_APP_API_URL set, CORS verified, smoke test on hosted frontend)

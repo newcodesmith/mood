@@ -12,9 +12,8 @@
   gap: $spacing-md;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 
-  @include desktop { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  @include tablet  { grid-template-columns: 1fr; gap: $spacing-md; }
-  @include mobile  { grid-template-columns: 1fr; gap: $spacing-md; }
+  @include tablet { grid-template-columns: 1fr; }
+  @include mobile { grid-template-columns: 1fr; }
 }
 
 // Each card gets a unique pillar-color accent
@@ -22,7 +21,7 @@
   @include card;
   border: 1px solid $border-color;
   border-radius: 0 $radius-lg $radius-lg 0;
-  border-left-width: 4px;
+  border-left-width: 3px;
   display: grid;
   gap: $spacing-sm;
   align-content: start;
@@ -170,10 +169,3 @@ h3 {
   }
 }
 
-@include mobile {
-  .comparison-grid { grid-template-columns: 1fr; }
-
-  .current,
-  .previous,
-  .change { padding: $spacing-sm $spacing-md; }
-}

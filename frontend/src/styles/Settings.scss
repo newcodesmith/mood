@@ -335,7 +335,7 @@
   background: rgba($primary-color, 0.04);
   margin-bottom: $spacing-md;
   margin-top: $spacing-md;
-  border-left: 4px solid rgba($primary-color, 0.4);
+  border-left: 3px solid rgba($primary-color, 0.4);
   border-radius: 0 $radius-md $radius-md 0;
 
   @include mobile {
@@ -403,7 +403,7 @@
 .password-rules {
   background: rgba($color-slate, 0.06);
   border: 1px solid $border-color;
-  border-left: 4px solid $color-slate;
+  border-left: 3px solid $color-slate;
   border-radius: 0 $radius-md $radius-md 0;
   padding: $spacing-md;
 
@@ -617,14 +617,6 @@
 }
 
 @include mobile {
-  .avatar-section {
-    grid-template-columns: 1fr;
-  }
-
-  .form-actions {
-    gap: $spacing-sm;
-  }
-
   .btn {
     padding: 0.875rem $spacing-md;
     font-size: $font-size-sm;

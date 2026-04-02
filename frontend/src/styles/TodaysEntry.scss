@@ -56,23 +56,39 @@
   }
 }
 
-.mood-display {
+.mood-hero {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba($color-slate, 0.08);
+  align-items: stretch;
+  border-left: 3px solid $color-slate;
   border: 1px solid $border-color;
-  border-left: 4px solid $color-slate;
-  padding: $spacing-lg;
+  border-left: 3px solid $color-slate;
   border-radius: 0 $radius-lg $radius-lg 0;
+  background: rgba($color-slate, 0.08);
+  overflow: hidden;
 
   @include mobile {
     flex-direction: column;
-    text-align: center;
+  }
+}
+
+.mood-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  padding: $spacing-lg;
+  flex-shrink: 0;
+  min-width: 100px;
+  border-right: 1px solid $border-color;
+
+  @include mobile {
+    flex-direction: row;
     gap: $spacing-sm;
     padding: $spacing-md;
-    border-radius: $radius-md;
-    border-left-width: 4px;
+    border-right: none;
+    border-bottom: 1px solid $border-color;
+    justify-content: center;
   }
 }
 
@@ -96,15 +112,19 @@
 }
 
 .quote {
-  background: rgba($color-slate, 0.1);
-  border-left: 4px solid $color-slate;
-  padding: $spacing-md $spacing-lg;
-  border-radius: 0 $radius-md $radius-md 0;
+  flex: 1;
+  padding: $spacing-lg;
   color: $text-secondary;
   line-height: 1.65;
   font-size: 0.9375rem;
   font-weight: $font-weight-medium;
   font-style: italic;
+  display: flex;
+  align-items: center;
+
+  @include mobile {
+    padding: $spacing-md;
+  }
 }
 
 .entry-detail {
@@ -166,19 +186,22 @@
   color: rgba(226, 228, 231, 0.5);
 }
 
-:root[data-theme='dark'] .mood-display {
-  background: $dark-surface;
-  border-color: rgba($color-teal, 0.14);
-}
-
 :root[data-theme='dark'] {
-  .entry-detail h3 { color: $color-teal; }
+  .mood-hero {
+    background: $dark-surface;
+    border-color: rgba($color-teal, 0.14);
+    border-left-color: rgba($color-teal, 0.45);
+  }
+
+  .mood-display {
+    border-color: rgba($color-teal, 0.14);
+  }
 
   .quote {
-    background: rgba($color-teal, 0.07);
-    border-left-color: rgba($color-teal, 0.45);
     color: rgba(226, 228, 231, 0.85);
   }
+
+  .entry-detail h3 { color: $color-teal; }
 
   .entry-detail {
     background: rgba(255, 255, 255, 0.03);
@@ -187,7 +210,5 @@
 }
 
 @include mobile {
-  .mood-display { padding: $spacing-md; }
-  .quote        { padding: $spacing-md; }
   .entry-detail { padding: $spacing-md; }
 }

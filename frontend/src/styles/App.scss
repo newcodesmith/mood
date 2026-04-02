@@ -7,6 +7,7 @@
 
 .app {
   min-height: 100vh;
+  position: relative;
   @include flex-column;
   background: linear-gradient(160deg, #eff0f3 0%, #f4f5f7 40%, #f0f1f5 100%);
 
@@ -168,12 +169,12 @@
 
 .header-nav-btn {
   padding: 9px 22px;
-  background: transparent;
+  background: rgba($primary-color, 0.06);
   color: $text-primary;
-  border: 1px solid transparent;
+  border: 1px solid rgba($primary-color, 0.18);
   border-radius: 0;
   font-size: 0.9375rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all $transition-fast;
   letter-spacing: -0.01em;
@@ -181,16 +182,15 @@
   margin: 0 5px;
 
   &:hover {
-    background: rgba($primary-color, 0.1);
+    background: rgba($primary-color, 0.12);
     color: $primary-color;
-    border-color: rgba($primary-color, 0.2);
+    border-color: rgba($primary-color, 0.32);
   }
 
   &.active {
     background: $gradient-primary;
     color: #fff;
     border-color: transparent;
-    font-weight: 600;
     box-shadow: 0 2px 14px rgba($primary-color, 0.35);
   }
 
@@ -207,16 +207,19 @@
 }
 
 :root[data-theme='dark'] .header-nav-btn {
+  background: rgba($color-teal, 0.07);
+  border-color: rgba($color-teal, 0.18);
   color: rgba(226, 228, 231, 0.75);
 
   &:hover {
-    background: rgba($color-teal, 0.12);
-    border-color: rgba($color-teal, 0.25);
+    background: rgba($color-teal, 0.14);
+    border-color: rgba($color-teal, 0.32);
     color: #e2e4e7;
   }
 
   &.active {
     background: $gradient-primary;
+    border-color: transparent;
     color: #fff;
     box-shadow: 0 2px 16px rgba($primary-color, 0.4);
   }
@@ -444,7 +447,7 @@
   text-align: left;
   cursor: pointer;
   transition: background $transition-fast;
-  border-left: 4px solid transparent;
+  border-left: 3px solid transparent;
 
   &:hover {
     background: $bg-lighter;
@@ -478,8 +481,6 @@
     &.open { opacity: 1; pointer-events: auto; }
   }
 }
-
-.app { position: relative; }
 
 @include tablet {
   .app-header { flex-wrap: wrap; gap: $spacing-md; }
@@ -543,7 +544,7 @@
 .dashboard-section {
   @include card;
   padding: $spacing-md $spacing-lg;
-  border-left: 4px solid transparent;
+  border-left: 3px solid transparent;
   background-clip: padding-box;
 
   &.dashboard-summary    { border-left-color: $color-slate; }
@@ -579,7 +580,7 @@
     &::before {
       content: '';
       display: inline-block;
-      width: 4px;
+      width: 3px;
       height: 1.1em;
       background: $gradient-primary;
       -webkit-background-clip: unset;
@@ -622,7 +623,7 @@
 .summary-card {
   background: $bg-white;
   border: 1px solid $border-color;
-  border-left: 4px solid $color-slate;
+  border-left: 3px solid $color-slate;
   border-radius: 0 $radius-lg $radius-lg 0;
   padding: $spacing-md;
   box-shadow: $shadow-sm;
@@ -777,7 +778,7 @@
     &::before {
       content: '';
       display: inline-block;
-      width: 4px;
+      width: 3px;
       height: 1.1em;
       background: $gradient-primary;
       flex-shrink: 0;
@@ -806,7 +807,7 @@
   @include bg-gradient-light;
   padding: $spacing-md;
   border-radius: $radius-md;
-  border-left: 4px solid $secondary-color;
+  border-left: 3px solid $secondary-color;
 
   p {
     margin-bottom: $spacing-sm;
@@ -959,20 +960,10 @@
   .summary-note  { color: rgba(226, 228, 231, 0.45); }
   .summary-bar-track { background: rgba(107, 160, 147, 0.1); }
 
-  .mood-ring-center {
-    background: #252a2f;
-    strong { color: #e2e4e7; }
-    span   { color: rgba(226, 228, 231, 0.45); }
-  }
-
   .entry-card {
     background: rgba(107, 160, 147, 0.07);
     border-left-color: rgba($color-teal, 0.5);
     p, strong { color: #e2e4e7; }
-  }
-
-  .app {
-    background: linear-gradient(160deg, #0f1215 0%, #111214 40%, #111419 100%);
   }
 
   .dashboard-section {
