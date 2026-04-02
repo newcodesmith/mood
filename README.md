@@ -41,17 +41,19 @@ npm run dev
 ## Features
 
 - **Log Health Check-In** - Rate mood, select emotions, add reflections, and track sleep/water/weight
-- **Spinner Controls** - Increment/decrement pickers for sleep, water intake, and weight fields
-- **Dashboard Health Pillars** - Dedicated cards for Mood, Sleep, Hydration, and Weight with mini insights
+- **Spinner Controls** - Increment/decrement pickers for sleep, water intake, and weight fields; buttons match input height across the site
+- **Dashboard Health Pillars** - Dedicated cards for Mood, Sleep, Hydration, and Weight with mini insights and per-pillar color accents
 - **Health Trends** - Interactive chart tabs for Mood, Sleep, Water, and Weight over the last 11 entries
-- **Weekly Insights** - Compare mood, sleep, hydration, and weight (last 5 check-ins vs. previous 5)
+- **Weekly Insights** - Compare mood, sleep, hydration, and weight (last 5 check-ins vs. previous 5); cards have per-pillar colored left borders
 - **Today's Check-In** - View full current-day details including all tracked metrics
-- **Guided Breathing Exercise** - Run inhale/hold/exhale cycles with animated visuals, countdown, start/pause/reset controls, and per-phase tones
+- **Guided Breathing Exercise** - Run inhale/hold/exhale cycles with animated visuals, countdown, start/pause/reset controls, and per-phase tones that fade to silence before the next phase
 - **Breathing Profiles** - Save named breathing routines, edit them later, and load built-in presets for focus, calm, or sleep
-- **Breathing Theme Palettes** - Choose a breathing color palette that updates the shapes and related exercise UI
+- **Breathing Theme Palettes** - Choose a breathing color palette that updates the shapes and related exercise UI; palette swatches shown as circles
+- **Breathing Audio Controls** - Toggle with live On/Off status badge; volume slider styled with earthy gradient; maximum volume capped at 0.30
 - **Cross-Device Breathing Preferences** - Breathing audio settings and color palette persist to the user account
 - **Settings** - Update name, avatar, theme, change password
 - **Authentication** - Register/login with JWT, password reset
+- **Light & Dark Mode** - Earthy wellness palette with neutral charcoal dark mode surfaces; consistent input, card, and border styling across both themes
 - **Responsive** - Mobile-first design
 
 ## Tech Stack
@@ -91,7 +93,7 @@ Payload supports:
 
 Breathing preference payload supports:
 - `breathing_audio_enabled` or `breathingAudioEnabled` (boolean)
-- `breathing_audio_level` or `breathingAudioLevel` (0.00-0.60)
+- `breathing_audio_level` or `breathingAudioLevel` (0.00-0.30)
 - `breathing_color_palette` or `breathingColorPalette` (`ocean`, `sunrise`, `forest`, `lavender`, `ember`)
 
 Breathing profile payload supports:
@@ -100,7 +102,7 @@ Breathing profile payload supports:
 - `hold_seconds` or `holdSeconds` (required)
 - `exhale_seconds` or `exhaleSeconds` (required)
 - `audio_enabled` or `audioEnabled` (optional)
-- `audio_level` or `audioLevel` (optional)
+- `audio_level` or `audioLevel` (0.00-0.30, optional)
 
 ## Notes
 

@@ -1,25 +1,63 @@
 @import './variables';
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Sora:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+// ============================================================
+// Theme System — Earthy Wellness
+// Light: warm off-white, deep forest text, earthy accents
+// Dark:  deep forest, warm earth glows, muted teal accents
+// ============================================================
 
 :root {
-  --page-bg: radial-gradient(circle at 10% 6%, #d5f3f2 0%, #edf5ff 36%, #f6f9fc 100%);
-  --surface: rgba(255, 255, 255, 0.96);
+  --page-bg: #f4f5f7;
+  --surface: #ffffff;
   --surface-strong: #ffffff;
-  --text-main: #0f1f32;
-  --text-soft: #4d617c;
-  --border-soft: rgba(20, 46, 79, 0.14);
-  --card-shadow: 0 18px 44px rgba(23, 52, 88, 0.12);
+  --surface-secondary: #eaecf0;
+  --text-main: #1e2d28;
+  --text-soft: #6b8279;
+  --text-muted: #8fa89f;
+  --border-soft: rgba(88, 128, 155, 0.22);
+  --border-medium: rgba(88, 128, 155, 0.22);
+  --card-shadow: 0 2px 16px rgba(30, 45, 40, 0.07);
+  --card-shadow-hover: 0 4px 28px rgba(30, 45, 40, 0.11);
+  --brand: #58809B;
+  --brand-deep: #3d6f85;
+  --brand-light: #6BA093;
+  --brand-sage: #8BC695;
+  --brand-olive: #A2A574;
+  --brand-earth: #8C7664;
+  --accent: #8BC695;
+  --glow: none;
+  --input-bg: #eef0f3;
+  --input-bg-focus: #ffffff;
 }
 
 :root[data-theme='dark'] {
-  --page-bg: radial-gradient(circle at 14% 10%, #0d2539 0%, #071526 38%, #050d1a 100%);
-  --surface: #122033;
-  --surface-strong: #1a2b41;
-  --text-main: #f8fbff;
-  --text-soft: #e4ecf9;
-  --border-soft: rgba(189, 211, 239, 0.24);
-  --card-shadow: 0 18px 46px rgba(1, 7, 14, 0.6);
+  --page-bg: #111214;
+  --surface: #1d2025;
+  --surface-strong: #252a2f;
+  --surface-secondary: #181b1e;
+  --text-main: #e2e4e7;
+  --text-soft: #8a9199;
+  --text-muted: #565d68;
+  --border-soft: rgba(180, 190, 200, 0.12);
+  --border-medium: rgba(180, 190, 200, 0.22);
+  --card-shadow: none;
+  --card-shadow-hover: 0 0 0 1px rgba(180, 190, 200, 0.18);
+  --brand: #6BA093;
+  --brand-deep: #4e8275;
+  --brand-light: #8BC695;
+  --brand-sage: #8BC695;
+  --brand-olive: #A2A574;
+  --brand-earth: #8C7664;
+  --accent: #8BC695;
+  --glow: 0 4px 60px rgba(107, 160, 147, 0.15);
+  --input-bg: #222529;
+  --input-bg-focus: #272b30;
 }
+
+// ============================================================
+// Reset & Base
+// ============================================================
 
 * {
   margin: 0;
@@ -28,45 +66,65 @@
 }
 
 body {
-  font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: var(--text-main);
   background: var(--page-bg);
   transition: background 0.35s ease, color 0.25s ease;
   min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 #root {
   min-height: 100vh;
 }
 
-h1,
-h2,
-h3,
-h4 {
-  font-family: 'Sora', 'IBM Plex Sans', sans-serif;
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
 }
+
+// ============================================================
+// Core Card/Surface Theming
+// ============================================================
 
 .dashboard-section,
 .mood-form,
 .todays-entry,
 .mood-chart,
-.comparison-card,
 .comparison-insight,
 .settings .form-section,
 .settings-info,
 .entry-details,
 .auth-card,
 .breathing-page,
-.breathing-settings-card,
 .breathing-player-card {
-  background: var(--surface) !important;
+  background: var(--surface);
   color: var(--text-main) !important;
   border: 1px solid var(--border-soft) !important;
   box-shadow: var(--card-shadow) !important;
-  backdrop-filter: blur(10px);
 }
+
+.comparison-card {
+  background: var(--surface);
+  color: var(--text-main) !important;
+  box-shadow: var(--card-shadow) !important;
+}
+
+.breathing-settings-card {
+  background: transparent !important;
+  color: var(--text-main) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+// ============================================================
+// Muted/Secondary Text
+// ============================================================
 
 .section-description,
 .entry-label,
@@ -92,44 +150,60 @@ h4 {
   color: var(--text-main) !important;
 }
 
+// ============================================================
+// Form Elements
+// ============================================================
+
 input,
 textarea,
 select {
-  color: var(--text-main) !important;
-  border-color: var(--border-soft) !important;
+  color: var(--text-main);
+  border-color: var(--border-soft);
 }
+
+// ============================================================
+// Dark Mode — Header
+// ============================================================
 
 :root[data-theme='dark'] .app-header {
   background:
-    radial-gradient(circle at 10% 18%, rgba(35, 174, 177, 0.22) 0, rgba(35, 174, 177, 0) 38%),
-    radial-gradient(circle at 86% 10%, rgba(59, 130, 246, 0.24) 0, rgba(59, 130, 246, 0) 36%),
-    linear-gradient(135deg, #0c2236 0%, #102d4c 100%);
-  border-bottom-color: rgba(180, 211, 244, 0.38);
-  box-shadow: 0 18px 42px rgba(2, 8, 18, 0.55);
+    radial-gradient(ellipse at 50% -10%, rgba(107, 160, 147, 0.22) 0%, transparent 60%),
+    linear-gradient(150deg, #111214 0%, #13161d 50%, #111214 100%);
+  border-bottom-color: rgba(107, 160, 147, 0.1);
+  box-shadow: 0 1px 0 rgba(107, 160, 147, 0.06), 0 4px 32px rgba(0, 0, 0, 0.35);
 }
 
+// ============================================================
+// Dark Mode — Navigation
+// ============================================================
+
 :root[data-theme='dark'] .app-nav .header-nav {
-  background: rgba(14, 165, 164, 0.1) !important;
-  border-color: rgba(14, 165, 164, 0.4) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(107, 160, 147, 0.12) !important;
 }
 
 :root[data-theme='dark'] .header-nav {
-  background: rgba(170, 214, 255, 0.14);
-  border-color: rgba(196, 227, 255, 0.34);
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(107, 160, 147, 0.12);
 }
 
 :root[data-theme='dark'] .header-nav-btn.active {
-  color: #0f2b45;
-  background: #e8f7ff;
-  border-color: #e8f7ff;
+  color: #e2e4e7;
+  background: rgba(107, 160, 147, 0.2);
+  border-color: rgba(107, 160, 147, 0.35);
+  box-shadow: none;
 }
 
 :root[data-theme='dark'] .header-nav-btn,
 :root[data-theme='dark'] .brand-copy p,
 :root[data-theme='dark'] .user-name,
 :root[data-theme='dark'] .logout-btn {
-  color: #e9f3ff;
+  color: rgba(226, 228, 231, 0.75);
 }
+
+// ============================================================
+// Dark Mode — General Text
+// ============================================================
 
 :root[data-theme='dark'] h1,
 :root[data-theme='dark'] h2,
@@ -156,45 +230,65 @@ select {
 :root[data-theme='dark'] .section-content,
 :root[data-theme='dark'] .reflection-text,
 :root[data-theme='dark'] .sleep-value {
-  color: #f2f7ff !important;
+  color: #e2e4e7 !important;
 }
 
+// ============================================================
+// Dark Mode — Theme Options
+// ============================================================
+
 :root[data-theme='dark'] .theme-option {
-  background: #1a2b41;
-  color: #dceaff;
-  border-color: rgba(195, 217, 244, 0.28);
+  background: #1d2025;
+  color: rgba(226, 228, 231, 0.7);
+  border-color: rgba(107, 160, 147, 0.14);
 }
 
 :root[data-theme='dark'] .theme-option.active {
-  color: #072231;
-  background: #b8eff4;
-  border-color: #b8eff4;
+  color: #e2e4e7;
+  background: rgba(107, 160, 147, 0.18);
+  border-color: rgba(107, 160, 147, 0.4);
 }
 
 :root[data-theme='dark'] .header-nav-btn.active,
 :root[data-theme='dark'] .user-name-btn.active,
 :root[data-theme='dark'] .mood-form .feeling-btn.active,
 :root[data-theme='dark'] .theme-option.active {
-  color: #072231 !important;
+  color: #e2e4e7 !important;
 }
+
+// ============================================================
+// Dark Mode — Footer
+// ============================================================
 
 :root[data-theme='dark'] .app-footer {
-  background: rgba(24, 31, 46, 0.9);
-  color: var(--text-soft);
-  border-top-color: var(--border-soft);
+  background: rgba(17, 18, 20, 0.98);
+  color: rgba(226, 228, 231, 0.35);
+  border-top-color: rgba(180, 190, 200, 0.08);
 }
 
+// ============================================================
+// Dark Mode — App Background
+// ============================================================
+
 :root[data-theme='dark'] .app {
-  background: #232323 !important;
+  background: linear-gradient(160deg, #0f1215 0%, #111214 40%, #111419 100%) !important;
 }
+
+// ============================================================
+// Dark Mode — Section Borders
+// ============================================================
 
 :root[data-theme='dark'] .section-header,
 :root[data-theme='dark'] .entry-header,
 :root[data-theme='dark'] .comparison-header,
 :root[data-theme='dark'] .form-header,
 :root[data-theme='dark'] .settings-header {
-  border-bottom-color: rgba(196, 214, 236, 0.25) !important;
+  border-bottom-color: rgba(107, 160, 147, 0.12) !important;
 }
+
+// ============================================================
+// Dark Mode — Sub-surfaces
+// ============================================================
 
 :root[data-theme='dark'] .entry-detail,
 :root[data-theme='dark'] .quote,
@@ -207,10 +301,14 @@ select {
 :root[data-theme='dark'] .no-data,
 :root[data-theme='dark'] .no-entry,
 :root[data-theme='dark'] .chart-no-data {
-  background: rgba(21, 37, 58, 0.9) !important;
-  border-color: rgba(180, 205, 236, 0.24) !important;
-  color: var(--text-main) !important;
+  background: rgba(29, 32, 37, 0.85) !important;
+  border-color: rgba(107, 160, 147, 0.12) !important;
+  color: #e2e4e7 !important;
 }
+
+// ============================================================
+// Dark Mode — Mood Form
+// ============================================================
 
 :root[data-theme='dark'] .mood-form,
 :root[data-theme='dark'] .mood-form p,
@@ -222,100 +320,125 @@ select {
 :root[data-theme='dark'] .entry-card strong,
 :root[data-theme='dark'] .details-value,
 :root[data-theme='dark'] .section-content {
-  color: #eef5ff !important;
+  color: #e2e4e7 !important;
 }
 
 :root[data-theme='dark'] .mood-form .feeling-btn {
-  background: #1b2d44 !important;
-  color: #eaf3ff !important;
-  border-color: rgba(184, 207, 236, 0.34) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: rgba(226, 228, 231, 0.75) !important;
+  border-color: rgba(107, 160, 147, 0.14) !important;
 }
 
 :root[data-theme='dark'] .mood-form .feeling-btn.active {
-  background: #a8eceb !important;
-  color: #062c34 !important;
-  border-color: #a8eceb !important;
+  background: rgba(107, 160, 147, 0.22) !important;
+  color: #e2e4e7 !important;
+  border-color: rgba(107, 160, 147, 0.45) !important;
 }
 
 :root[data-theme='dark'] .mood-form .mood-display,
 :root[data-theme='dark'] .mood-form .quote {
-  background: rgba(28, 47, 72, 0.82) !important;
-  border-color: rgba(183, 210, 241, 0.25) !important;
+  background: rgba(26, 46, 43, 0.6) !important;
+  border-color: rgba(107, 160, 147, 0.12) !important;
 }
 
-:root[data-theme='dark'] input::placeholder,
-:root[data-theme='dark'] textarea::placeholder {
-  color: #c8d8ed !important;
-  opacity: 1;
-}
+// ============================================================
+// Dark Mode — Inputs
+// ============================================================
 
 :root[data-theme='dark'] input:not([type='range']):not([type='file']):not([type='checkbox']):not([type='radio']),
 :root[data-theme='dark'] textarea,
 :root[data-theme='dark'] select {
-  background: #e7f0fb !important;
-  color: #0f2236 !important;
-  border-color: #b7cbe3 !important;
+  background: var(--input-bg) !important;
+  color: var(--text-main) !important;
+  border-color: var(--border-soft) !important;
 }
 
-:root[data-theme='dark'] input:not([type='range'])::placeholder,
+:root[data-theme='dark'] input:not([type='range']):not([type='file']):not([type='checkbox']):not([type='radio']):focus,
+:root[data-theme='dark'] textarea:focus {
+  background: var(--input-bg-focus) !important;
+  border-color: rgba(88, 128, 155, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(88, 128, 155, 0.12) !important;
+}
+
+:root[data-theme='dark'] input::placeholder,
 :root[data-theme='dark'] textarea::placeholder {
-  color: #4f6884 !important;
+  color: rgba(226, 228, 231, 0.28) !important;
+  opacity: 1;
 }
 
-:root[data-theme='dark'] .settings input,
-:root[data-theme='dark'] .settings textarea,
-:root[data-theme='dark'] .settings select {
-  background: #e7f0fb !important;
-  color: #0f2236 !important;
-  border-color: #b7cbe3 !important;
-}
-
-:root[data-theme='dark'] .settings input::placeholder,
-:root[data-theme='dark'] .settings textarea::placeholder {
-  color: #4f6884 !important;
-}
+// ============================================================
+// Dark Mode — Mobile Menu
+// ============================================================
 
 :root[data-theme='dark'] .mobile-menu {
-  background: #0f1f32 !important;
-  color: #f8fbff;
+  background: #181b1e !important;
+  border-left: 1px solid rgba(107, 160, 147, 0.1);
+  color: #e2e4e7;
 }
 
 :root[data-theme='dark'] .mobile-menu-header {
-  border-bottom-color: rgba(180, 205, 236, 0.24) !important;
+  border-bottom-color: rgba(107, 160, 147, 0.1) !important;
 }
 
 :root[data-theme='dark'] .user-name-mobile,
 :root[data-theme='dark'] .mobile-menu-item {
-  color: #f8fbff !important;
+  color: rgba(226, 228, 231, 0.8) !important;
 }
 
 :root[data-theme='dark'] .user-email-mobile {
-  color: #b8d1e6 !important;
+  color: rgba(226, 228, 231, 0.4) !important;
 }
 
 :root[data-theme='dark'] .mobile-menu-close {
-  color: #f8fbff !important;
+  color: rgba(226, 228, 231, 0.6) !important;
 }
 
 :root[data-theme='dark'] .mobile-menu-item:hover {
-  background: rgba(184, 207, 236, 0.12) !important;
-  border-left-color: #0ea5a4 !important;
+  background: rgba(107, 160, 147, 0.1) !important;
+  border-left-color: #6BA093 !important;
 }
 
 :root[data-theme='dark'] .mobile-menu-item.logout {
-  color: #f87171 !important;
+  color: #d6776e !important;
 }
 
 :root[data-theme='dark'] .mobile-menu-item.logout:hover {
-  background: rgba(248, 113, 113, 0.08) !important;
-  border-left-color: #f87171 !important;
+  background: rgba(192, 87, 74, 0.08) !important;
+  border-left-color: #d6776e !important;
 }
 
 :root[data-theme='dark'] .mobile-menu-nav {
-  border-top-color: rgba(180, 205, 236, 0.24) !important;
+  border-top-color: rgba(107, 160, 147, 0.1) !important;
+}
+
+// ============================================================
+// Dark Mode — Inline Action Buttons
+// ============================================================
+
+:root[data-theme='dark'] .inline-action-btn {
+  background: rgba(107, 160, 147, 0.1);
+  color: rgba(226, 228, 231, 0.8);
+  border-color: rgba(107, 160, 147, 0.22);
+  font-weight: 600;
+
+  &:hover {
+    background: rgba(107, 160, 147, 0.18);
+    border-color: rgba(107, 160, 147, 0.4);
+    color: #e2e4e7;
+  }
+}
+
+:root[data-theme='dark'] .dashboard-entry-details .entry-card .inline-action-btn {
+  background: rgba(107, 160, 147, 0.18) !important;
+  color: #e2e4e7 !important;
+  border: 1px solid rgba(107, 160, 147, 0.35) !important;
+}
+
+:root[data-theme='dark'] .dashboard-entry-details .entry-card .inline-action-btn:hover {
+  background: rgba(107, 160, 147, 0.28) !important;
+  border-color: rgba(107, 160, 147, 0.55) !important;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }

@@ -33,7 +33,7 @@
   padding: $top $right $bottom $left;
 }
 
-// Text Utilities
+// Text
 @mixin text-truncate {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -47,7 +47,7 @@
   overflow: hidden;
 }
 
-// Colors & Backgrounds
+// Backgrounds
 @mixin bg-gradient {
   background: $gradient-primary;
 }
@@ -56,25 +56,31 @@
   background: $gradient-primary-light;
 }
 
-// Button Styles
-@mixin button-base($bg-color: $primary-color, $text-color: $bg-white) {
-  padding: $spacing-md;
-  background: $bg-color;
-  color: $text-color;
+// Buttons
+@mixin button-base($bg: $gradient-primary, $color: #fff) {
+  padding: 0.75rem 1.5rem;
+  background: $bg;
+  color: $color;
   border: none;
   border-radius: $radius-md;
   font-size: $font-size-md;
   font-weight: $font-weight-semibold;
+  font-family: inherit;
+  letter-spacing: 0.005em;
   cursor: pointer;
-  transition: all $transition-normal;
+  transition: all $transition-fast;
+  position: relative;
+  overflow: hidden;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: $shadow-lg;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 18px rgba($color-slate, 0.28);
+    filter: brightness(1.06);
   }
 
   &:active {
     transform: translateY(0);
+    filter: brightness(0.96);
   }
 }
 
@@ -82,20 +88,27 @@
   @include button-base($gradient-primary);
 }
 
-// Form Utilities
+// Form
 @mixin form-input {
   width: 100%;
-  padding: $spacing-md;
+  padding: 0.8125rem 1rem;
+  background: var(--input-bg, $bg-lighter);
   border: 1px solid $border-color;
   border-radius: $radius-md;
-  font-size: $font-size-md;
+  font-size: $font-size-base;
   font-family: inherit;
+  color: var(--text-main, $text-primary);
   transition: all $transition-fast;
 
   &:focus {
     outline: none;
-    border-color: $primary-color;
+    border-color: rgba($primary-color, 0.5);
+    background: var(--input-bg-focus, $bg-white);
     box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+  }
+
+  &::placeholder {
+    color: $text-light;
   }
 }
 
@@ -104,32 +117,38 @@
   margin-bottom: $spacing-sm;
   font-weight: $font-weight-semibold;
   color: $text-primary;
-  font-size: $font-size-md;
+  font-size: $font-size-sm;
+  letter-spacing: 0.015em;
 }
 
-@mixin form-error($bg-color: #fee, $border-color: $error-color, $text-color: $error-color) {
-  background: $bg-color;
-  border: 1px solid $border-color;
-  color: $text-color;
+@mixin form-error(
+  $bg: rgba(#c0574a, 0.07),
+  $border: #c0574a,
+  $text: #c0574a
+) {
+  background: $bg;
+  border: 1px solid rgba($border, 0.35);
+  color: $text;
   padding: $spacing-md;
   border-radius: $radius-md;
 }
 
-// Card Styles
+// Card
 @mixin card {
-  background: $bg-white;
+  background: var(--surface, $bg-white);
   padding: $spacing-xl;
   border-radius: $radius-lg;
+  border: 1px solid $border-color;
   box-shadow: $shadow-md;
 }
 
 @mixin card-header {
   margin-bottom: $spacing-lg;
-  border-bottom: 2px solid $bg-lighter;
+  border-bottom: 1px solid $border-color;
   padding-bottom: $spacing-md;
 }
 
-// Responsive Mixins
+// Responsive
 @mixin mobile {
   @media (max-width: $tablet) {
     @content;
@@ -154,10 +173,19 @@
   }
 }
 
-// Overlay & Glass Effect
+// Glass effects
 @mixin glass-effect {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@mixin glass-effect-light {
+  background: rgba(244, 245, 247, 0.92);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(88, 128, 155, 0.1);
 }
 
 @mixin overlay {
@@ -168,10 +196,17 @@
   bottom: 0;
 }
 
-// Text Gradient
-@mixin text-gradient($color1: $primary-color, $color2: $secondary-color) {
-  background: linear-gradient(135deg, $color1 0%, $color2 100%);
+// Text gradient
+@mixin text-gradient($c1: $color-slate, $c2: $color-teal) {
+  background: linear-gradient(135deg, $c1 0%, $c2 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+// Dark card
+@mixin dark-card {
+  background: $dark-surface;
+  border: 1px solid $dark-border;
+  border-radius: $radius-lg;
 }

@@ -10,23 +10,33 @@ import "../styles/BreathingExercise.scss";
 
 const MIN_SECONDS = 1;
 const MAX_SECONDS = 60;
+const MIN_CYCLES = 1;
+const MAX_CYCLES = 50;
 
-const PHASE_AUDIO = {
-  inhale: { primary: 164.81, secondary: 207.65 },
-  hold: { primary: 246.94, secondary: 311.13 },
-  exhale: { primary: 146.83, secondary: 185.0 },
+const PHASE_WIND = {
+  inhale: { freqStart: 280, freqEnd: 750, q: 1.1 },
+  hold:   { freqStart: 450, freqEnd: 450, q: 0.7 },
+  exhale: { freqStart: 750, freqEnd: 220, q: 1.4 },
 };
 
 const COLOR_PALETTES = [
   {
     id: "ocean",
     label: "Ocean",
-    core: ["#7edff5", "#0ea5a4", "#0a5f79"],
+    core: ["#9ecfdf", "#3d8fa8", "#1a5570"],
     orb: [
       "rgba(255, 255, 255, 0.96)",
       "rgba(71, 166, 226, 0.9)",
       "rgba(22, 88, 148, 0.96)",
     ],
+    shadow: {
+      core: "rgba(61, 143, 168, 0.45)",
+      coreSoft: "rgba(61, 143, 168, 0.38)",
+      coreStrong: "rgba(61, 143, 168, 0.62)",
+      orb: "rgba(24, 100, 166, 0.34)",
+      coreDark: "rgba(158, 207, 223, 0.5)",
+      orbDark: "rgba(64, 157, 236, 0.45)",
+    },
   },
   {
     id: "sunrise",
@@ -37,6 +47,14 @@ const COLOR_PALETTES = [
       "rgba(251, 146, 60, 0.9)",
       "rgba(194, 65, 12, 0.96)",
     ],
+    shadow: {
+      core: "rgba(245, 158, 11, 0.45)",
+      coreSoft: "rgba(245, 158, 11, 0.38)",
+      coreStrong: "rgba(245, 158, 11, 0.62)",
+      orb: "rgba(194, 65, 12, 0.34)",
+      coreDark: "rgba(251, 146, 60, 0.52)",
+      orbDark: "rgba(234, 88, 12, 0.45)",
+    },
   },
   {
     id: "forest",
@@ -47,6 +65,14 @@ const COLOR_PALETTES = [
       "rgba(34, 197, 94, 0.88)",
       "rgba(21, 128, 61, 0.96)",
     ],
+    shadow: {
+      core: "rgba(34, 197, 94, 0.45)",
+      coreSoft: "rgba(34, 197, 94, 0.38)",
+      coreStrong: "rgba(34, 197, 94, 0.62)",
+      orb: "rgba(21, 128, 61, 0.34)",
+      coreDark: "rgba(34, 197, 94, 0.52)",
+      orbDark: "rgba(21, 128, 61, 0.45)",
+    },
   },
   {
     id: "lavender",
@@ -57,6 +83,14 @@ const COLOR_PALETTES = [
       "rgba(167, 139, 250, 0.9)",
       "rgba(109, 40, 217, 0.96)",
     ],
+    shadow: {
+      core: "rgba(167, 139, 250, 0.45)",
+      coreSoft: "rgba(167, 139, 250, 0.38)",
+      coreStrong: "rgba(167, 139, 250, 0.62)",
+      orb: "rgba(109, 40, 217, 0.34)",
+      coreDark: "rgba(196, 181, 253, 0.52)",
+      orbDark: "rgba(124, 58, 237, 0.45)",
+    },
   },
   {
     id: "ember",
@@ -67,6 +101,14 @@ const COLOR_PALETTES = [
       "rgba(248, 113, 113, 0.9)",
       "rgba(153, 27, 27, 0.96)",
     ],
+    shadow: {
+      core: "rgba(239, 68, 68, 0.45)",
+      coreSoft: "rgba(239, 68, 68, 0.38)",
+      coreStrong: "rgba(239, 68, 68, 0.62)",
+      orb: "rgba(153, 27, 27, 0.34)",
+      coreDark: "rgba(248, 113, 113, 0.52)",
+      orbDark: "rgba(185, 28, 28, 0.45)",
+    },
   },
 ];
 
@@ -88,34 +130,31 @@ const PRESET_PROFILES = [
   {
     id: "preset-calm-reset",
     name: "Calm Reset",
-    icon: "🌊",
     inhale_seconds: 4,
     hold_seconds: 4,
     exhale_seconds: 6,
     audio_enabled: true,
-    audio_level: 0.18,
+    audio_level: 0.09,
     color_palette: "ocean",
   },
   {
     id: "preset-focus-box",
     name: "Focus Box",
-    icon: "🎯",
     inhale_seconds: 4,
     hold_seconds: 4,
     exhale_seconds: 4,
     audio_enabled: true,
-    audio_level: 0.16,
+    audio_level: 0.08,
     color_palette: "forest",
   },
   {
     id: "preset-deep-sleep",
     name: "Deep Sleep 4-7-8",
-    icon: "🌙",
     inhale_seconds: 4,
     hold_seconds: 7,
     exhale_seconds: 8,
     audio_enabled: true,
-    audio_level: 0.12,
+    audio_level: 0.06,
     color_palette: "lavender",
   },
 ];
@@ -129,13 +168,22 @@ const clampSeconds = (value) => {
   return Math.max(MIN_SECONDS, Math.min(MAX_SECONDS, Math.round(numeric)));
 };
 
+const clampCycleCount = (value) => {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) {
+    return 5;
+  }
+
+  return Math.max(MIN_CYCLES, Math.min(MAX_CYCLES, Math.round(numeric)));
+};
+
 const normalizeAudioLevel = (value) => {
   const numeric = Number(value);
   if (!Number.isFinite(numeric)) {
-    return 0.22;
+    return 0.12;
   }
 
-  const clamped = Math.max(0, Math.min(0.6, numeric));
+  const clamped = Math.max(0, Math.min(0.3, numeric));
   return Number(clamped.toFixed(2));
 };
 
@@ -149,25 +197,7 @@ const normalizeColorPalette = (value) => {
   return hasPalette ? normalized : "ocean";
 };
 
-const getProfileIcon = (profile) => {
-  if (profile?.icon) {
-    return profile.icon;
-  }
-
-  const inhale = Number(profile?.inhale_seconds) || 0;
-  const hold = Number(profile?.hold_seconds) || 0;
-  const exhale = Number(profile?.exhale_seconds) || 0;
-
-  if (exhale >= inhale + 2) {
-    return "🫁";
-  }
-
-  if (inhale === hold && hold === exhale) {
-    return "📦";
-  }
-
-  return "✨";
-};
+const getProfileIcon = () => null;
 
 const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
   const [durations, setDurations] = useState({
@@ -175,8 +205,13 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
     hold: clampSeconds(settings?.hold ?? 4),
     exhale: clampSeconds(settings?.exhale ?? 6),
   });
-  const [phaseIndex, setPhaseIndex] = useState(0);
-  const [secondsRemaining, setSecondsRemaining] = useState(durations.inhale);
+  const [cycleCount, setCycleCount] = useState(
+    clampCycleCount(settings?.cycleCount ?? 5),
+  );
+  const [breathingProgress, setBreathingProgress] = useState({
+    phaseIndex: 0,
+    secondsRemaining: clampSeconds(settings?.inhale ?? 4),
+  });
   const [isRunning, setIsRunning] = useState(false);
   const [completedCycles, setCompletedCycles] = useState(0);
   const [activeTab, setActiveTab] = useState("exercise");
@@ -184,7 +219,7 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
     typeof settings?.audioEnabled === "boolean" ? settings.audioEnabled : true,
   );
   const [audioLevel, setAudioLevel] = useState(
-    normalizeAudioLevel(settings?.audioLevel ?? 0.22),
+    normalizeAudioLevel(settings?.audioLevel ?? 0.12),
   );
   const [colorPalette, setColorPalette] = useState(
     normalizeColorPalette(settings?.colorPalette),
@@ -197,29 +232,55 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
   const [profileError, setProfileError] = useState("");
   const [activeProfileId, setActiveProfileId] = useState(null);
   const [editingProfileId, setEditingProfileId] = useState(null);
+  const [deletingProfileId, setDeletingProfileId] = useState(null);
   const audioContextRef = useRef(null);
   const activeCueRef = useRef(null);
-  const previousPhaseIndexRef = useRef(phaseIndex);
+  const durationsRef = useRef(durations);
+  const runDurationsRef = useRef(durations);
+  const previousPhaseIndexRef = useRef(0);
   const latestSettingsRef = useRef(null);
   const saveStateTimeoutRef = useRef(null);
   const profileSaveTimeoutRef = useRef(null);
+  const shouldStopAtCycleBoundaryRef = useRef(false);
+
+  const phaseIndex = breathingProgress.phaseIndex;
+  const secondsRemaining = breathingProgress.secondsRemaining;
 
   useEffect(() => {
-    setDurations({
+    durationsRef.current = durations;
+    if (!isRunning) {
+      runDurationsRef.current = durations;
+    }
+  }, [durations, isRunning]);
+
+  useEffect(() => {
+    const syncedDurations = {
       inhale: clampSeconds(settings?.inhale ?? 4),
       hold: clampSeconds(settings?.hold ?? 4),
       exhale: clampSeconds(settings?.exhale ?? 6),
-    });
+    };
+
+    setDurations(syncedDurations);
+    setCycleCount(clampCycleCount(settings?.cycleCount ?? 5));
     setAudioEnabled(
       typeof settings?.audioEnabled === "boolean"
         ? settings.audioEnabled
         : true,
     );
-    setAudioLevel(normalizeAudioLevel(settings?.audioLevel ?? 0.22));
+    setAudioLevel(normalizeAudioLevel(settings?.audioLevel ?? 0.12));
     setColorPalette(normalizeColorPalette(settings?.colorPalette));
+
+    durationsRef.current = syncedDurations;
+    runDurationsRef.current = syncedDurations;
+  setBreathingProgress({ phaseIndex: 0, secondsRemaining: syncedDurations.inhale });
+    setCompletedCycles(0);
+    shouldStopAtCycleBoundaryRef.current = false;
+    setIsRunning(false);
   }, [
+    userId,
     settings?.audioEnabled,
     settings?.audioLevel,
+    settings?.cycleCount,
     settings?.colorPalette,
     settings?.exhale,
     settings?.hold,
@@ -270,6 +331,14 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
     return activeProfile?.name || "Custom Exercise";
   }, [activeProfileId, profiles]);
 
+  const editingProfile = useMemo(
+    () =>
+      profiles.find(
+        (profile) => String(profile.id) === String(editingProfileId),
+      ) || null,
+    [editingProfileId, profiles],
+  );
+
   const totalCycleSeconds = useMemo(() => {
     return durations.inhale + durations.hold + durations.exhale;
   }, [durations]);
@@ -304,9 +373,13 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
     const gain = activeCue.gain;
 
     if (gain) {
-      gain.gain.cancelScheduledValues(now);
-      const safeLevel = Math.max(gain.gain.value, 0.0001);
-      gain.gain.setValueAtTime(safeLevel, now);
+      if (typeof gain.gain.cancelAndHoldAtTime === "function") {
+        gain.gain.cancelAndHoldAtTime(now);
+      } else {
+        gain.gain.cancelScheduledValues(now);
+        const safeLevel = Math.max(gain.gain.value, 0.0001);
+        gain.gain.setValueAtTime(safeLevel, now);
+      }
       gain.gain.exponentialRampToValueAtTime(0.0001, now + fadeOutSeconds);
     }
 
@@ -331,69 +404,87 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
         return;
       }
 
-      const phaseSound = PHASE_AUDIO[phaseKey];
+      const phaseConfig = PHASE_WIND[phaseKey];
       const context = ensureAudioContext();
-      if (!context || !phaseSound) {
+      if (!context || !phaseConfig) {
         return;
       }
 
       const now = context.currentTime;
+      const currentDurations = runDurationsRef.current;
       const phaseDurationSeconds = Math.max(
         0.35,
-        Number(durations[phaseKey]) || 1,
+        Number(currentDurations[phaseKey]) || 1,
       );
-      const fadeInTime = Math.min(0.35, phaseDurationSeconds * 0.2);
+      const fadeInTime = Math.min(1.2, phaseDurationSeconds * 0.45);
       const endTime = now + phaseDurationSeconds;
-      const fadeOutStart = now + phaseDurationSeconds * 0.5;
-      const fadeMidpoint = now + phaseDurationSeconds * 0.75;
+      const fadeOutStart =
+        phaseKey === "exhale"
+          ? now + phaseDurationSeconds * 0.42
+          : now + phaseDurationSeconds * 0.5;
+      // Fade completely to silence at least 300ms before the phase ends
+      const fadeOutEnd = Math.max(fadeOutStart + 0.4, endTime - 0.3);
 
       stopActiveCue(0.03);
 
+      // White noise buffer shared by both sources
+      const bufferSize = Math.ceil(context.sampleRate * (phaseDurationSeconds + 0.1));
+      const noiseBuffer = context.createBuffer(1, bufferSize, context.sampleRate);
+      const channelData = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < channelData.length; i++) {
+        channelData[i] = Math.random() * 2 - 1;
+      }
+
+      // Primary source: bandpass sweep — the body of the wind
+      const sourceMain = context.createBufferSource();
+      sourceMain.buffer = noiseBuffer;
+      const bandpass = context.createBiquadFilter();
+      bandpass.type = "bandpass";
+      bandpass.frequency.setValueAtTime(phaseConfig.freqStart, now);
+      bandpass.frequency.linearRampToValueAtTime(phaseConfig.freqEnd, endTime);
+      bandpass.Q.setValueAtTime(phaseConfig.q, now);
+
+      // Secondary source: highpass — airy overtone layer
+      const sourceAiry = context.createBufferSource();
+      sourceAiry.buffer = noiseBuffer;
+      const highpass = context.createBiquadFilter();
+      highpass.type = "highpass";
+      highpass.frequency.setValueAtTime(2200, now);
+      highpass.Q.setValueAtTime(0.5, now);
+      const airyGain = context.createGain();
+      airyGain.gain.setValueAtTime(0.22, now);
+
+      // Master gain envelope — fades fully to silence before phase end
       const gain = context.createGain();
-      const filter = context.createBiquadFilter();
-      filter.type = "bandpass";
-      filter.frequency.setValueAtTime(520, now);
-      filter.frequency.linearRampToValueAtTime(360, endTime);
-      filter.Q.setValueAtTime(1.1, now);
       gain.gain.setValueAtTime(0.0001, now);
       gain.gain.linearRampToValueAtTime(audioLevel, now + fadeInTime);
       gain.gain.setValueAtTime(audioLevel, fadeOutStart);
-      gain.gain.linearRampToValueAtTime(
-        Math.max(audioLevel * 0.45, 0.0003),
-        fadeMidpoint,
-      );
-      gain.gain.exponentialRampToValueAtTime(0.0001, endTime);
-      gain.connect(filter);
-      filter.connect(context.destination);
+      gain.gain.linearRampToValueAtTime(0.0001, fadeOutEnd);
 
-      const oscPrimary = context.createOscillator();
-      oscPrimary.type = "square";
-      oscPrimary.frequency.setValueAtTime(phaseSound.primary, now);
-      oscPrimary.connect(gain);
+      sourceMain.connect(bandpass);
+      bandpass.connect(gain);
+      sourceAiry.connect(highpass);
+      highpass.connect(airyGain);
+      airyGain.connect(gain);
+      gain.connect(context.destination);
 
-      const oscSecondary = context.createOscillator();
-      oscSecondary.type = "sawtooth";
-      oscSecondary.frequency.setValueAtTime(phaseSound.secondary, now);
-      oscSecondary.detune.setValueAtTime(-10, now);
-      oscSecondary.connect(gain);
-
-      oscPrimary.start(now);
-      oscSecondary.start(now);
-      oscPrimary.stop(endTime);
-      oscSecondary.stop(endTime);
+      sourceMain.start(now);
+      sourceAiry.start(now);
+      sourceMain.stop(endTime);
+      sourceAiry.stop(endTime);
 
       activeCueRef.current = {
         gain,
-        oscillators: [oscPrimary, oscSecondary],
+        oscillators: [sourceMain, sourceAiry],
       };
 
-      oscSecondary.onended = () => {
-        if (activeCueRef.current?.oscillators?.includes(oscSecondary)) {
+      sourceMain.onended = () => {
+        if (activeCueRef.current?.oscillators?.includes(sourceMain)) {
           activeCueRef.current = null;
         }
       };
     },
-    [audioEnabled, audioLevel, durations, ensureAudioContext, stopActiveCue],
+    [audioEnabled, audioLevel, ensureAudioContext, stopActiveCue],
   );
 
   useEffect(() => {
@@ -401,33 +492,61 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
       return undefined;
     }
 
-    const timerId = window.setInterval(() => {
-      setSecondsRemaining((current) => {
-        if (current > 1) {
-          return current - 1;
+    const timerId = window.setTimeout(() => {
+      setBreathingProgress((current) => {
+        const currentDurations = runDurationsRef.current;
+        if (current.secondsRemaining > 1) {
+          return {
+            ...current,
+            secondsRemaining: current.secondsRemaining - 1,
+          };
         }
 
-        setPhaseIndex((currentPhaseIndex) => {
-          const nextPhaseIndex = (currentPhaseIndex + 1) % PHASES.length;
+        const nextPhaseIndex = (current.phaseIndex + 1) % PHASES.length;
 
-          if (nextPhaseIndex === 0) {
-            setCompletedCycles((cycles) => cycles + 1);
-          }
+        let nextSeconds;
+        if (nextPhaseIndex === 0) {
+          setCompletedCycles((cycles) => {
+            const nextCompletedCycles = cycles + 1;
+            if (nextCompletedCycles >= cycleCount) {
+              shouldStopAtCycleBoundaryRef.current = true;
+            }
+            return nextCompletedCycles;
+          });
+          nextSeconds = currentDurations.inhale;
+        } else {
+          nextSeconds = currentDurations[PHASES[nextPhaseIndex].key];
+        }
 
-          const nextPhaseKey = PHASES[nextPhaseIndex].key;
-          const nextDuration = durations[nextPhaseKey];
-          setSecondsRemaining(nextDuration);
-          return nextPhaseIndex;
-        });
-
-        return 1;
+        return {
+          phaseIndex: nextPhaseIndex,
+          secondsRemaining: nextSeconds,
+        };
       });
     }, 1000);
 
     return () => {
-      window.clearInterval(timerId);
+      window.clearTimeout(timerId);
     };
-  }, [durations, isRunning]);
+  }, [cycleCount, isRunning, secondsRemaining]);
+
+  useEffect(() => {
+    if (
+      !isRunning ||
+      !shouldStopAtCycleBoundaryRef.current ||
+      completedCycles < cycleCount
+    ) {
+      return;
+    }
+
+    shouldStopAtCycleBoundaryRef.current = false;
+    stopActiveCue(0.03);
+    setIsRunning(false);
+    setBreathingProgress({
+      phaseIndex: 0,
+      secondsRemaining: durationsRef.current.inhale,
+    });
+  }, [completedCycles, cycleCount, durations.inhale, isRunning, stopActiveCue]);
 
   useEffect(() => {
     if (!isRunning || !audioEnabled) {
@@ -436,7 +555,9 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
     }
 
     if (previousPhaseIndexRef.current !== phaseIndex) {
-      playPhaseCue(PHASES[phaseIndex].key);
+      if (!shouldStopAtCycleBoundaryRef.current) {
+        playPhaseCue(PHASES[phaseIndex].key);
+      }
     }
 
     previousPhaseIndexRef.current = phaseIndex;
@@ -475,12 +596,18 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
       inhale: clampSeconds(durations.inhale),
       hold: clampSeconds(durations.hold),
       exhale: clampSeconds(durations.exhale),
+      cycleCount: clampCycleCount(cycleCount),
       audioEnabled,
       audioLevel: normalizeAudioLevel(audioLevel),
       colorPalette: normalizeColorPalette(colorPalette),
     };
 
     const serialized = JSON.stringify(nextSettings);
+    if (latestSettingsRef.current === null) {
+      latestSettingsRef.current = serialized;
+      return undefined;
+    }
+
     if (latestSettingsRef.current === serialized) {
       return undefined;
     }
@@ -515,6 +642,7 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
   }, [
     audioEnabled,
     audioLevel,
+    cycleCount,
     colorPalette,
     durations.exhale,
     durations.hold,
@@ -531,8 +659,16 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
         [key]: nextValue,
       };
 
+      durationsRef.current = nextDurations;
+      if (!isRunning) {
+        runDurationsRef.current = nextDurations;
+      }
+
       if (!isRunning && PHASES[phaseIndex].key === key) {
-        setSecondsRemaining(nextValue);
+        setBreathingProgress((current) => ({
+          ...current,
+          secondsRemaining: nextValue,
+        }));
       }
 
       return nextDurations;
@@ -541,6 +677,24 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
 
   const adjustDuration = (key, delta) => {
     updateDuration(key, durations[key] + delta);
+  };
+
+  const updateCycleCount = (value) => {
+    const nextValue = clampCycleCount(value);
+    setActiveProfileId(editingProfileId);
+    setCycleCount(nextValue);
+    setCompletedCycles((current) => Math.min(current, nextValue));
+
+    if (isRunning && completedCycles >= nextValue) {
+      shouldStopAtCycleBoundaryRef.current = false;
+      stopActiveCue(0.03);
+      setIsRunning(false);
+      setBreathingProgress({ phaseIndex: 0, secondsRemaining: durations.inhale });
+    }
+  };
+
+  const adjustCycleCount = (delta) => {
+    updateCycleCount(cycleCount + delta);
   };
 
   const handleAudioEnabledChange = (event) => {
@@ -637,14 +791,15 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
     };
 
     setDurations(nextDurations);
+    durationsRef.current = nextDurations;
+    runDurationsRef.current = nextDurations;
     setAudioEnabled(Boolean(profile.audio_enabled));
     setAudioLevel(normalizeAudioLevel(profile.audio_level));
     if (profile.color_palette) {
       setColorPalette(normalizeColorPalette(profile.color_palette));
     }
     setActiveProfileId(String(profile.id));
-    setPhaseIndex(0);
-    setSecondsRemaining(nextDurations.inhale);
+    setBreathingProgress({ phaseIndex: 0, secondsRemaining: nextDurations.inhale });
     setCompletedCycles(0);
     setActiveTab("exercise");
     stopActiveCue(0.03);
@@ -658,38 +813,103 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
     setProfileError("");
     setProfileSaveState("idle");
     setActiveProfileId(profile.id);
-    setDurations({
+    const nextDurations = {
       inhale: clampSeconds(profile.inhale_seconds),
       hold: clampSeconds(profile.hold_seconds),
       exhale: clampSeconds(profile.exhale_seconds),
-    });
+    };
+    setDurations(nextDurations);
+    durationsRef.current = nextDurations;
+    if (!isRunning) {
+      runDurationsRef.current = nextDurations;
+    }
     setAudioEnabled(Boolean(profile.audio_enabled));
     setAudioLevel(normalizeAudioLevel(profile.audio_level));
-    setPhaseIndex(0);
-    setSecondsRemaining(clampSeconds(profile.inhale_seconds));
+    setBreathingProgress({
+      phaseIndex: 0,
+      secondsRemaining: clampSeconds(profile.inhale_seconds),
+    });
     setCompletedCycles(0);
     stopActiveCue(0.03);
     setIsRunning(false);
   };
 
+  const handleDeleteProfile = async (profile) => {
+    if (!userId) {
+      setProfileSaveState("error");
+      setProfileError("Sign in again to delete a profile");
+      return;
+    }
+
+    setDeletingProfileId(profile.id);
+    setProfileSaveState("saving");
+    setProfileError("");
+
+    try {
+      await userService.deleteBreathingProfile(userId, profile.id);
+
+      setProfiles((current) =>
+        current.filter((currentProfile) => currentProfile.id !== profile.id),
+      );
+
+      if (String(activeProfileId) === String(profile.id)) {
+        setActiveProfileId(null);
+      }
+
+      if (String(editingProfileId) === String(profile.id)) {
+        clearProfileEditor();
+      }
+
+      setProfileSaveState("deleted");
+      if (profileSaveTimeoutRef.current) {
+        window.clearTimeout(profileSaveTimeoutRef.current);
+      }
+      profileSaveTimeoutRef.current = window.setTimeout(() => {
+        setProfileSaveState("idle");
+      }, 1800);
+    } catch (error) {
+      setProfileSaveState("error");
+      setProfileError(error.response?.data?.error || "Could not delete profile");
+    } finally {
+      setDeletingProfileId(null);
+    }
+  };
+
   const handleStart = () => {
+    const shouldRestartCycleSet = completedCycles >= cycleCount;
+    const runDurations = { ...durationsRef.current };
+    const startPhaseIndex = shouldRestartCycleSet ? 0 : phaseIndex;
+
+    runDurationsRef.current = runDurations;
+
+    shouldStopAtCycleBoundaryRef.current = false;
+    if (shouldRestartCycleSet) {
+      setCompletedCycles(0);
+      setBreathingProgress({ phaseIndex: 0, secondsRemaining: runDurations.inhale });
+    }
+
     if (audioEnabled) {
-      playPhaseCue(PHASES[phaseIndex].key);
+      playPhaseCue(PHASES[startPhaseIndex].key);
     }
     setIsRunning(true);
   };
 
   const handlePause = () => {
+    shouldStopAtCycleBoundaryRef.current = false;
     stopActiveCue(0.03);
     setIsRunning(false);
   };
 
   const handleReset = () => {
+    runDurationsRef.current = durationsRef.current;
+    shouldStopAtCycleBoundaryRef.current = false;
     stopActiveCue(0.03);
     setIsRunning(false);
-    setPhaseIndex(0);
     setCompletedCycles(0);
-    setSecondsRemaining(durations.inhale);
+    setBreathingProgress({
+      phaseIndex: 0,
+      secondsRemaining: durationsRef.current.inhale,
+    });
   };
 
   const selectedPalette =
@@ -713,7 +933,10 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
           role="tab"
           aria-selected={activeTab === "exercise"}
           className={`breathing-tab-btn ${activeTab === "exercise" ? "active" : ""}`}
-          onClick={() => setActiveTab("exercise")}
+          onClick={() => {
+            clearProfileEditor();
+            setActiveTab("exercise");
+          }}
         >
           Exercise
         </button>
@@ -793,12 +1016,19 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
                     {profiles.map((profile) => (
                       <article
                         key={profile.id}
-                        className={`saved-profile-card ${activeProfileId === profile.id ? "active" : ""}`}
+                        className={`saved-profile-card ${activeProfileId === profile.id ? "active" : ""} ${String(editingProfileId) === String(profile.id) ? "is-editing" : ""}`}
                       >
                         <div className="saved-profile-head">
-                          <span className="saved-profile-name">
-                            {profile.name}
-                          </span>
+                          <div className="saved-profile-title-group">
+                            <span className="saved-profile-name">
+                              {profile.name}
+                            </span>
+                            {String(editingProfileId) === String(profile.id) && (
+                              <span className="saved-profile-editing-badge">
+                                Editing
+                              </span>
+                            )}
+                          </div>
                           <span className="saved-profile-icon" aria-hidden="true">
                             {getProfileIcon(profile)}
                           </span>
@@ -818,6 +1048,7 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
                             type="button"
                             className="control-btn secondary"
                             onClick={() => handleApplyProfile(profile)}
+                            disabled={deletingProfileId === profile.id}
                           >
                             Load
                           </button>
@@ -825,8 +1056,19 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
                             type="button"
                             className="control-btn ghost"
                             onClick={() => handleEditProfile(profile)}
+                            disabled={deletingProfileId === profile.id}
                           >
                             Edit
+                          </button>
+                          <button
+                            type="button"
+                            className="control-btn danger"
+                            onClick={() => handleDeleteProfile(profile)}
+                            disabled={deletingProfileId === profile.id}
+                          >
+                            {deletingProfileId === profile.id
+                              ? "Deleting..."
+                              : "Delete"}
                           </button>
                         </div>
                       </article>
@@ -884,6 +1126,44 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
                 </div>
               ))}
 
+              <div className="breathing-setting-row">
+                <div className="breathing-setting-text">
+                  <label htmlFor="breathing-cycle-count">Cycles</label>
+                  <span>
+                    Stop automatically after this many full breathing cycles.
+                  </span>
+                </div>
+                <div
+                  className="breathing-stepper"
+                  role="group"
+                  aria-label="Breathing cycle count"
+                >
+                  <button
+                    type="button"
+                    className="step-btn"
+                    onClick={() => adjustCycleCount(-1)}
+                  >
+                    -
+                  </button>
+                  <input
+                    id="breathing-cycle-count"
+                    type="number"
+                    min={MIN_CYCLES}
+                    max={MAX_CYCLES}
+                    value={cycleCount}
+                    onChange={(event) => updateCycleCount(event.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="step-btn"
+                    onClick={() => adjustCycleCount(1)}
+                  >
+                    +
+                  </button>
+                  <span className="step-unit">cycles</span>
+                </div>
+              </div>
+
               <div className="breathing-total">
                 <strong>Total cycle:</strong> {totalCycleSeconds} sec
               </div>
@@ -901,18 +1181,22 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
             <section className="settings-section-card settings-section-audio">
               <div className="audio-settings-block">
               <h4>Audio Cues</h4>
-              <label
-                className="audio-toggle-row"
-                htmlFor="breathing-audio-enabled"
-              >
-                <span>Play calming tones for inhale, hold, and exhale</span>
-                <input
-                  id="breathing-audio-enabled"
-                  type="checkbox"
-                  checked={audioEnabled}
-                  onChange={handleAudioEnabledChange}
-                />
-              </label>
+              <div className="audio-toggle-row">
+                <span>
+                  Play calming tones for inhale, hold, and exhale
+                  <span className={`audio-toggle-status ${audioEnabled ? "is-on" : "is-off"}`}>
+                    {audioEnabled ? "On" : "Off"}
+                  </span>
+                </span>
+                <label htmlFor="breathing-audio-enabled" className="audio-toggle-label">
+                  <input
+                    id="breathing-audio-enabled"
+                    type="checkbox"
+                    checked={audioEnabled}
+                    onChange={handleAudioEnabledChange}
+                  />
+                </label>
+              </div>
 
               <label
                 className="audio-volume-row"
@@ -923,7 +1207,7 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
                   id="breathing-audio-volume"
                   type="range"
                   min="0"
-                  max="0.6"
+                  max="0.3"
                   step="0.01"
                   value={audioLevel}
                   onChange={handleAudioLevelChange}
@@ -974,6 +1258,14 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
                 <h4>
                   {editingProfileId ? "Edit Profile" : "Save Current Profile"}
                 </h4>
+                {editingProfile && (
+                  <div className="editing-profile-callout" aria-live="polite">
+                    <span className="editing-profile-label">Currently editing</span>
+                    <strong className="editing-profile-name">
+                      {editingProfile.name}
+                    </strong>
+                  </div>
+                )}
                 <p className="breathing-settings-help">
                   {editingProfileId
                     ? "Update the selected profile with the values shown above."
@@ -1017,6 +1309,7 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
                 >
                   {profileSaveState === "saved" && "Profile saved"}
                   {profileSaveState === "updated" && "Profile updated"}
+                  {profileSaveState === "deleted" && "Profile deleted"}
                   {profileSaveState === "error" &&
                     (profileError || "Could not save profile")}
                 </div>
@@ -1036,12 +1329,22 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
               "--orb-1": selectedPalette.orb[0],
               "--orb-2": selectedPalette.orb[1],
               "--orb-3": selectedPalette.orb[2],
+              "--core-shadow": selectedPalette.shadow.core,
+              "--core-shadow-soft": selectedPalette.shadow.coreSoft,
+              "--core-shadow-strong": selectedPalette.shadow.coreStrong,
+              "--orb-shadow": selectedPalette.shadow.orb,
+              "--core-shadow-dark": selectedPalette.shadow.coreDark,
+              "--orb-shadow-dark": selectedPalette.shadow.orbDark,
             }}
           >
             <div className="selected-exercise-summary">
+              <span className="selected-exercise-label">Selected exercise</span>
               <strong className="selected-exercise-name">
                 {selectedExerciseName}
               </strong>
+              <span className="selected-exercise-meta">
+                {cycleCount} cycle{cycleCount === 1 ? "" : "s"} target
+              </span>
             </div>
             <div className={`phase-pill phase-${activePhase.key}`}>
               {activePhase.label}
@@ -1083,7 +1386,9 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
             </div>
 
             <div className="breathing-stats">
-              <span>Completed cycles: {completedCycles}</span>
+              <span>
+                Completed cycles: {completedCycles}/{cycleCount}
+              </span>
               <span>Total cycle: {totalCycleSeconds} sec</span>
             </div>
 

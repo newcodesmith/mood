@@ -4,9 +4,7 @@
 .mood-comparison {
   width: 100%;
 
-  @include mobile {
-    padding: $spacing-lg;
-  }
+  @include mobile { padding: $spacing-lg; }
 }
 
 .comparison-grid {
@@ -14,47 +12,62 @@
   gap: $spacing-md;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 
-  @include desktop {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  @include tablet {
-    grid-template-columns: 1fr;
-    gap: $spacing-lg;
-  }
-
-  @include mobile {
-    grid-template-columns: 1fr;
-    gap: $spacing-md;
-  }
+  @include desktop { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @include tablet  { grid-template-columns: 1fr; gap: $spacing-md; }
+  @include mobile  { grid-template-columns: 1fr; gap: $spacing-md; }
 }
 
+// Each card gets a unique pillar-color accent
 .comparison-card {
   @include card;
-  background: linear-gradient(160deg, rgba($primary-color, 0.04) 0%, rgba($secondary-color, 0.04) 100%);
-  border: 1px solid rgba($primary-color, 0.14);
+  border: 1px solid $border-color;
+  border-radius: 0 $radius-lg $radius-lg 0;
+  border-left-width: 4px;
   display: grid;
   gap: $spacing-sm;
   align-content: start;
   padding: $spacing-md;
+  transition: box-shadow $transition-fast;
 
-  @include mobile {
-    padding: $spacing-md;
+  &:hover { box-shadow: $shadow-md; }
+
+  &:nth-child(1) {
+    border-left-color: $color-slate;
+    background: linear-gradient(135deg, rgba($color-slate, 0.12) 0%, $bg-white 60%);
+    .value { color: $color-slate; }
   }
+  &:nth-child(2) {
+    border-left-color: $color-teal;
+    background: linear-gradient(135deg, rgba($color-teal, 0.12) 0%, $bg-white 60%);
+    .value { color: darken($color-teal, 5%); }
+  }
+  &:nth-child(3) {
+    border-left-color: $color-sage;
+    background: linear-gradient(135deg, rgba($color-sage, 0.12) 0%, $bg-white 60%);
+    .value { color: darken($color-sage, 8%); }
+  }
+  &:nth-child(4) {
+    border-left-color: $color-olive;
+    background: linear-gradient(135deg, rgba($color-olive, 0.12) 0%, $bg-white 60%);
+    .value { color: darken($color-olive, 8%); }
+  }
+
+  @include mobile { padding: $spacing-md; }
 }
 
 h3 {
   margin: 0;
-  font-size: 1rem;
-  font-weight: $font-weight-bold;
-  color: $primary-color;
-  letter-spacing: -0.02em;
+  font-size: $font-size-xs;
+  font-weight: 700;
+  color: $text-light;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
 }
 
 .current,
 .previous {
   padding: $spacing-sm $spacing-md;
-  background: rgba($bg-white, 0.7);
+  background: $bg-lighter;
   border: 1px solid $border-color;
   border-radius: $radius-md;
   display: grid;
@@ -62,16 +75,19 @@ h3 {
 }
 
 .label {
-  font-size: $font-size-sm;
+  font-size: $font-size-xs;
   color: var(--text-soft);
-  font-weight: $font-weight-semibold;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .value {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   line-height: 1;
-  font-weight: $font-weight-bold;
+  font-weight: 700;
   color: var(--text-main);
+  letter-spacing: -0.04em;
 }
 
 .change {
@@ -81,64 +97,83 @@ h3 {
   display: grid;
   gap: $spacing-xs;
   font-size: $font-size-sm;
-  font-weight: $font-weight-semibold;
+  font-weight: $font-weight-medium;
   line-height: 1.4;
 }
 
 .change.positive {
-  background: rgba($success-color, 0.15);
+  background: rgba($success-color, 0.08);
   color: darken($success-color, 10%);
+  border: 1px solid rgba($success-color, 0.2);
 }
 
 .change.negative {
-  background: rgba($error-color, 0.12);
-  color: darken($error-color, 8%);
+  background: rgba($error-color, 0.07);
+  color: darken($error-color, 6%);
+  border: 1px solid rgba($error-color, 0.18);
 }
 
 .percent {
-  font-size: $font-size-sm;
-  font-weight: $font-weight-bold;
+  font-size: $font-size-md;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 :root[data-theme='dark'] {
   .comparison-card {
-    border-color: rgba(173, 207, 241, 0.28);
-    background: linear-gradient(160deg, rgba(12, 31, 52, 0.74) 0%, rgba(17, 40, 65, 0.74) 100%);
+    box-shadow: none;
+    border-color: var(--border-soft);
+
+    &:hover { box-shadow: none; border-color: var(--border-medium); }
+
+    &:nth-child(1) {
+      border-left-color: $color-slate;
+      background: linear-gradient(135deg, rgba($color-slate, 0.18) 0%, #1d2025 55%);
+      .value { color: lighten($color-slate, 12%); }
+    }
+    &:nth-child(2) {
+      border-left-color: $color-teal;
+      background: linear-gradient(135deg, rgba($color-teal, 0.18) 0%, #1d2025 55%);
+      .value { color: lighten($color-teal, 12%); }
+    }
+    &:nth-child(3) {
+      border-left-color: $color-sage;
+      background: linear-gradient(135deg, rgba($color-sage, 0.18) 0%, #1d2025 55%);
+      .value { color: lighten($color-sage, 8%); }
+    }
+    &:nth-child(4) {
+      border-left-color: $color-olive;
+      background: linear-gradient(135deg, rgba($color-olive, 0.18) 0%, #1d2025 55%);
+      .value { color: lighten($color-olive, 12%); }
+    }
   }
 
   .current,
   .previous {
-    background: rgba(27, 46, 70, 0.72);
-    border-color: rgba(178, 207, 240, 0.24);
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(107, 160, 147, 0.12);
   }
 
-  .label {
-    color: #cbd9eb;
-  }
-
-  .value {
-    color: #f3f8ff;
-  }
+  .label  { color: rgba(226, 228, 231, 0.4); }
+  .value  { color: #e2e4e7; }
 
   .change.positive {
-    background: rgba(34, 197, 94, 0.22);
-    color: #97f5bc;
+    background: rgba(126, 207, 154, 0.1);
+    color: #7ecf9a;
+    border-color: rgba(126, 207, 154, 0.2);
   }
 
   .change.negative {
-    background: rgba(239, 68, 68, 0.22);
-    color: #ffb2b2;
+    background: rgba(192, 87, 74, 0.1);
+    color: #e08a82;
+    border-color: rgba(192, 87, 74, 0.2);
   }
 }
 
 @include mobile {
-  .comparison-grid {
-    grid-template-columns: 1fr;
-  }
+  .comparison-grid { grid-template-columns: 1fr; }
 
   .current,
   .previous,
-  .change {
-    padding: $spacing-md;
-  }
+  .change { padding: $spacing-sm $spacing-md; }
 }

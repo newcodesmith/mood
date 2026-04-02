@@ -364,7 +364,7 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
                 className={`theme-option ${themePreference === 'light' ? 'active' : ''}`}
                 onClick={() => handleThemeSelect('light')}
               >
-                ☀️ Light
+                Light
               </button>
               <button
                 type="button"
@@ -373,7 +373,7 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
                 className={`theme-option ${themePreference === 'dark' ? 'active' : ''}`}
                 onClick={() => handleThemeSelect('dark')}
               >
-                🌙 Dark
+                Dark
               </button>
             </div>
           </div>

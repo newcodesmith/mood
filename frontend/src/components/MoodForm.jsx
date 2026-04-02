@@ -286,7 +286,7 @@ const MoodForm = ({ userId, entryToEdit = null, todaysEntry = null, onSuccess, o
           <div className="mood-display">
             <span className="mood-value">{mood}</span>
             <span className="mood-text">
-              {mood <= 3 ? '😢 Not good' : mood <= 5 ? '😐 Neutral' : mood <= 7 ? '🙂 Good' : '😊 Great'}
+              {mood <= 3 ? 'Not good' : mood <= 5 ? 'Neutral' : mood <= 7 ? 'Good' : 'Great'}
             </span>
           </div>
         </div>
