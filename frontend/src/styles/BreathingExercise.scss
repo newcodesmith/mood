@@ -98,7 +98,7 @@
 
 .settings-section-card {
   border: 1px solid $border-color;
-  border-left: 4px solid $color-slate;
+  border-left: 3px solid $color-slate;
   border-radius: 0 $radius-lg $radius-lg 0;
   padding: $spacing-md;
   background: linear-gradient(135deg, rgba($color-slate, 0.1) 0%, $bg-lighter 60%);
@@ -152,6 +152,10 @@
   grid-template-columns: 40px minmax(0, 70px) 40px auto;
   align-items: stretch;
   gap: $spacing-sm;
+
+  @media (max-width: 440px) {
+    justify-content: center;
+  }
 
   input {
     @include form-input;
@@ -661,7 +665,7 @@
 }
 
 .control-btn.primary {
-  background: linear-gradient(135deg, var(--core-1, #{$color-teal}) 0%, var(--core-2, #{$color-slate}) 58%, var(--core-3, darken($color-slate, 10%)) 100%);
+  background: $gradient-primary;
   color: #fff;
   box-shadow: 0 2px 10px rgba($primary-color, 0.25);
 }
@@ -747,6 +751,11 @@
     grid-template-columns: repeat(auto-fit, minmax(150px, 180px));
     justify-content: start;
   }
+
+  @media (max-width: 440px) {
+    grid-template-columns: 1fr;
+    justify-content: center;
+  }
 }
 
 .settings-profile-list     { margin-top: $spacing-sm; }
@@ -757,6 +766,11 @@
 .saved-profile-card {
   width: 240px;
   max-width: 100%;
+
+  @media (max-width: 440px) {
+    width: 100%;
+    text-align: center;
+  }
   display: grid;
   gap: 0.25rem;
   padding: $spacing-sm;
@@ -843,6 +857,315 @@
   border-color: rgba($primary-color, 0.5);
   background: rgba($primary-color, 0.1);
   box-shadow: 0 0 0 2px rgba($primary-color, 0.1);
+}
+
+// ============================================================
+// Visual Shape Selector
+// ============================================================
+
+.shape-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+
+  @include mobile {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.shape-chip {
+  border: 1px solid rgba($color-olive, 0.22);
+  background: rgba($color-olive, 0.05);
+  color: $text-secondary;
+  border-radius: $radius-md;
+  padding: 0.55rem $spacing-sm 0.45rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: rgba($color-olive, 0.4);
+    background: rgba($color-olive, 0.1);
+    color: darken($color-olive, 10%);
+    transform: translateY(-1px);
+  }
+
+  &.active {
+    border-color: $color-olive;
+    background: rgba($color-olive, 0.14);
+    color: darken($color-olive, 12%);
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba($color-olive, 0.2);
+  }
+}
+
+.shape-preview {
+  display: block;
+  width: 28px;
+  height: 28px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.shape-preview-orb {
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 36%, rgba($color-teal, 0.5) 0%, rgba($color-slate, 0.8) 100%);
+  width: 28px;
+  height: 28px;
+}
+
+.shape-preview-lotus {
+  color: $color-teal;
+}
+
+.shape-preview-crystal {
+  &::before, &::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+    background: rgba($color-slate, 0.7);
+  }
+  &::before { width: 22px; height: 22px; }
+  &::after  { width: 12px; height: 12px; background: rgba($color-teal, 0.85); }
+}
+
+.shape-preview-ripple {
+  border-radius: 50%;
+  border: 2px solid rgba($color-teal, 0.8);
+  width: 28px; height: 28px;
+  &::before, &::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    border-radius: 50%;
+    border: 1.5px solid rgba($color-teal, 0.5);
+    transform: translate(-50%, -50%);
+  }
+  &::before { width: 18px; height: 18px; }
+  &::after  { width: 10px; height: 10px; border-color: rgba($color-slate, 0.8); }
+}
+
+.color-subhead {
+  margin-top: $spacing-md !important;
+}
+
+// ============================================================
+// Lotus Shape
+// ============================================================
+
+.petal-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 38%, var(--core-1, #9ecfdf), var(--core-2, #3d8fa8));
+  transform: translate(-50%, -50%);
+  transition: transform var(--phase-ms, 900ms) ease-in-out;
+  z-index: 2;
+}
+
+.petal {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 14px; height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, var(--core-1, #9ecfdf) 0%, var(--core-2, #3d8fa8) 100%);
+  opacity: 0.5;
+  transform-origin: 50% 50%;
+  transition:
+    transform var(--phase-ms, 900ms) ease-in-out,
+    opacity var(--phase-ms, 900ms) ease-in-out;
+}
+
+.petal-1 { --petal-angle: 0deg;   }
+.petal-2 { --petal-angle: 60deg;  }
+.petal-3 { --petal-angle: 120deg; }
+.petal-4 { --petal-angle: 180deg; }
+.petal-5 { --petal-angle: 240deg; }
+.petal-6 { --petal-angle: 300deg; }
+
+// Idle/paused: petals tucked in near center
+.breathing-player-card.shape-lotus .petal {
+  transform: translate(-50%, -50%) rotate(var(--petal-angle)) translateY(-6px) scale(0.45);
+  opacity: 0.4;
+}
+
+// Inhale: bloom outward
+.breathing-player-card.shape-lotus.is-running.phase-state-inhale .petal {
+  transform: translate(-50%, -50%) rotate(var(--petal-angle)) translateY(-48px) scale(1);
+  opacity: 0.88;
+}
+.breathing-player-card.shape-lotus.is-running.phase-state-inhale .petal-center {
+  transform: translate(-50%, -50%) scale(1.25);
+}
+
+// Hold: stay open + slow rotation
+.breathing-player-card.shape-lotus.is-running.phase-state-hold .petal {
+  transform: translate(-50%, -50%) rotate(var(--petal-angle)) translateY(-48px) scale(1);
+  opacity: 0.88;
+}
+.breathing-player-card.shape-lotus.is-running.phase-state-hold .petal-center {
+  transform: translate(-50%, -50%) scale(1.25);
+}
+.breathing-player-card.shape-lotus.is-running.phase-state-hold .breath-visual {
+  animation: holdSpin var(--phase-ms, 900ms) linear 1;
+}
+
+// Exhale: fold back in
+.breathing-player-card.shape-lotus.is-running.phase-state-exhale .petal {
+  transform: translate(-50%, -50%) rotate(var(--petal-angle)) translateY(-6px) scale(0.45);
+  opacity: 0.4;
+}
+.breathing-player-card.shape-lotus.is-running.phase-state-exhale .petal-center {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+// ============================================================
+// Crystal Shape
+// ============================================================
+
+.crystal-outer,
+.crystal-inner {
+  position: absolute;
+  top: 50%; left: 50%;
+  transition:
+    transform var(--phase-ms, 900ms) ease-in-out,
+    border-radius var(--phase-ms, 900ms) ease-in-out,
+    box-shadow 600ms ease;
+}
+
+.crystal-outer {
+  width: 76px; height: 76px;
+  background: linear-gradient(135deg, var(--core-1, #9ecfdf) 0%, var(--core-2, #3d8fa8) 100%);
+  transform: translate(-50%, -50%) rotate(45deg) scale(0.72);
+  border-radius: 4px;
+  box-shadow: 0 4px 18px var(--core-shadow, rgba(61, 143, 168, 0.3));
+}
+
+.crystal-inner {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--core-2, #3d8fa8) 0%, var(--core-3, #1a5570) 100%);
+  transform: translate(-50%, -50%) rotate(45deg) scale(0.72);
+  border-radius: 2px;
+  opacity: 0.85;
+}
+
+// Inhale: grow + soften corners
+.breathing-player-card.shape-crystal.is-running.phase-state-inhale .crystal-outer {
+  transform: translate(-50%, -50%) rotate(45deg) scale(1.28);
+  border-radius: 14px;
+}
+.breathing-player-card.shape-crystal.is-running.phase-state-inhale .crystal-inner {
+  transform: translate(-50%, -50%) rotate(45deg) scale(1.28);
+  border-radius: 7px;
+}
+
+// Hold: stay expanded + glow
+.breathing-player-card.shape-crystal.is-running.phase-state-hold .crystal-outer {
+  transform: translate(-50%, -50%) rotate(45deg) scale(1.28);
+  border-radius: 14px;
+  animation: crystalGlow 1.6s ease-in-out infinite;
+}
+.breathing-player-card.shape-crystal.is-running.phase-state-hold .crystal-inner {
+  transform: translate(-50%, -50%) rotate(45deg) scale(1.28);
+  border-radius: 7px;
+}
+
+// Exhale: shrink back + sharpen corners
+.breathing-player-card.shape-crystal.is-running.phase-state-exhale .crystal-outer {
+  transform: translate(-50%, -50%) rotate(45deg) scale(0.72);
+  border-radius: 4px;
+}
+.breathing-player-card.shape-crystal.is-running.phase-state-exhale .crystal-inner {
+  transform: translate(-50%, -50%) rotate(45deg) scale(0.72);
+  border-radius: 2px;
+}
+
+@keyframes crystalGlow {
+  0%, 100% { box-shadow: 0 4px 18px var(--core-shadow, rgba(61, 143, 168, 0.3)); }
+  50%       { box-shadow: 0 4px 42px var(--core-shadow-strong, rgba(61, 143, 168, 0.62)); }
+}
+
+// ============================================================
+// Ripple Shape
+// ============================================================
+
+.ripple-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 38%, var(--core-1, #9ecfdf), var(--core-2, #3d8fa8));
+  transform: translate(-50%, -50%) scale(1);
+  transition: transform var(--phase-ms, 900ms) ease-in-out;
+  z-index: 2;
+}
+
+.ripple-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  border-radius: 50%;
+  border: 2px solid var(--core-2, #3d8fa8);
+  background: transparent;
+  transform: translate(-50%, -50%) scale(0.18);
+  opacity: 0;
+  transition:
+    transform var(--phase-ms, 900ms) ease-out,
+    opacity var(--phase-ms, 900ms) ease-out;
+}
+
+.ripple-ring-1 { width: 62px;  height: 62px; }
+.ripple-ring-2 { width: 104px; height: 104px; transition-delay: 0.1s; }
+.ripple-ring-3 { width: 152px; height: 152px; border-width: 1.5px; transition-delay: 0.2s; }
+
+// Inhale: center grows + rings expand outward
+.breathing-player-card.shape-ripple.is-running.phase-state-inhale .ripple-center {
+  transform: translate(-50%, -50%) scale(1.4);
+}
+.breathing-player-card.shape-ripple.is-running.phase-state-inhale .ripple-ring {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+// Hold: stay expanded + rings pulse opacity in staggered waves
+.breathing-player-card.shape-ripple.is-running.phase-state-hold .ripple-center {
+  transform: translate(-50%, -50%) scale(1.4);
+}
+.breathing-player-card.shape-ripple.is-running.phase-state-hold .ripple-ring {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+.breathing-player-card.shape-ripple.is-running.phase-state-hold .ripple-ring-1 {
+  animation: ripplePulse 1.8s ease-in-out infinite;
+}
+.breathing-player-card.shape-ripple.is-running.phase-state-hold .ripple-ring-2 {
+  animation: ripplePulse 1.8s ease-in-out 0.3s infinite;
+}
+.breathing-player-card.shape-ripple.is-running.phase-state-hold .ripple-ring-3 {
+  animation: ripplePulse 1.8s ease-in-out 0.6s infinite;
+}
+
+// Exhale: rings collapse inward
+.breathing-player-card.shape-ripple.is-running.phase-state-exhale .ripple-center {
+  transform: translate(-50%, -50%) scale(1);
+}
+.breathing-player-card.shape-ripple.is-running.phase-state-exhale .ripple-ring {
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0.75;
+  transition-timing-function: ease-in;
+  transition-delay: 0s;
+}
+
+@keyframes ripplePulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.28; }
 }
 
 @include mobile {
@@ -1109,5 +1432,37 @@
   .breath-orb {
     background: radial-gradient(circle at 50% 50%, var(--orb-2, rgba(139, 198, 149, 0.9)) 0%, var(--orb-3, rgba(88, 128, 155, 0.85)) 100%);
     box-shadow: 0 2px 6px var(--orb-shadow-dark, rgba(107, 160, 147, 0.1));
+  }
+
+  .shape-chip {
+    background: rgba($color-olive, 0.08);
+    border-color: rgba($color-olive, 0.22);
+    color: rgba(226, 228, 231, 0.75);
+
+    &:hover {
+      background: rgba($color-olive, 0.15);
+      border-color: rgba($color-olive, 0.38);
+      color: lighten($color-olive, 18%);
+    }
+
+    &.active {
+      background: rgba($color-olive, 0.2);
+      border-color: rgba($color-olive, 0.5);
+      color: lighten($color-olive, 20%);
+      box-shadow: 0 2px 8px rgba($color-olive, 0.2);
+    }
+  }
+
+  .petal-center {
+    background: radial-gradient(circle at 40% 38%, var(--core-1, #{lighten($color-teal, 20%)}) 0%, var(--core-2, #{$color-teal}) 100%);
+  }
+
+  .crystal-outer {
+    background: linear-gradient(135deg, var(--core-1, #{lighten($color-teal, 20%)}) 0%, var(--core-2, #{$color-teal}) 100%);
+    box-shadow: 0 4px 18px var(--core-shadow-dark, rgba(107, 160, 147, 0.2));
+  }
+
+  .ripple-center {
+    background: radial-gradient(circle at 40% 38%, var(--core-1, #{lighten($color-teal, 20%)}) 0%, var(--core-2, #{$color-teal}) 100%);
   }
 }

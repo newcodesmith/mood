@@ -136,6 +136,7 @@ const PRESET_PROFILES = [
     audio_enabled: true,
     audio_level: 0.09,
     color_palette: "ocean",
+    visual_shape: "orb",
   },
   {
     id: "preset-focus-box",
@@ -146,6 +147,7 @@ const PRESET_PROFILES = [
     audio_enabled: true,
     audio_level: 0.08,
     color_palette: "forest",
+    visual_shape: "crystal",
   },
   {
     id: "preset-deep-sleep",
@@ -156,6 +158,7 @@ const PRESET_PROFILES = [
     audio_enabled: true,
     audio_level: 0.06,
     color_palette: "lavender",
+    visual_shape: "ripple",
   },
 ];
 
@@ -197,6 +200,18 @@ const normalizeColorPalette = (value) => {
   return hasPalette ? normalized : "ocean";
 };
 
+const VISUAL_SHAPES = [
+  { id: "orb",     label: "Orb" },
+  { id: "lotus",   label: "Lotus" },
+  { id: "crystal", label: "Crystal" },
+  { id: "ripple",  label: "Ripple" },
+];
+
+const normalizeVisualShape = (value) => {
+  const normalized = String(value || "").trim().toLowerCase();
+  return VISUAL_SHAPES.some((s) => s.id === normalized) ? normalized : "orb";
+};
+
 const getProfileIcon = () => null;
 
 const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
@@ -223,6 +238,9 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
   );
   const [colorPalette, setColorPalette] = useState(
     normalizeColorPalette(settings?.colorPalette),
+  );
+  const [visualShape, setVisualShape] = useState(
+    normalizeVisualShape(settings?.visualShape),
   );
   const [saveState, setSaveState] = useState("idle");
   const [profiles, setProfiles] = useState([]);
@@ -269,6 +287,7 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
     );
     setAudioLevel(normalizeAudioLevel(settings?.audioLevel ?? 0.12));
     setColorPalette(normalizeColorPalette(settings?.colorPalette));
+    setVisualShape(normalizeVisualShape(settings?.visualShape));
 
     durationsRef.current = syncedDurations;
     runDurationsRef.current = syncedDurations;
@@ -282,6 +301,7 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
     settings?.audioLevel,
     settings?.cycleCount,
     settings?.colorPalette,
+    settings?.visualShape,
     settings?.exhale,
     settings?.hold,
     settings?.inhale,
@@ -600,6 +620,7 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
       audioEnabled,
       audioLevel: normalizeAudioLevel(audioLevel),
       colorPalette: normalizeColorPalette(colorPalette),
+      visualShape: normalizeVisualShape(visualShape),
     };
 
     const serialized = JSON.stringify(nextSettings);
@@ -644,6 +665,7 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
     audioLevel,
     cycleCount,
     colorPalette,
+    visualShape,
     durations.exhale,
     durations.hold,
     durations.inhale,
@@ -710,6 +732,10 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
   const handlePaletteChange = (paletteId) => {
     setActiveProfileId(editingProfileId);
     setColorPalette(normalizeColorPalette(paletteId));
+  };
+
+  const handleShapeChange = (shapeId) => {
+    setVisualShape(normalizeVisualShape(shapeId));
   };
 
   const clearProfileEditor = useCallback(() => {
@@ -797,6 +823,9 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
     setAudioLevel(normalizeAudioLevel(profile.audio_level));
     if (profile.color_palette) {
       setColorPalette(normalizeColorPalette(profile.color_palette));
+    }
+    if (profile.visual_shape) {
+      setVisualShape(normalizeVisualShape(profile.visual_shape));
     }
     setActiveProfileId(String(profile.id));
     setBreathingProgress({ phaseIndex: 0, secondsRemaining: nextDurations.inhale });
@@ -1220,9 +1249,42 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
 
             <section className="settings-section-card settings-section-colors">
               <div className="color-settings-block">
-              <h4>Shape Colors</h4>
+              <h4>Breathing Shape</h4>
               <p className="breathing-settings-help">
-                Choose a color palette for the breathing shape.
+                Choose a visual style for the breathing exercise.
+              </p>
+              <div
+                className="shape-grid"
+                role="group"
+                aria-label="Breathing visual shape"
+              >
+                {VISUAL_SHAPES.map((shape) => (
+                  <button
+                    key={shape.id}
+                    type="button"
+                    className={`shape-chip ${visualShape === shape.id ? "active" : ""}`}
+                    onClick={() => handleShapeChange(shape.id)}
+                    aria-pressed={visualShape === shape.id}
+                  >
+                    <span className={`shape-preview shape-preview-${shape.id}`} aria-hidden="true">
+                      {shape.id === "lotus" && (
+                        <svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "100%" }}>
+                          {[0, 60, 120, 180, 240, 300].map((angle) => (
+                            <g key={angle} transform={`rotate(${angle}, 14, 14)`}>
+                              <ellipse cx="14" cy="7" rx="3.5" ry="7" fill="currentColor" opacity="0.72" />
+                            </g>
+                          ))}
+                          <circle cx="14" cy="14" r="4.5" fill="currentColor" opacity="0.95" />
+                        </svg>
+                      )}
+                    </span>
+                    <span>{shape.label}</span>
+                  </button>
+                ))}
+              </div>
+              <h4 className="color-subhead">Color Palette</h4>
+              <p className="breathing-settings-help">
+                Customize the shape colors.
               </p>
               <div
                 className="palette-grid"
@@ -1320,7 +1382,7 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
 
         {activeTab === "exercise" && (
           <article
-            className={`breathing-player-card phase-state-${activePhase.key} ${isRunning ? "is-running" : "is-paused"}`}
+            className={`breathing-player-card shape-${visualShape} phase-state-${activePhase.key} ${isRunning ? "is-running" : "is-paused"}`}
             style={{
               "--phase-ms": `${durations[activePhase.key] * 1000}ms`,
               "--core-1": selectedPalette.core[0],
@@ -1350,10 +1412,36 @@ const BreathingExercise = ({ userId, settings, onSettingsChange }) => {
               {activePhase.label}
             </div>
             <div className="breath-visual" aria-hidden="true">
-              <span className="breath-core" />
-              <span className="breath-orb orb-one" />
-              <span className="breath-orb orb-two" />
-              <span className="breath-orb orb-three" />
+              {visualShape === "lotus" ? (
+                <>
+                  <span className="petal-center" />
+                  <span className="petal petal-1" />
+                  <span className="petal petal-2" />
+                  <span className="petal petal-3" />
+                  <span className="petal petal-4" />
+                  <span className="petal petal-5" />
+                  <span className="petal petal-6" />
+                </>
+              ) : visualShape === "crystal" ? (
+                <>
+                  <span className="crystal-outer" />
+                  <span className="crystal-inner" />
+                </>
+              ) : visualShape === "ripple" ? (
+                <>
+                  <span className="ripple-center" />
+                  <span className="ripple-ring ripple-ring-1" />
+                  <span className="ripple-ring ripple-ring-2" />
+                  <span className="ripple-ring ripple-ring-3" />
+                </>
+              ) : (
+                <>
+                  <span className="breath-core" />
+                  <span className="breath-orb orb-one" />
+                  <span className="breath-orb orb-two" />
+                  <span className="breath-orb orb-three" />
+                </>
+              )}
             </div>
             <div className="countdown-number">{secondsRemaining}</div>
             <p className="phase-hint">{activePhase.hint}</p>

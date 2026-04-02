@@ -11,7 +11,19 @@
       "Bash(heroku config:*)",
       "Bash(git add:*)",
       "Bash(git commit -m ':*)",
-      "Bash(heroku run:*)"
+      "Bash(heroku run:*)",
+      "Bash(python3 /tmp/analyze_scss.py)",
+      "Bash(bash /tmp/scss_audit.sh)",
+      "Bash(python3 /tmp/detailed_audit.py)",
+      "Bash(python3 /tmp/full_audit.py)",
+      "Bash(python3 /tmp/verify_unused.py)",
+      "Bash(npx knex:*)",
+      "Bash(heroku git:remote -a mood--backend)",
+      "Bash(git subtree:*)",
+      "Bash(ls *.json)",
+      "Bash(heroku apps:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }

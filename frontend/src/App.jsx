@@ -31,6 +31,12 @@ const normalizeBreathingColorPalette = (value) => {
   return allowed.includes(normalized) ? normalized : 'ocean';
 };
 
+const normalizeBreathingVisualShape = (value) => {
+  const allowed = ['orb', 'lotus', 'crystal', 'ripple'];
+  const normalized = String(value || '').trim().toLowerCase();
+  return allowed.includes(normalized) ? normalized : 'orb';
+};
+
 const getBreathingSettingsFromUser = (user) => {
   const normalizeDuration = (value, fallback) => {
     const parsed = Number(value);
@@ -67,7 +73,8 @@ const getBreathingSettingsFromUser = (user) => {
     cycleCount: normalizeCycleCount(user?.breathing_cycle_count, 5),
     audioEnabled: typeof user?.breathing_audio_enabled === 'boolean' ? user.breathing_audio_enabled : true,
     audioLevel: normalizeAudioLevel(user?.breathing_audio_level, 0.12),
-    colorPalette: normalizeBreathingColorPalette(user?.breathing_color_palette)
+    colorPalette: normalizeBreathingColorPalette(user?.breathing_color_palette),
+    visualShape: normalizeBreathingVisualShape(user?.breathing_visual_shape)
   };
 };
 
@@ -338,7 +345,8 @@ function App() {
         breathingCycleCount: nextSettings.cycleCount,
         breathingAudioEnabled: nextSettings.audioEnabled,
         breathingAudioLevel: nextSettings.audioLevel,
-        breathingColorPalette: nextSettings.colorPalette
+        breathingColorPalette: nextSettings.colorPalette,
+        breathingVisualShape: nextSettings.visualShape
       });
 
       if (requestId === latestBreathingSaveRequestRef.current) {

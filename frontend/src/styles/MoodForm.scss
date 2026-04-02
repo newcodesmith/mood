@@ -82,7 +82,7 @@
   margin-bottom: $spacing-xl;
   padding: $spacing-md;
   border: 1px solid $border-color;
-  border-left: 4px solid $color-teal;
+  border-left: 3px solid $color-teal;
   border-radius: 0 $radius-md $radius-md 0;
   background: rgba($color-teal, 0.1);
 }
@@ -244,7 +244,6 @@
     color: #fff;
     border-color: transparent;
     font-weight: 600;
-    box-shadow: 0 2px 12px rgba($primary-color, 0.35), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 0 0 1px rgba(255,255,255,0.2);
   }
 }
 

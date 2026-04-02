@@ -25,7 +25,6 @@ $error-color:      #c0574a;
 // Light Mode Text
 $text-primary:   #1e2d28;    // deep forest
 $text-secondary: #3a5046;    // mid forest
-$text-dark:      #1e2d28;
 $text-light:     #6b8279;    // muted green-grey
 $text-lighter:   #e8f0ed;    // near-white (for dark bg text)
 
@@ -44,7 +43,6 @@ $dark-border:      rgba(107, 160, 147, 0.15);
 // Gradients
 $gradient-primary:        linear-gradient(135deg, $color-slate 0%, $color-teal 100%);
 $gradient-primary-light:  linear-gradient(135deg, rgba($color-slate, 0.07) 0%, rgba($color-teal, 0.07) 100%);
-$gradient-primary-transparent: linear-gradient(to right, $color-slate, $color-teal, $color-sage);
 $gradient-hero-light:     linear-gradient(150deg, #3d6f85 0%, #4e8275 45%, #3d6f85 100%);
 $gradient-hero-dark:      linear-gradient(150deg, #111214 0%, #181b1e 50%, #111214 100%);
 
