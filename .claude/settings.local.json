@@ -38,7 +38,11 @@
       "Bash(lsof -ti:3000)",
       "Bash(xargs ps:*)",
       "Bash(ls:*)",
-      "Bash(grep -v \"^$\")"
+      "Bash(grep -v \"^$\")",
+      "Bash(curl -s https://mood--backend-9b77c9379b8b.herokuapp.com/api/auth/login -X POST -H 'Content-Type: application/json' -d '{\"name\":\"test\",\"password\":\"test\"}')",
+      "Bash(curl -s -I -X OPTIONS https://mood--backend-9b77c9379b8b.herokuapp.com/api/auth/login -H 'Origin: https://mood-frontend.web.app' -H 'Access-Control-Request-Method: POST')",
+      "Bash(heroku logs:*)",
+      "Bash(curl -s https://mood--backend-9b77c9379b8b.herokuapp.com/api/auth/login -X POST -H 'Content-Type: application/json' -d '{\"name\":\"test\",\"password\":\"wrongpassword\"}')"
     ]
   }
 }
