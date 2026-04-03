@@ -87,11 +87,13 @@ A time-series health tracking application centered on mood, sleep, hydration, we
 - Check-in count remains visible in summary context
 
 ### 11. Settings & Profile
-- Update display name (non-unique — multiple users may share a display name)
+- Separate display name from login username: users set a display name that appears in the header and throughout the app; the login username is immutable and shown as read-only in account info
+- Display name is optional (2–50 characters if set); falls back to username when not set
 - Upload/change avatar from local files or image URL
 - Preview and remove avatar before saving
 - Store theme preference and profile preferences
 - Save theme preference to the user account so it syncs across devices after login
+- Settings info panel shows login username and account creation date
 
 ### 12. Mobile-Friendly Design
 - Responsive layout that works seamlessly on mobile, tablet, and desktop
@@ -120,6 +122,7 @@ A time-series health tracking application centered on mood, sleep, hydration, we
 ### 14. Guided Breathing Exercise
 - Users can open a dedicated breathing experience with Exercise and Settings tabs
 - Breathing runs through inhale, hold, and exhale phases with a live countdown and animated shape
+- Users can choose from four visual shapes: Orb, Lotus, Crystal, and Ripple — each with distinct per-phase animations
 - Phase labels and countdown visuals reflect the active breathing color palette
 - Users can start, pause, and reset the breathing cycle
 - Audio cues play distinct tones per phase and stop immediately on pause or reset
@@ -136,10 +139,12 @@ A time-series health tracking application centered on mood, sleep, hydration, we
 - Maximum audio volume is capped at 0.30 (reduced from 0.60) with lower defaults across all presets
 - Users can choose from saved breathing color palettes: Ocean, Sunrise, Forest, Lavender, and Ember
 - Palette swatches are displayed as circles
+- Users can choose a visual shape for the breathing animation: Orb, Lotus, Crystal, or Ripple
+- Visual shape selection persists to the user account alongside other breathing preferences
 - Breathing preferences persist to the authenticated user account and restore on login, refresh, and new devices
 - Users can save named breathing profiles from their current settings
 - Users can edit previously saved breathing profiles
-- Preset breathing profiles are available for quick start: Calm Reset, Focus Box, and Deep Sleep 4-7-8
+- Preset breathing profiles are available for quick start: Calm Reset (Orb), Focus Box (Crystal), and Deep Sleep 4-7-8 (Ripple)
 - Saved and preset profiles can be loaded into the active exercise from either tab
 - Profile cards display iconography, timing summary, and audio state
 
@@ -154,12 +159,18 @@ A time-series health tracking application centered on mood, sleep, hydration, we
 ```json
 {
   "id": "number",
-  "name": "string (unique login username / display name)",
+  "name": "string (unique login username — immutable after registration)",
+  "display_name": "string | null (optional display name shown in header and settings, 2–50 chars)",
   "avatar": "string (url/path)",
   "theme_preference": "string ('light' | 'dark')",
+  "breathing_inhale_seconds": "number",
+  "breathing_hold_seconds": "number",
+  "breathing_exhale_seconds": "number",
+  "breathing_cycle_count": "number",
   "breathing_audio_enabled": "boolean",
   "breathing_audio_level": "number (0.00-0.30)",
   "breathing_color_palette": "string ('ocean' | 'sunrise' | 'forest' | 'lavender' | 'ember')",
+  "breathing_visual_shape": "string ('orb' | 'lotus' | 'crystal' | 'ripple')",
   "password_hash": "string (DB only)",
   "created_at": "timestamp",
   "updated_at": "timestamp"
@@ -241,7 +252,7 @@ A time-series health tracking application centered on mood, sleep, hydration, we
 - One-entry-per-day guard: second create attempt for same day should show edit redirect/notice
 - Edit mood entry: open edit from Today's Entry and from chart detail, update fields, verify persisted changes
 - Health form validation: required feeling, mood bounds, sleep range, water range, weight range, optional reflection behavior
-- Settings profile updates: change name and avatar URL/upload, preview/remove avatar, save success state
+- Settings profile updates: change display name and avatar URL/upload, preview/remove avatar, save success state; verify display name updates in header and settings field
 - Theme behavior: switch light/dark preview, save persistence, unsaved theme reverts when leaving Settings
 - Theme styling QA: verify text contrast, chart readability, borders, and component backgrounds in both light and dark mode
 - Mood chart interactions: last 11 entries render, selecting a point opens matching entry details
@@ -300,5 +311,7 @@ A time-series health tracking application centered on mood, sleep, hydration, we
 - [x] Shared SCSS design system and component styling cleanup (removed unused variables, duplicate rules, dead overrides)
 - [x] Auth switched from email to username-based login
 - [x] Display name unique constraint dropped (migration 013)
+- [x] Separate display_name field added (migration 015) — editable in Settings, shown in header; login username immutable
+- [x] Breathing visual shape selection (Orb, Lotus, Crystal, Ripple) with per-phase animations (migration 014)
 - [ ] Cypress E2E coverage for full auth, mood logging, edit, and settings flows
 - [x] Production deployment checks (REACT_APP_API_URL set, CORS verified, smoke test on hosted frontend)

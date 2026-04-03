@@ -47,11 +47,12 @@ npm run dev
 - **Weekly Insights** - Compare mood, sleep, hydration, and weight (last 5 check-ins vs. previous 5); cards have per-pillar 3px colored left borders
 - **Today's Check-In** - View full current-day details including all tracked metrics
 - **Guided Breathing Exercise** - Run inhale/hold/exhale cycles with animated visuals, countdown, start/pause/reset controls, and per-phase tones that fade to silence before the next phase
-- **Breathing Profiles** - Save named breathing routines, edit them later, and load built-in presets for focus, calm, or sleep
+- **Breathing Visual Shapes** - Choose from four animated shapes: Orb, Lotus, Crystal, and Ripple — each with distinct inhale/hold/exhale animations; shape persists to user account
+- **Breathing Profiles** - Save named breathing routines, edit them later, and load built-in presets (Calm Reset, Focus Box, Deep Sleep 4-7-8) each with a default shape
 - **Breathing Theme Palettes** - Choose a breathing color palette that updates the shapes and related exercise UI; palette swatches shown as circles
 - **Breathing Audio Controls** - Toggle with live On/Off status badge; volume slider styled with earthy gradient; maximum volume capped at 0.30
-- **Cross-Device Breathing Preferences** - Breathing audio settings and color palette persist to the user account
-- **Settings** - Update display name, avatar, theme, change password
+- **Cross-Device Breathing Preferences** - Breathing audio settings, color palette, and visual shape persist to the user account
+- **Settings** - Set a display name (shown in header; login username stays unchanged), update avatar, theme, and change password
 - **Authentication** - Register/login with username and JWT, password reset by username
 - **Light & Dark Mode** - Earthy wellness palette with neutral charcoal dark mode surfaces; consistent input, card, and border styling across both themes
 - **Responsive** - Mobile-first design
@@ -87,8 +88,8 @@ Payload supports:
 
 **User:**
 - `GET /api/users/:id` - Get user
-- `PUT /api/users/:id` - Update user
-- `PATCH /api/users/:id/preferences` - Update persisted user preferences including breathing audio and color palette
+- `PUT /api/users/:id` - Update user (display name, avatar, theme preference)
+- `PATCH /api/users/:id/preferences` - Update persisted user preferences including breathing audio, color palette, and visual shape
 - `GET /api/users/:id/breathing-profiles` - List saved breathing profiles
 - `POST /api/users/:id/breathing-profiles` - Create a breathing profile
 - `PATCH /api/users/:id/breathing-profiles/:profileId` - Update a saved breathing profile
@@ -97,6 +98,7 @@ Breathing preference payload supports:
 - `breathing_audio_enabled` or `breathingAudioEnabled` (boolean)
 - `breathing_audio_level` or `breathingAudioLevel` (0.00-0.30)
 - `breathing_color_palette` or `breathingColorPalette` (`ocean`, `sunrise`, `forest`, `lavender`, `ember`)
+- `breathing_visual_shape` or `breathingVisualShape` (`orb`, `lotus`, `crystal`, `ripple`)
 
 Breathing profile payload supports:
 - `name` (required)

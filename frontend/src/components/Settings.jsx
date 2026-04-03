@@ -58,14 +58,15 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
   // Initialize form with user data
   useEffect(() => {
     if (user) {
-      setDisplayName(user.display_name || '');
+      setDisplayName(user.display_name !== null && user.display_name !== undefined ? user.display_name : (user.name || ''));
       // Validate avatar from user data - clear if invalid (like email addresses)
       const avatarUrl = user.avatar || '';
       setAvatar(isValidImageUrl(avatarUrl) ? avatarUrl : '');
+      setThemePreference(user.theme_preference || theme || 'light');
       setAvatarError(false);
       setLoading(false);
     }
-  }, [user]);
+  }, [theme, user]);
 
   useEffect(() => {
     setThemePreference(theme || 'light');
@@ -186,7 +187,11 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
     if (!validateForm()) return;
 
     try {
-      const updated = await userService.update(user.id, { displayName: displayName.trim() || null, avatar });
+      const updated = await userService.update(user.id, {
+        displayName: displayName.trim() || null,
+        avatar,
+        themePreference
+      });
       if (onThemeChange) {
         onThemeChange(themePreference, { persist: true });
       }
@@ -257,15 +262,14 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
           <h3>Display Name</h3>
           <div className="form-group">
             <input
-              id="display-name-field"
               type="text"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              placeholder={user?.name || 'Enter a display name'}
+              placeholder="Enter a display name"
               className={errors.displayName ? 'input-error' : ''}
             />
             {errors.displayName && <span className="error">{errors.displayName}</span>}
-            <small>Login username: <strong>{user?.name}</strong></small>
+            {/* <small>Shown in the header. Login username (<strong>{user?.name}</strong>) cannot be changed.</small> */}
           </div>
         </div>
 
@@ -511,6 +515,7 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
       </form>
 
       <div className="settings-info">
+        <p><strong>Username:</strong> {user?.name}</p>
         <p><strong>Account Created:</strong> {user && new Date(user.created_at).toLocaleDateString()}</p>
       </div>
     </div>
