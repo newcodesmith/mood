@@ -23,7 +23,26 @@
       "Bash(ls *.json)",
       "Bash(heroku apps:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(heroku run:output bzsbpu92m --app mood--backend)",
+      "Bash(grep -v \"^\\\\[G\\\\|^$\\\\|connecting\\\\|starting\\\\|⣾\\\\|⣽\\\\|⣻\\\\|⢿\\\\|⡿\\\\|⣟\\\\|⣯\\\\|⣷\")",
+      "Bash(heroku pg:psql:*)",
+      "Bash(firebase deploy:*)",
+      "Bash(node -e ':*)",
+      "Bash(node:*)",
+      "Bash(curl -s http://localhost:3001/api/auth/login -H 'Content-Type: application/json' -d '{\"username\":\"User\",\"password\":\"testpass\"}')",
+      "Bash(curl -s http://localhost:3001/api/users/10 -X PUT -H 'Content-Type: application/json' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJpYXQiOjE3NzUxNzQwNjAsImV4cCI6MTc3NTc3ODg2MH0.GOLf4R_PQlhkcHih8BufREv3-PJYVBh0JDWNehp45J8' -d '{\"displayName\":\"My Display Name\",\"avatar\":\"\",\"themePreference\":\"light\"}')",
+      "Bash(curl -s http://localhost:3001/api/users/10 -X PUT -H 'Content-Type: application/json' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJpYXQiOjE3NzUxNzQwNjAsImV4cCI6MTc3NTc3ODg2MH0.GOLf4R_PQlhkcHih8BufREv3-PJYVBh0JDWNehp45J8' -d '{\"displayName\":null,\"avatar\":\"\",\"themePreference\":\"light\"}')",
+      "Bash(curl -s http://localhost:3001/api/users/10 -X DELETE -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEwLCJpYXQiOjE3NzUxNzQwNjAsImV4cCI6MTc3NTc3ODg2MH0.GOLf4R_PQlhkcHih8BufREv3-PJYVBh0JDWNehp45J8')",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(lsof -ti:3000)",
+      "Bash(xargs ps:*)",
+      "Bash(ls:*)",
+      "Bash(grep -v \"^$\")",
+      "Bash(curl -s https://mood--backend-9b77c9379b8b.herokuapp.com/api/auth/login -X POST -H 'Content-Type: application/json' -d '{\"name\":\"test\",\"password\":\"test\"}')",
+      "Bash(curl -s -I -X OPTIONS https://mood--backend-9b77c9379b8b.herokuapp.com/api/auth/login -H 'Origin: https://mood-frontend.web.app' -H 'Access-Control-Request-Method: POST')",
+      "Bash(heroku logs:*)",
+      "Bash(curl -s https://mood--backend-9b77c9379b8b.herokuapp.com/api/auth/login -X POST -H 'Content-Type: application/json' -d '{\"name\":\"test\",\"password\":\"wrongpassword\"}')"
     ]
   }
 }

@@ -30,7 +30,7 @@ const passwordRules = [
 ];
 
 const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
-  const [name, setName] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [avatar, setAvatar] = useState('');
   const [themePreference, setThemePreference] = useState(theme || 'light');
   const [errors, setErrors] = useState({});
@@ -58,14 +58,15 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
   // Initialize form with user data
   useEffect(() => {
     if (user) {
-      setName(user.name || '');
+      setDisplayName(user.display_name !== null && user.display_name !== undefined ? user.display_name : (user.name || ''));
       // Validate avatar from user data - clear if invalid (like email addresses)
       const avatarUrl = user.avatar || '';
       setAvatar(isValidImageUrl(avatarUrl) ? avatarUrl : '');
+      setThemePreference(user.theme_preference || theme || 'light');
       setAvatarError(false);
       setLoading(false);
     }
-  }, [user]);
+  }, [theme, user]);
 
   useEffect(() => {
     setThemePreference(theme || 'light');
@@ -170,14 +171,12 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!name || name.trim().length === 0) {
-      newErrors.name = 'Name is required';
+    const trimmed = displayName.trim();
+    if (trimmed.length > 0 && trimmed.length < 2) {
+      newErrors.displayName = 'Display name must be at least 2 characters';
     }
-    if (name.length < 2) {
-      newErrors.name = 'Name must be at least 2 characters';
-    }
-    if (name.length > 50) {
-      newErrors.name = 'Name must be 50 characters or less';
+    if (trimmed.length > 50) {
+      newErrors.displayName = 'Display name must be 50 characters or less';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -188,7 +187,11 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
     if (!validateForm()) return;
 
     try {
-      const updated = await userService.update(user.id, { name, avatar });
+      const updated = await userService.update(user.id, {
+        displayName: displayName.trim() || null,
+        avatar,
+        themePreference
+      });
       if (onThemeChange) {
         onThemeChange(themePreference, { persist: true });
       }
@@ -256,16 +259,17 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
 
       <form onSubmit={handleSubmit} className="settings-form">
         <div className="form-section">
-          <h3>Name</h3>
+          <h3>Display Name</h3>
           <div className="form-group">
             <input
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Your name"
-              className={errors.name ? 'input-error' : ''}
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              placeholder="Enter a display name"
+              className={errors.displayName ? 'input-error' : ''}
             />
-            {errors.name && <span className="error">{errors.name}</span>}
+            {errors.displayName && <span className="error">{errors.displayName}</span>}
+            {/* <small>Shown in the header. Login username (<strong>{user?.name}</strong>) cannot be changed.</small> */}
           </div>
         </div>
 
@@ -511,6 +515,7 @@ const Settings = ({ user, onUpdate, theme, onThemeChange }) => {
       </form>
 
       <div className="settings-info">
+        <p><strong>Username:</strong> {user?.name}</p>
         <p><strong>Account Created:</strong> {user && new Date(user.created_at).toLocaleDateString()}</p>
       </div>
     </div>

@@ -625,7 +625,7 @@
 }
 
 .phase-inhale { background: var(--core-2, $color-teal); }
-.phase-hold   { background: $color-olive; }
+.phase-hold   { background: var(--core-3, $color-olive); }
 .phase-exhale { background: var(--core-2, $color-teal); }
 
 .countdown-number {
