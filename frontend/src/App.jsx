@@ -458,13 +458,25 @@ function App() {
         <div className="header-left">
           <div className="brand-lockup">
             <div className="brand-mark" aria-hidden="true">
-              <span className="dot dot-one" />
-              <span className="dot dot-two" />
-              <span className="dot dot-three" />
+              <svg className="brand-pulse-svg" width="46" height="46" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="20" cy="20" r="19" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.20)" strokeWidth="1"/>
+                <polyline
+                  className="pulse-line"
+                  points="4,20 10,20 13,11 16.5,28 20,6 23.5,27 27,20 36,20"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.95)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
             <div className="brand-copy">
-              <h1>Health Tracker</h1>
-              <p>Track patterns across your health</p>
+              <h1>
+                <span className="brand-word-light">Health</span>
+                <span className="brand-word-bold"> Tracker</span>
+              </h1>
+              <p>Your health patterns, at a glance</p>
             </div>
           </div>
         </div>
